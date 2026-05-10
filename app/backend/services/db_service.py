@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import List, Dict, Optional, Any, Union
 from collections import defaultdict
 
-from sqlalchemy import text, func
+from sqlalchemy import text, func, inspect
 import hashlib
 import secrets
 from config import USE_MOCK
@@ -81,6 +81,34 @@ class DBService:
             from config import get_database_url
             db_type = "SQLite" if get_database_url().startswith("sqlite") else "PostgreSQL"
             logger.info(f"DBService initialised for {db_type} (SessionLocal accessed dynamically)")
+
+    def migrate_db(self):
+        """Auto-migrate schema (e.g., adding 'title' to 'chat_sessions' if missing)."""
+        if self.use_mock or not database.get_engine():
+            return
+            
+        table_name = "chat_sessions"
+        column_name = "title"
+        
+        try:
+            inspector = inspect(database.get_engine())
+            if table_name not in inspector.get_table_names():
+                return
+
+            columns = [col['name'] for col in inspector.get_columns(table_name)]
+            if column_name not in columns:
+                logger.info(f"Migration: Adding column '{column_name}' to table '{table_name}'...")
+                with database.get_engine().connect() as conn:
+                    # PostgreSQL & SQLite compatible syntax
+                    query = text(f"ALTER TABLE {table_name} ADD COLUMN {column_name} TEXT DEFAULT 'Cuộc hội thoại mới'")
+                    conn.execute(query)
+                    conn.commit()
+                logger.info("✓ Migration successful.")
+            else:
+                logger.debug(f"Schema for '{table_name}' is already up-to-date.")
+
+        except Exception as e:
+            logger.error(f"Migration failed (non-critical): {e}")
 
     # ------------------------------------------------------------------
     # Conversation history

@@ -67,6 +67,12 @@ Format bắt buộc:
 {"answer": "...", "top3": [{"major_id": "...", "match_reason": "...", "match_score": 0}], "fallback": false}
 """
 
+ADVISOR_CHAT_SYSTEM_PROMPT = """
+Bạn là Cố vấn học tập tại VinUniversity. Hãy hỗ trợ học sinh tìm hiểu về các ngành học và môi trường tại trường.
+Hãy trả lời một cách thân thiện, chuyên nghiệp. Nếu học sinh hỏi về việc chọn ngành, hãy gợi ý họ thực hiện 
+bài trắc nghiệm Wizard hoặc thảo luận về sở thích/thế mạnh của họ. Trả lời bằng tiếng Việt.
+"""
+
 
 class AdvisorAgent:
     """
@@ -140,29 +146,25 @@ class AdvisorAgent:
                 logger.warning("AdvisorAgent: Missing data in wizard answers, returning fallback/handoff.")
                 return {"top3": [], "fallback": True}
 
-            # TODO: 1. Build user prompt from answers using _build_match_prompt(answers).
             prompt = self._build_match_prompt(answers, cv_signals)
 
-            # 2. Call self.llm.generate(prompt).
             if not self.llm: return {"top3": [], "fallback": True}
             response_text = self.llm.generate(prompt)
 
             if not response_text or response_text == "I don't know":
                 return {"top3": [], "fallback": True}
 
-            # 3. Parse JSON response — catch json.JSONDecodeError → return fallback.
             clean_text = response_text.strip()
-            if clean_text.startswith("```"):
-                clean_text = clean_text.split("```")[1].replace("json", "", 1).strip()
-            data = json.loads(clean_text)
+            # Robust JSON extraction
+            start_idx = clean_text.find('{')
+            end_idx = clean_text.rfind('}') + 1
+            data = json.loads(clean_text[start_idx:end_idx])
 
             # Dynamic validation and enrichment using DB/Fallback lookup
             enriched = self._validate_and_enrich(data.get("top3", []))
 
-            # 6. Sort top3 by match_score descending before returning.
             enriched.sort(key=lambda x: x.get("match_score", 0), reverse=True)
 
-            # 7. Wrap all LLM + parse logic in try/except → return fallback on any error.
             return {
                 "answer": data.get("answer"),
                 "top3": enriched,
@@ -172,10 +174,7 @@ class AdvisorAgent:
             logger.error(f"AdvisorAgent.match_majors failed: {e}")
             return {"top3": [], "fallback": True}
 
-        # TODO: Remove stub and implement Gemini call + validation
-        return {"top3": [], "fallback": True}
-
-    def run(self, message: str, history: List[Dict[str, Any]], user_id: str = None, persona_summary: str = None) -> str:
+    def run(self, message: str, history: List[Dict[str, Any]], user_id: str = None, persona_summary: str = None, **kwargs) -> str:
         """
         Free-form advisor chat: personalized guidance on major choice.
         Called by Pipeline when router returns "advisor".
@@ -188,11 +187,6 @@ class AdvisorAgent:
 
         Returns:
             Guidance text in Vietnamese.
-
-        TODO: 1. Build a chat prompt with MATCH_SYSTEM_PROMPT + last 3 history turns + message.
-        TODO: 2. Call self.model.generate_content(prompt).
-        TODO: 3. Return response.text, stripped of leading/trailing whitespace.
-        TODO: 4. Wrap in try/except → return polite error string on failure.
         """
         logger.info("AdvisorAgent.run() called")
 
@@ -202,7 +196,6 @@ class AdvisorAgent:
                         "ngành Khoa học Máy tính hoặc Kỹ thuật tại VinUni sẽ là lựa chọn tuyệt vời. "
                         "Bạn có muốn biết thêm về cơ hội thực tập tại các tập đoàn lớn không?")
 
-            # TODO: 1. Build a chat prompt with MATCH_SYSTEM_PROMPT + last 3 history turns + message.
             hist_ctx = "\n".join([
                 f"{'Học sinh' if t.get('role')=='user' else 'Cố vấn'}: {t.get('content')}" 
                 for t in history[-5:] 
@@ -211,27 +204,20 @@ class AdvisorAgent:
             
             persona_ctx = f"\n\nBối cảnh người dùng: {persona_summary}" if persona_summary else ""
             
-            # run() expects a response that follows the MATCH_SYSTEM_PROMPT format (JSON) 
-            # so that the Pipeline can extract 'answer' and 'top3' if needed.
-            prompt = f"{MATCH_SYSTEM_PROMPT}{persona_ctx}\n\nLịch sử trò chuyện:\n{hist_ctx}\n\nCâu hỏi: {message}"
+            # Sử dụng Chat Prompt thay vì Match Prompt để có phản hồi tự nhiên trong hội thoại
+            prompt = f"{ADVISOR_CHAT_SYSTEM_PROMPT}{persona_ctx}\n\nLịch sử trò chuyện:\n{hist_ctx}\n\nCâu hỏi: {message}"
 
-            # 2. Call self.llm.generate(prompt).
             if not self.llm: return "Hệ thống đang bận. Vui lòng thử lại sau."
             response_text = self.llm.generate(prompt)
 
             if not response_text or response_text == "I don't know":
                 return "Tôi xin lỗi, tôi chưa thể đưa ra lời khuyên lúc này. Bạn có thể hỏi cụ thể hơn không?"
 
-            # 3. Return response_text, stripped of leading/trailing whitespace.
             return response_text.strip()
 
-        # 4. Wrap in try/except → return polite error string on failure.
         except Exception as e:
             logger.error(f"AdvisorAgent.run failure: {e}")
             return "Tôi xin lỗi, tôi gặp vấn đề khi xử lý câu hỏi này. Bạn có thể hỏi lại về các ngành học tại VinUni không?"
-
-        # TODO: Replace stub with real Gemini response
-        return "AdvisorAgent chưa được implement."
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -246,11 +232,7 @@ class AdvisorAgent:
 
         Returns:
             Full prompt string combining MATCH_SYSTEM_PROMPT + answers.
-
-        TODO: Format interests/strengths/dislikes lists as Vietnamese bullet strings.
-        TODO: Append work_style as a single line.
         """
-        # TODO: Implement prompt formatting
         interests = ", ".join(answers.get("interests", []))
         strengths = ", ".join(answers.get("strengths", []))
         dislikes = ", ".join(answers.get("dislikes", []))

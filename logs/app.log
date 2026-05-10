@@ -70,3 +70,4 @@
 2026-05-09 21:40:20 [-] agents.judge INFO — Judge Result: pass=True, score=95, reason=The response is relevant and helpful to the user's inquiry about engineering fields. It provides information about three engineering majors with clear descriptions and how they might match the user's interests.
 2026-05-09 21:40:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=11778ms
 2026-05-09 21:40:20 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-10 23:32:48 [-] agents.crm INFO — CRMAgent.run() — user: test_user

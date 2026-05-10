@@ -76,34 +76,24 @@ class JudgeAgent:
                         return {"pass": False, "reason": f"Banned keyword detected: {word}", "score": 0}
                 return {"pass": True, "reason": "Safe (Mock check passed)", "score": 100}
 
-            # TODO: Remove stub and implement real Gemini call
             if not self.llm:
                 return self._fail_safe("llm_client_not_initialized")
 
-            # TODO: 1. Build prompt: JUDGE_SYSTEM_PROMPT + input + output.
             prompt = self._build_judge_prompt(input_text, output_text)
-
-            # TODO: 2. Call self.llm.generate(prompt).
             response = self.llm.generate(prompt)
             if not response or response == "I don't know":
                 return self._fail_safe("empty_llm_response")
 
-            # TODO: 3. Parse JSON from response — catch JSONDecodeError → _fail_safe().
+            # Clean response to find the JSON block
             clean_text = response.strip()
-            if "```" in clean_text:
-                # Extract JSON from potential markdown code blocks
-                clean_text = clean_text.split("```")[1].replace("json", "", 1).strip()
-            
-            result = json.loads(clean_text)
+            start_idx = clean_text.find('{')
+            end_idx = clean_text.rfind('}') + 1
+            result = json.loads(clean_text[start_idx:end_idx])
 
-            # TODO: 4. Validate "pass" key exists and is bool — else → _fail_safe().
             if "pass" not in result or not isinstance(result["pass"], bool):
                 return self._fail_safe("invalid_response_schema")
 
-            # TODO: 5. Log the judge result (score + reason) at INFO level.
             logger.info(f"Judge Result: pass={result['pass']}, score={result.get('score', 0)}, reason={result.get('reason')}")
-
-            # TODO: Wrap EVERYTHING (steps 1-5) in a broad try/except Exception → _fail_safe().
             return result
 
         except json.JSONDecodeError as e:

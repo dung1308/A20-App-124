@@ -38,7 +38,7 @@ class CRMAgent:
         # TODO: Inject DBService dependency for easier testing
         self.db = DBService()
 
-    def run(self, user_id: str, message: str, history: list = None) -> str:
+    def run(self, user_id: str, message: str, history: list = None, **kwargs) -> str:
         """
         Retrieve student profile and answer a profile-related question.
 
@@ -48,13 +48,6 @@ class CRMAgent:
 
         Returns:
             Personalised answer string in Vietnamese.
-
-        TODO: 1. Call self.db.get_student_profile(user_id) → profile dict or None.
-        TODO: 2. If profile is None → return "Mình chưa tìm thấy hồ sơ của bạn..."
-        TODO: 3. Build prompt: CRM_SYSTEM_PROMPT + formatted profile + question.
-        TODO: 4. Call self.model.generate_content(prompt).
-        TODO: 5. Return response.text stripped of whitespace.
-        TODO: 6. Wrap in try/except → return polite error string on failure.
         """
         logger.info(f"CRMAgent.run() — user: {user_id}")
 
@@ -97,9 +90,6 @@ class CRMAgent:
 
         Returns:
             Profile dict or None if not found.
-
-        TODO: Call db.get_student_profile(user_id).
-        TODO: Return None (not raise) if user not found — let caller handle.
         """
         return self.db.get_student_profile(user_id)
 
@@ -118,13 +108,16 @@ class CRMAgent:
 
         Returns:
             Full prompt string for Gemini.
-
-        TODO: Format each profile key-value pair on its own line.
-        TODO: Mask sensitive fields (phone, email) before including in prompt.
-        TODO: Append the user question at the end.
         """
-        # TODO: Implement formatted profile serialisation
-        formatted = "\n".join(f"{k}: {v}" for k, v in profile.items())
+        # Mask sensitive fields to protect student PII
+        sensitive_keys = {"email", "phone", "phone_number", "address", "id_number"}
+        masked_profile = {
+            k: ("[ĐÃ ẨN ĐỂ BẢO MẬT]" if k.lower() in sensitive_keys else v)
+            for k, v in profile.items()
+        }
+
+        # Format profile keys for better LLM readability
+        formatted = "\n".join(f"- {k.replace('_', ' ').title()}: {v}" for k, v in masked_profile.items() if v)
 
         hist_ctx = ""
         if history:

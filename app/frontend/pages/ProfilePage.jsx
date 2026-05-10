@@ -96,6 +96,13 @@ const ProfilePage = () => {
         <p className="text-gray-600">Dữ liệu này giúp CRM Agent đưa ra những lời khuyên chính xác nhất cho bạn.</p>
       </header>
 
+      <div className="mb-8 flex items-center gap-3 px-5 py-4 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm animate-in fade-in slide-in-from-top-4 duration-700">
+        <span className="material-symbols-outlined text-emerald-600 text-[22px]">verified_user</span>
+        <p className="text-xs text-emerald-800 font-medium leading-relaxed">
+          🛡️ Thông tin nhạy cảm của bạn (Email, SĐT) được mã hóa tự động trước khi gửi tới AI để đảm bảo an toàn tuyệt đối.
+        </p>
+      </div>
+
       {profile ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Personal Information Form */}

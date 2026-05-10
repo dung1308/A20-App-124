@@ -135,3 +135,23 @@ Thành viên: Nhóm A20-124
 #### Kế hoạch tuần tới
 - Triển khai UI theo pattern "Chat + Context Panel" để hiển thị Match Score và bằng chứng đi kèm.
  - Hoàn thiện hệ thống Guardrails để bảo vệ dữ liệu PII của sinh viên.
+
+### Cập nhật ngày 06/09/2026
+#### Đã làm
+- Triển khai trọn bộ Backend Session API: hỗ trợ lưu, đổi tên, xóa và tải xuống lịch sử hội thoại dưới dạng file .txt.
+- Xây dựng logic `migrate_db()` trong `DBService` giúp tự động cập nhật schema (thêm cột `title`) khi khởi chạy server.
+- Tối ưu hóa các Agent: Tách biệt `ADVISOR_CHAT_SYSTEM_PROMPT` cho hội thoại tự nhiên, cải tiến khả năng parse JSON bền bỉ cho Advisor và Judge Agent.
+- Bảo mật dữ liệu: Thực hiện PII Masking (ẩn Email, SĐT) trong `CRMAgent` và viết unit test xác thực tại `test_crm_pii.py`.
+- Cải tiến UI/UX: Thêm "Trust Badge" bảo mật tại trang Profile, cập nhật giao diện `MajorCard` và xử lý lỗi crash Google Login khi thiếu cấu hình Client ID.
+- Fix lỗi SyntaxError: Xử lý triệt để các lỗi docstring chưa đóng trong các file agent.
+
+#### Khó nhất tuần này
+- Đảm bảo tính nhất quán của dữ liệu khi thực hiện migration schema tự động trên SQLite và PostgreSQL mà không làm gián đoạn dịch vụ.
+
+#### AI tool đã dùng
+| Tool | Dùng để làm gì | Kết quả |
+|---|---|---|
+| Gemini Code Assist | Hỗ trợ refactor Agent prompts, viết code migration và unit test PII | Hệ thống hoạt động ổn định, bảo mật và chuyên nghiệp hơn |
+
+#### Học được
+- Việc tách biệt rõ ràng giữa prompt trả về dữ liệu (JSON) và prompt trò chuyện (Text) giúp hệ thống AI hoạt động tin cậy hơn, tránh được các lỗi hiển thị không mong muốn cho người dùng cuối.

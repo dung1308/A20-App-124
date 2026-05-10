@@ -145,6 +145,10 @@ def startup_event():
     try:
         init_database()
         logger.info("Database initialized on startup")
+        
+        # Chạy migration để cập nhật schema (thêm cột title nếu cần)
+        pipeline.db_service.migrate_db()
+        
     except Exception as e:
         logger.critical(f"CRITICAL: Failed to initialize database on startup: {e}")
         # Stop the application if the database is unreachable to avoid inconsistent states

@@ -399,3 +399,52 @@
 2026-05-10 21:15:44 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response provides relevant suggestions for university majors based on the user's interests, specifically tailored for a Vietnamese context. It maintains a positive and supportive tone, is accurate regarding industry requirements, and avoids any harmful content.
 2026-05-10 21:15:44 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=9171ms
 2026-05-10 21:15:44 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-10 23:42:27 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-10 23:42:27 [-] services.rag_service INFO — Initializing RAGService
+2026-05-10 23:42:29 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-10 23:42:29 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-10 23:42:29 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-10 23:42:29 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-10 23:42:30 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-10 23:42:31 [-] main INFO — Database initialized on startup
+2026-05-10 23:44:03 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-10 23:44:03 [-] services.rag_service INFO — Ingesting CV for user 123455_123455.com
+2026-05-10 23:44:16 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-10 23:44:16 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-10 23:44:21 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.21s
+2026-05-10 23:44:21 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-10 23:44:24 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.42s
+2026-05-10 23:44:24 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is appropriate for a Vietnamese high school student interested in university admissions, providing relevant insights on suitable study majors based on the user's interests, strengths, and work style. It does not contain harmful or false information and is detailed.
+2026-05-10 23:44:24 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=7632ms
+2026-05-10 23:44:24 [-] orchestrator.pipeline ERROR — Audit log failed (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-10 23:44:24 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-10 23:44:24 [-] services.rag_service INFO — Ingesting CV for user 123455_123455.com
+2026-05-10 23:44:26 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-10 23:44:32 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: bda66b4b-dc17-4a1f-b8e0-062208847c21
+2026-05-10 23:44:32 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-10 23:44:32 [-] orchestrator.router INFO — Routing message: 'Tôi muốn tìm hiểu sâu hơn về ngành Tài chính...'
+2026-05-10 23:44:33 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.69s
+2026-05-10 23:44:33 [-] orchestrator.router INFO — [LLM] Routed to: rag
+2026-05-10 23:44:33 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-10 23:44:34 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.20s
+2026-05-10 23:44:34 [-] services.cost_control INFO — [CostControl] RECORDED expand_query user=[EMAIL] tokens=244+49 cost=$0.00007 (daily_global=$0.0001)
+2026-05-10 23:44:34 [-] services.rag_service INFO — Query expanded: 'Tôi muốn tìm hiểu sâu hơn về ngành Tài chính' → 'Tôi muốn biết thêm thông tin chi tiết về chương tr'
+2026-05-10 23:44:34 [-] services.rag_service WARNING — No docs from hybrid → fallback keyword
+2026-05-10 23:44:34 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-10 23:44:36 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.40s
+2026-05-10 23:44:36 [-] agents.judge INFO — Judge Result: pass=False, score=25, reason=The response is vague and does not provide any helpful information about the Finance major, nor does it address the user's request for deeper understanding.
+2026-05-10 23:44:36 [-] orchestrator.pipeline WARNING — Judge REJECTED response for user [EMAIL] Reason: The response is vague and does not provide any helpful information about the Finance major, nor does it address the user's request for deeper understanding.
+2026-05-10 23:44:36 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=False latency=3817ms
+2026-05-10 23:44:36 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-10 23:44:38 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: bda66b4b-dc17-4a1f-b8e0-062208847c21
+2026-05-10 23:44:38 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-10 23:44:38 [-] orchestrator.router INFO — Routing message: 'Phân tích hồ sơ...'
+2026-05-10 23:44:39 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.95s
+2026-05-10 23:44:39 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-10 23:44:39 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-10 23:44:42 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.96s
+2026-05-10 23:44:42 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-10 23:44:43 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.42s
+2026-05-10 23:44:43 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response analyzes the user's profile in a constructive way, encouraging exploration of finance while acknowledging their communication strengths. It provides relevant insights without any harmful or fabricated content, and it invites further questions.
+2026-05-10 23:44:43 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=5334ms
+2026-05-10 23:44:43 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'

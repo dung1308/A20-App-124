@@ -1,0 +1,371 @@
+2026-05-09 21:01:30 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 7aaf423f-6892-43d8-808d-7d6f0f02ead0
+2026-05-09 21:01:30 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:01:30 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-09 21:01:31 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.68s
+2026-05-09 21:01:31 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:01:31 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:01:35 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.92s
+2026-05-09 21:01:35 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:01:39 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.71s
+2026-05-09 21:01:39 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response is helpful and encourages the user to share more about their interests and skills for tailored advice, making it relevant for a high school student considering university admissions.
+2026-05-09 21:01:39 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=8320ms
+2026-05-09 21:01:39 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:05:32 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 805dc469-0e49-44dd-87ee-b7aa2b2f51bb
+2026-05-09 21:05:32 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:05:32 [-] orchestrator.router INFO — Routing message: 'Tôi muốn hỏi ngành tôi chọn với điểm GPA 7.0...'
+2026-05-09 21:05:33 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.76s
+2026-05-09 21:05:33 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-09 21:05:33 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-09 21:05:36 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.53s
+2026-05-09 21:05:36 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:05:38 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.25s
+2026-05-09 21:05:38 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is helpful and provides relevant information about a potential university program (Business) in relation to the user's GPA of 7.0. It encourages further questions and offers support.
+2026-05-09 21:05:38 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=6588ms
+2026-05-09 21:05:38 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:06:09 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: a84ea3b4-1bb0-4225-ae9d-5d6b4942c6c3
+2026-05-09 21:06:09 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:06:09 [-] orchestrator.router INFO — Routing message: 'Với điểm tôi đã nêu, tôi nên chọn ngành nào...'
+2026-05-09 21:06:09 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.58s
+2026-05-09 21:06:09 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:06:09 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:06:18 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 8.32s
+2026-05-09 21:06:18 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:06:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.21s
+2026-05-09 21:06:20 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is safe, accurate, and appropriate for a Vietnamese high school student. It provides relevant academic options based on the GPA mentioned, offering helpful advice and encouraging further discussion about the user's interests and experiences.
+2026-05-09 21:06:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=11132ms
+2026-05-09 21:06:20 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:15:34 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:15:34 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:15:35 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:15:35 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:15:35 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:15:35 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:15:36 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:15:36 [-] main INFO — Database initialized on startup
+2026-05-09 21:20:12 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 61941d4e-f8c3-4015-8a8d-1865890fedb2
+2026-05-09 21:20:12 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:20:12 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-09 21:20:14 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.29s
+2026-05-09 21:20:14 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:20:14 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:20:17 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.89s
+2026-05-09 21:20:17 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:20:19 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.93s
+2026-05-09 21:20:19 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response is helpful and encourages the user to provide more information about their interests and strengths, which is appropriate for a high school student seeking guidance on career prospects.
+2026-05-09 21:20:19 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=7185ms
+2026-05-09 21:20:19 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:20:21 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 61941d4e-f8c3-4015-8a8d-1865890fedb2
+2026-05-09 21:20:21 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:20:21 [-] orchestrator.router INFO — Routing message: 'Phân tích hồ sơ...'
+2026-05-09 21:20:22 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.99s
+2026-05-09 21:20:22 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-09 21:20:22 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-09 21:20:26 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.14s
+2026-05-09 21:20:26 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:20:28 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.42s
+2026-05-09 21:20:28 [-] agents.judge INFO — Judge Result: pass=True, score=95, reason=The response provides helpful and relevant advice concerning the user's interests and strengths. It encourages further questions and aligns well with the user's potential academic paths, making it appropriate for a Vietnamese high school student seeking guidance on university admissions.
+2026-05-09 21:20:28 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=7569ms
+2026-05-09 21:20:28 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:21:32 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-09 21:21:32 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.
+2026-05-09 21:21:32 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-09 21:22:51 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:22:51 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:22:51 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:22:51 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:22:51 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:22:51 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:22:52 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:22:52 [-] main INFO — Database initialized on startup
+2026-05-09 21:23:28 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-09 21:23:28 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-09 21:23:35 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 6.75s
+2026-05-09 21:23:35 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:23:37 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.00s
+2026-05-09 21:23:37 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response provides relevant information about university majors that align with the user’s interests and strengths. It is constructive, encouraging the student to consider options while recognizing their dislike for mathematics. The content is safe and appropriate for a Vietnamese high school student.
+2026-05-09 21:23:37 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=8756ms
+2026-05-09 21:23:37 [-] orchestrator.pipeline ERROR — Audit log failed (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:23:37 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-09 21:23:37 [-] services.rag_service INFO — Ingesting CV for user 123456789_gmail.com
+2026-05-09 21:23:37 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-09 21:23:44 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 8c4cd38c-92cc-46a7-ac54-cb1b3788f0fa
+2026-05-09 21:23:44 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:23:44 [-] orchestrator.router INFO — Routing message: 'Tôi muốn tìm hiểu sâu hơn về ngành Khoa học Xã hội & Nhân vă...'
+2026-05-09 21:23:44 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.69s
+2026-05-09 21:23:44 [-] orchestrator.router INFO — [LLM] Routed to: rag
+2026-05-09 21:23:44 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-09 21:23:46 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.45s
+2026-05-09 21:23:46 [-] services.context_manager WARNING — Expanded query too long (89 tokens), falling back to original
+2026-05-09 21:23:46 [-] services.cost_control INFO — [CostControl] RECORDED expand_query user=[EMAIL] tokens=267+36 cost=$0.00006 (daily_global=$0.0001)
+2026-05-09 21:23:46 [-] services.rag_service INFO — Query expanded: 'Tôi muốn tìm hiểu sâu hơn về ngành Khoa học Xã hội' → 'Tôi muốn tìm hiểu sâu hơn về ngành Khoa học Xã hội'
+2026-05-09 21:23:46 [-] services.rag_service WARNING — No docs from hybrid → fallback keyword
+2026-05-09 21:23:46 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:23:48 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.77s
+2026-05-09 21:23:48 [-] agents.judge INFO — Judge Result: pass=False, score=35, reason=The response is vague and does not provide any specific information about the field of Social Sciences and Humanities. It lacks relevance and helpfulness for the user’s inquiry.
+2026-05-09 21:23:48 [-] orchestrator.pipeline WARNING — Judge REJECTED response for user [EMAIL] Reason: The response is vague and does not provide any specific information about the field of Social Sciences and Humanities. It lacks relevance and helpfulness for the user’s inquiry.
+2026-05-09 21:23:48 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=False latency=4494ms
+2026-05-09 21:23:48 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:23:56 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 8c4cd38c-92cc-46a7-ac54-cb1b3788f0fa
+2026-05-09 21:23:56 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:23:56 [-] orchestrator.router INFO — Routing message: 'Phân tích hồ sơ...'
+2026-05-09 21:23:56 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.75s
+2026-05-09 21:23:56 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-09 21:23:56 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-09 21:24:01 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.86s
+2026-05-09 21:24:01 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:24:03 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.06s
+2026-05-09 21:24:03 [-] agents.judge INFO — Judge Result: pass=True, score=95, reason=The response provides a thoughtful analysis of the user's academic interests, directly relating them to suitable fields of study. It offers constructive advice regarding areas of academia that align with the user's strengths and preferences, without including harmful content or misinformation. It encourages further inquiry, making it appropriate for the student.
+2026-05-09 21:24:03 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=7880ms
+2026-05-09 21:24:03 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:24:12 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 8c4cd38c-92cc-46a7-ac54-cb1b3788f0fa
+2026-05-09 21:24:12 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:24:12 [-] orchestrator.router INFO — Routing message: 'Nên chọn ngành gì...'
+2026-05-09 21:24:13 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.98s
+2026-05-09 21:24:13 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:24:13 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:24:19 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.62s
+2026-05-09 21:24:19 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:24:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.53s
+2026-05-09 21:24:20 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response provides relevant suggestions for university majors based on the student's interests and strengths without any harmful or offensive content. It avoids fabricating statistics or requirements and does not leak personal data.
+2026-05-09 21:24:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=8136ms
+2026-05-09 21:24:20 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:29:58 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 4bb05bbf-d7d2-4be8-ad2c-4a2ebc9b9c11
+2026-05-09 21:29:58 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.
+2026-05-09 21:29:58 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:29:58 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-09 21:29:59 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.29s
+2026-05-09 21:29:59 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:29:59 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:30:01 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.59s
+2026-05-09 21:30:01 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:30:02 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.46s
+2026-05-09 21:30:02 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response is helpful and appropriate, offering guidance on career prospects based on the user's interests and skills, which is relevant to a university admissions context.
+2026-05-09 21:30:02 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=4356ms
+2026-05-09 21:30:02 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:30:07 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 4bb05bbf-d7d2-4be8-ad2c-4a2ebc9b9c11
+2026-05-09 21:30:07 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:30:07 [-] orchestrator.router INFO — Routing message: 'Phân tích hồ sơ...'
+2026-05-09 21:30:08 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.77s
+2026-05-09 21:30:08 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-09 21:30:08 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-09 21:30:13 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.52s
+2026-05-09 21:30:13 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:30:18 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.31s
+2026-05-09 21:30:18 [-] agents.judge INFO — Judge Result: pass=True, score=95, reason=The response provides a thoughtful and relevant analysis of the user’s profile regarding their interests and strengths, and it offers appropriate suggestions for study fields. It encourages further questions if needed, making it supportive and helpful for a high school student.
+2026-05-09 21:30:18 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=11615ms
+2026-05-09 21:30:18 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:33:23 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:33:23 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:33:23 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:33:23 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:33:23 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:33:24 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:33:25 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:33:25 [-] main INFO — Database initialized on startup
+2026-05-09 21:35:23 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:35:23 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:35:24 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:35:24 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:35:24 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:35:24 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:35:25 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:35:26 [-] main INFO — Database initialized on startup
+2026-05-09 21:37:56 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:37:56 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:37:56 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:37:56 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:37:56 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:37:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:37:58 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:37:59 [-] main INFO — Database initialized on startup
+2026-05-09 21:40:04 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:40:04 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:40:05 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:40:05 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:40:05 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:40:06 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:40:07 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:40:07 [-] main INFO — Database initialized on startup
+2026-05-09 21:41:53 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 20fc802e-68ea-4ac6-9a43-8cb4a6036b24
+2026-05-09 21:41:53 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:41:53 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-09 21:41:54 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.58s
+2026-05-09 21:41:54 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:41:54 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:41:57 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.71s
+2026-05-09 21:41:57 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:41:59 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.77s
+2026-05-09 21:41:59 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response is helpful and encourages the student to provide information about their interests and skills, which is appropriate for guiding them towards potential career paths.
+2026-05-09 21:41:59 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=6081ms
+2026-05-09 21:41:59 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:44:00 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: cd0492aa-b0d3-48f8-a96d-6a8928e6275b
+2026-05-09 21:44:00 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:44:00 [-] orchestrator.router INFO — Routing message: 'Phân tích hồ sơ...'
+2026-05-09 21:44:01 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.71s
+2026-05-09 21:44:01 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-09 21:44:01 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-09 21:44:08 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 6.77s
+2026-05-09 21:44:08 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:44:10 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.08s
+2026-05-09 21:44:10 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The AI response is safe, accurate, and provides relevant analysis of the user's profile regarding their interest in business studies. It highlights strengths, preferences, and areas for improvement in a constructive manner.
+2026-05-09 21:44:10 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=10672ms
+2026-05-09 21:44:10 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:44:25 [-] services.db_service INFO — DBService: Deleted session cd0492aa-b0d3-48f8-a96d-6a8928e6275b and its messages
+2026-05-09 21:44:27 [-] services.db_service INFO — DBService: Deleted session 08c6e8b4-9637-4246-829e-4ae22479b5b6 and its messages
+2026-05-09 21:44:29 [-] services.db_service INFO — DBService: Deleted session 20fc802e-68ea-4ac6-9a43-8cb4a6036b24 and its messages
+2026-05-09 21:48:13 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-09 21:48:13 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.
+2026-05-09 21:48:13 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-09 21:48:18 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.86s
+2026-05-09 21:48:18 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:48:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.85s
+2026-05-09 21:48:20 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is relevant to the user's interests in business, strengths in leadership, and preferences in work style. It provides appropriate majors and explains why they would be a good fit, addressing potential concerns about dislike for math. No harmful, offensive, or discriminatory content is present, and it avoids fabricated statistics. The information is also respectful of the user's individual preferences.
+2026-05-09 21:48:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=6705ms
+2026-05-09 21:48:20 [-] orchestrator.pipeline ERROR — Audit log failed (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:48:20 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-09 21:48:20 [-] services.rag_service INFO — Ingesting CV for user 123456789_gmail.com
+2026-05-09 21:48:21 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-09 21:51:48 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 21:51:48 [-] services.rag_service INFO — Ingesting CV for user 12334555_gmail.com
+2026-05-09 21:52:13 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-09 21:52:13 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-09 21:52:18 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.39s
+2026-05-09 21:52:18 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:52:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.11s
+2026-05-09 21:52:20 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is helpful, accurate, and relevant to the user's interests and strengths. It provides appropriate industry options based on the user's preferences without including any harmful content or fabricated information.
+2026-05-09 21:52:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=7517ms
+2026-05-09 21:52:20 [-] orchestrator.pipeline ERROR — Audit log failed (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:52:20 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-09 21:52:20 [-] services.rag_service INFO — Ingesting CV for user 12334555_gmail.com
+2026-05-09 21:52:21 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-09 21:52:52 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: e6a449f7-01af-4218-9b1e-cb54eadca72a
+2026-05-09 21:52:52 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:52:52 [-] orchestrator.router INFO — Routing message: 'Tôi muốn tìm hiểu sâu hơn về ngành Quản trị Kinh doanh...'
+2026-05-09 21:52:53 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.67s
+2026-05-09 21:52:53 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:52:53 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:52:58 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.36s
+2026-05-09 21:52:58 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:52:59 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.52s
+2026-05-09 21:52:59 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response provides relevant information about related fields of study to Business Administration, guiding the student effectively on their academic interests. It is safe, accurate, appropriate, and directly addresses the user's question.
+2026-05-09 21:52:59 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=7596ms
+2026-05-09 21:52:59 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-10 23:03:38 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:03:38 [-] services.rag_service INFO — Initializing RAGService
+2026-05-10 23:03:40 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-10 23:03:54 [-] services.rag_service INFO — Ingested 11 admission chunks
+2026-05-10 23:04:29 [-] services.rag_service INFO — Ingested 50 FAQ items
+2026-05-10 23:04:29 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:04:30 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:04:30 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:08:28 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], route pending
+2026-05-10 23:08:28 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-10 23:08:28 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-10 23:08:30 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.11s
+2026-05-10 23:08:30 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-10 23:08:30 [-] orchestrator.pipeline INFO — [CHAT_ROUTE] user=[EMAIL] intent=advisor message_preview='Triển vọng nghề nghiệp'
+2026-05-10 23:08:30 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-10 23:08:32 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.21s
+2026-05-10 23:08:32 [-] orchestrator.pipeline INFO — [CHAT_RESPONSE] user=[EMAIL] intent=advisor raw_response_preview='{"answer": "Chào bạn! Để giúp bạn có cái nhìn rõ hơn về triển vọng nghề nghiệp, mình cần tìm hiểu thêm về những sở thích và kỹ năng mà bạn đang có. Bạn có thể c'
+2026-05-10 23:08:32 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-10 23:08:34 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.78s
+2026-05-10 23:08:34 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response is helpful and encourages the user to share their interests and skills, which is appropriate for a high school student exploring career prospects.
+2026-05-10 23:08:34 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor judge_pass=True ai_resolved=True fallback=False response_time_ms=6884.7
+2026-05-10 23:08:34 [-] services.db_service INFO — DBService.save_audit_log() — user=[EMAIL], pass=True, route=advisor, ai_resolved=True, fallback=False, response_time_ms=6884.7
+2026-05-10 23:08:35 [-] orchestrator.pipeline ERROR — Traceback (most recent call last):
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+psycopg2.errors.UndefinedColumn: column "route" of relation "audit_logs" does not exist
+LINE 1: INSERT INTO audit_logs (user_id, route, response_time_ms, ai...
+                                         ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "E:\VinUNI_thuc_chien_project\nghia\A20-App-124\app\backend\orchestrator\pipeline.py", line 437, in run_chat
+    self._audit_log(
+  File "E:\VinUNI_thuc_chien_project\nghia\A20-App-124\app\backend\orchestrator\pipeline.py", line 661, in _audit_log
+    self.db_service.save_audit_log(
+  File "E:\VinUNI_thuc_chien_project\nghia\A20-App-124\app\backend\services\db_service.py", line 386, in save_audit_log
+    session.commit()
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1311, in commit
+    self._prepare_impl()
+  File "<string>", line 2, in _prepare_impl
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1286, in _prepare_impl
+    self.session.flush()
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+             ^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "e:\VinUNI_thuc_chien_project\nghia\A20-App-124\.venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.ProgrammingError: (psycopg2.errors.UndefinedColumn) column "route" of relation "audit_logs" does not exist
+LINE 1: INSERT INTO audit_logs (user_id, route, response_time_ms, ai...
+                                         ^
+
+[SQL: INSERT INTO audit_logs (user_id, route, response_time_ms, ai_resolved, fallback, input_data, output_data, judge_result, timestamp) VALUES (%(user_id)s, %(route)s, %(response_time_ms)s, %(ai_resolved)s, %(fallback)s, %(input_data)s, %(output_data)s, %(judge_result)s::JSON, %(timestamp)s) RETURNING audit_logs.id]
+[parameters: {'user_id': '[EMAIL]', 'route': 'advisor', 'response_time_ms': 6884.[ID_NUMBER], 'ai_resolved': True, 'fallback': False, 'input_data': 'Triển vọng nghề nghiệp', 'output_data': '{"answer": "Chào bạn! Để giúp bạn có cái nhìn rõ hơn về triển vọng nghề nghiệp, mình cần tìm hiểu thêm về những sở thích và kỹ năng mà bạn đang có. B ... (66 characters truncated) ... ông việc mà bạn thấy hứng thú không? Từ đó, mình có thể giúp bạn phân tích và gợi ý những cơ hội nghề nghiệp phù hợp.", "top3": [], "fallback": true}', 'judge_result': '{"pass": true, "reason": "The response is helpful and encourages the user to share their interests and skills, which is appropriate for a high school student exploring career prospects.", "score": 85}', 'timestamp': datetime.datetime(2026, 5, 10, 16, 8, 34, 942981)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+
+2026-05-10 23:10:58 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:10:58 [-] services.rag_service INFO — Initializing RAGService
+2026-05-10 23:10:59 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-10 23:11:07 [-] services.rag_service INFO — Ingested 11 admission chunks
+2026-05-10 23:11:41 [-] services.rag_service INFO — Ingested 50 FAQ items
+2026-05-10 23:11:42 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:11:42 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:11:42 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:18 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:18 [-] services.rag_service INFO — Initializing RAGService
+2026-05-10 23:16:19 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:20 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:20 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:27 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:27 [-] services.rag_service INFO — Initializing RAGService
+2026-05-10 23:16:28 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:29 [-] services.db_service INFO — DBService initialised with PostgreSQL engine
+2026-05-10 23:16:29 [-] services.db_service INFO — DBService initialised with PostgreSQL engine

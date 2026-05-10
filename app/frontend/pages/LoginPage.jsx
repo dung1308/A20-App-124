@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -126,13 +126,21 @@ const LoginPage = () => {
               </div>
 
               <div className="flex justify-center">
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => setError('Đăng nhập Google thất bại')}
-                  useOneTap
-                  shape="pill"
-                  theme="outline"
-                />
+                {GOOGLE_CLIENT_ID ? (
+                  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => setError('Đăng nhập Google thất bại')}
+                      useOneTap
+                      shape="pill"
+                      theme="outline"
+                    />
+                  </GoogleOAuthProvider>
+                ) : (
+                  <div className="text-xs text-amber-600 bg-amber-50 p-3 rounded-lg border border-amber-100 italic">
+                    Đăng nhập bằng Google hiện đang bảo trì (Thiếu Client ID).
+                  </div>
+                )}
               </div>
             </>
           )}
