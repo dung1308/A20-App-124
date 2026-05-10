@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: vinuni_db_container
+    environment:
+      POSTGRES_DB: vinuni_db
+      POSTGRES_USER: vinuni_user2
+      POSTGRES_PASSWORD: "your pass" # Matches DATABASE_SETUP.md
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vinuni_user2 -d vinuni_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+    container_name: vinuni_backend
+    environment:
+      - DATABASE_URL=postgresql://vinuni_user2:13082001@db:5432/vinuni_db
+      - USE_MOCK=False
+      - LOG_LEVEL=INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
+    container_name: vinuni_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

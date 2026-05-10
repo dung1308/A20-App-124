@@ -1,0 +1,199 @@
+2026-05-09 09:24:41 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:24:41 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 09:24:42 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 09:24:42 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 09:24:42 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 09:24:43 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:24:44 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:24:44 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:26:20 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:26:20 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 09:26:20 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 09:26:20 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 09:26:20 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 09:26:21 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:26:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:26:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:29:00 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:29:00 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 09:29:00 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 09:29:00 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 09:29:00 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 09:29:01 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:29:02 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:29:02 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:29:02 [-] main ERROR — Failed to process PDF: 'CVAgent' object has no attribute 'analyze'
+2026-05-09 09:32:44 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:32:44 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 09:32:44 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 09:32:44 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 09:32:44 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 09:32:45 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:32:45 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:32:45 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2652 characters.
+2026-05-09 09:32:45 [-] services.rag_service INFO — Ingesting CV for user [EMAIL]
+2026-05-09 09:32:45 [-] main ERROR — Failed to process PDF: Validation error: name: Expected a name containing 3-512 characters from [a-zA-Z0-9._-], starting and ending with a character in [a-zA-Z0-9]. Got: [EMAIL]
+2026-05-09 09:36:47 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:36:47 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 09:36:47 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 09:36:47 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 09:36:47 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 09:36:48 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:36:49 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:36:49 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2652 characters.
+2026-05-09 09:36:49 [-] services.rag_service INFO — Ingesting CV for user [EMAIL]
+2026-05-09 09:36:49 [-] main ERROR — Failed to process PDF: Validation error: name: Expected a name containing 3-512 characters from [a-zA-Z0-9._-], starting and ending with a character in [a-zA-Z0-9]. Got: [EMAIL]
+2026-05-09 09:44:21 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:44:21 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 09:44:22 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 09:44:22 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 09:44:22 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 09:44:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:44:23 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 09:44:23 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2652 characters.
+2026-05-09 09:44:23 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:02:17 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:02:17 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:02:17 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:02:17 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:02:17 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:02:18 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:02:18 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:02:20 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:02:20 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:04:38 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:04:38 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:04:39 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:04:39 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:04:39 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:04:39 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:04:40 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:04:41 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:04:41 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:08:01 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:08:01 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:08:02 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:08:02 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:08:02 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:08:02 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:08:03 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:08:05 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:08:05 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:08:38 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:08:38 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:08:38 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:08:38 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:08:38 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:08:39 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:08:39 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:08:40 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:08:40 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:10:04 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:10:04 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:10:05 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:10:05 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:10:05 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:10:05 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:10:06 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:10:07 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:10:07 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:17:56 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:17:56 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:17:56 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:17:56 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:17:56 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:17:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:17:58 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:17:59 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:17:59 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:22:41 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:22:41 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:22:41 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:22:41 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:22:41 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:22:42 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:22:42 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:22:43 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:22:43 [-] main ERROR — Failed to process PDF: expected string or bytes-like object, got 'NoneType'
+2026-05-09 10:27:31 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:27:31 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:27:31 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:27:31 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:27:31 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:27:32 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:27:33 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:27:33 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:27:33 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:28:47 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:28:47 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:28:47 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:28:47 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:28:47 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:28:48 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:28:49 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:28:50 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:28:50 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:29:48 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:29:48 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:29:49 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:29:49 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:29:49 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:29:49 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:29:50 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:29:51 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:29:51 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:30:55 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:30:55 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:30:55 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:30:55 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:30:55 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:30:56 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:30:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:30:57 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 0 characters.
+2026-05-09 10:30:57 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:33:19 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:33:19 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:33:20 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:33:20 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:33:20 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:33:20 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:33:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:33:25 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10794 characters.
+2026-05-09 10:33:25 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:38:20 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:38:20 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:38:21 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:38:21 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:38:21 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:38:21 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:38:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:38:23 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:38:23 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:38:40 [-] services.rag_service ERROR — Embedding failed: Connection error.
+2026-05-09 10:39:09 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:39:09 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:39:10 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:39:10 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:39:10 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:39:10 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:39:11 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:39:12 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:39:12 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 10:39:41 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:39:41 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 10:39:47 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 10:39:47 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 10:39:47 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 10:39:48 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:39:49 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 10:39:50 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 10:39:50 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 11:02:02 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 11:02:02 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 11:02:03 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 11:02:03 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 11:02:03 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 11:02:03 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 11:02:04 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 11:02:05 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10862 characters.
+2026-05-09 11:02:05 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn

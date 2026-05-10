@@ -1,0 +1,72 @@
+2026-05-09 18:20:27 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 18:20:27 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 18:20:28 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 18:20:28 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 18:20:28 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 18:20:28 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 18:20:29 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 18:20:30 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10871 characters.
+2026-05-09 18:20:30 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: cs
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: ee
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: me
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: bme
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: ba
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: finance
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: data_science
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: liberal_arts
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Seeded major: architecture
+2026-05-09 20:55:01 [-] utils.seed_majors INFO — Majors seeded successfully.
+2026-05-09 21:35:30 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:35:30 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:35:30 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:35:30 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:35:30 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:35:31 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:35:31 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:35:32 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: c05fe801-1c7d-4956-9646-dde256aa6d83
+2026-05-09 21:35:32 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-09 21:35:32 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:35:32 [-] orchestrator.router INFO — Routing message: 'Xin chào, tôi muốn tìm hiểu về các ngành kỹ thuật....'
+2026-05-09 21:35:34 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.68s
+2026-05-09 21:35:34 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:35:34 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:35:38 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.19s
+2026-05-09 21:35:38 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-09 21:35:38 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:35:40 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.98s
+2026-05-09 21:35:40 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is safe, accurate, and appropriate. It provides relevant information about engineering majors while encouraging the student's interests. No harmful or discriminatory content, personal data leaks, or unrelated information is present.
+2026-05-09 21:35:40 [-] services.db_service ERROR — DBService.get_majors failed: database.SessionLocal is not initialized
+2026-05-09 21:35:40 [-] agents.advisor INFO — Using hardcoded VINUNI_MAJORS_LOOKUP (Mock/Fallback)
+2026-05-09 21:35:40 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=8858ms
+2026-05-09 21:35:40 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
+2026-05-09 21:35:40 [-] services.db_service ERROR — DBService.get_user_sessions failed: database.SessionLocal is not initialized
+2026-05-09 21:37:56 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:37:56 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:37:56 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:37:56 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:37:56 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:37:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:37:58 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:37:58 [-] main INFO — Database initialized on startup
+2026-05-09 21:37:58 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 223cd09a-9cc3-4e5b-bb49-be59fbaa9e13
+2026-05-09 21:40:04 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:40:04 [-] services.rag_service INFO — Initializing RAGService
+2026-05-09 21:40:06 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-09 21:40:06 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-09 21:40:06 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-09 21:40:06 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:40:07 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-09 21:40:08 [-] main INFO — Database initialized on startup
+2026-05-09 21:40:08 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 9ad3238e-8124-40d1-ab48-89561f104770
+2026-05-09 21:40:08 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-09 21:40:08 [-] orchestrator.router INFO — Routing message: 'Xin chào, tôi muốn tìm hiểu về các ngành kỹ thuật....'
+2026-05-09 21:40:10 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.16s
+2026-05-09 21:40:10 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-09 21:40:10 [-] agents.advisor INFO — AdvisorAgent.run() called
+2026-05-09 21:40:16 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 6.25s
+2026-05-09 21:40:16 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-09 21:40:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.31s
+2026-05-09 21:40:20 [-] agents.judge INFO — Judge Result: pass=True, score=95, reason=The response is relevant and helpful to the user's inquiry about engineering fields. It provides information about three engineering majors with clear descriptions and how they might match the user's interests.
+2026-05-09 21:40:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=11778ms
+2026-05-09 21:40:20 [-] orchestrator.pipeline ERROR — Audit log failed in run_chat (non-blocking): DBService.save_audit_log() got an unexpected keyword argument 'input_data'
