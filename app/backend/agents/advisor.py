@@ -7,18 +7,19 @@ Responsibility: AdvisorAgent handles two tasks:
 
 Uses LLMClient (OpenAI).
 Validates that returned major IDs exist in the 9-item VINUNI_MAJORS list.
-Returns fallback=True if Gemini output is ambiguous or cannot be validated.
+Returns fallback=True if model output is ambiguous or cannot be validated.
 """
 
 import json
 import logging
 from typing import List, Dict, Any
 
-from config import USE_MOCK
+from config import USE_MOCK, PROMPT_VERSION
 from services.llm_client import LLMClient
 from services.db_service import DBService
 from models.cv_schema import CVSignals
 from utils.logger import get_logger
+from services.prompt_service import PromptService
 
 logger = get_logger(__name__)
 
@@ -76,13 +77,16 @@ bài trắc nghiệm Wizard hoặc thảo luận về sở thích/thế mạnh c
 
 class AdvisorAgent:
     """
-    Provides major-matching and personalized guidance using Gemini.
+    Provides major-matching and personalized guidance using the configured LLM.
     """
 
-    def __init__(self):
+    def __init__(self, prompt_version: str = PROMPT_VERSION):
         self.llm = None if USE_MOCK else LLMClient()
         self.db = DBService()
+        self.prompt_service = PromptService()
         self._majors_cache = None
+        self.system_prompt = self.prompt_service.get_prompt("advisor", prompt_version)
+        self.match_prompt = self.prompt_service.get_prompt("advisor_match", prompt_version)
 
     def _get_majors_lookup(self) -> Dict[str, Dict]:
         """
@@ -128,13 +132,12 @@ class AdvisorAgent:
             Each top3 item has: major_id, major_name, match_reason,
                                 match_score, what_students_do.
 
-        TODO: 1. Build user prompt from answers using _build_match_prompt(answers).
-        TODO: 2. Call self.model.generate_content(prompt).
-        TODO: 3. Parse JSON response — catch json.JSONDecodeError → return fallback.
-        TODO: 4. Validate every major_id is in VALID_IDS — reject unknowns → fallback.
-        TODO: 5. Enrich each item with major_name + what_students_do from VINUNI_MAJORS_LOOKUP.
-        TODO: 6. Sort top3 by match_score descending before returning.
-        TODO: 7. Wrap all LLM + parse logic in try/except → return fallback on any error.
+        Implemented feature flow:
+          - Build a model prompt from wizard answers and optional CV signals.
+          - Parse a JSON response from the configured LLM client.
+          - Validate major IDs against the DB-backed major list or static fallback.
+          - Enrich valid matches with display names and "what students do" copy.
+          - Sort matches by match_score and fail closed to fallback on errors.
         """
         logger.info("AdvisorAgent.match_majors() called")
 
@@ -174,7 +177,7 @@ class AdvisorAgent:
             logger.error(f"AdvisorAgent.match_majors failed: {e}")
             return {"top3": [], "fallback": True}
 
-    def run(self, message: str, history: List[Dict[str, Any]], user_id: str = None, persona_summary: str = None, **kwargs) -> str:
+    def run(self, message: str, history: List[Dict[str, Any]], user_id: str = None, persona_summary: str = None, clarify: bool = False, **kwargs) -> str:
         """
         Free-form advisor chat: personalized guidance on major choice.
         Called by Pipeline when router returns "advisor".
@@ -184,17 +187,25 @@ class AdvisorAgent:
             history: Prior conversation turns for context.
             user_id: Student identifier for personalized context.
             persona_summary: Natural language context about the student (from CV/Wizard).
+            clarify: If True, ask for clarification instead of giving advice.
 
         Returns:
             Guidance text in Vietnamese.
         """
-        logger.info("AdvisorAgent.run() called")
+        logger.info(f"AdvisorAgent.run() called (clarify={clarify})")
 
         try:
             if USE_MOCK:
-                return ("Dựa trên sở thích của bạn về công nghệ và giải quyết vấn đề, "
-                        "ngành Khoa học Máy tính hoặc Kỹ thuật tại VinUni sẽ là lựa chọn tuyệt vời. "
-                        "Bạn có muốn biết thêm về cơ hội thực tập tại các tập đoàn lớn không?")
+                if clarify:
+                    return ("Để tôi có thể tư vấn tốt hơn cho bạn, bạn có thể chia sẻ thêm về:\n\n"
+                            "1. Sở thích cụ thể của bạn (ví dụ: thích lập trình, thiết kế, kinh doanh...)\n"
+                            "2. Điểm mạnh và điểm yếu của bạn\n"
+                            "3. Bạn muốn làm việc gì trong tương lai?\n\n"
+                            "Hoặc bạn có thể làm bài trắc nghiệm ngành học của chúng tôi để có kết quả chính xác hơn!")
+                else:
+                    return ("Dựa trên sở thích của bạn về công nghệ và giải quyết vấn đề, "
+                            "ngành Khoa học Máy tính hoặc Kỹ thuật tại VinUni sẽ là lựa chọn tuyệt vời. "
+                            "Bạn có muốn biết thêm về cơ hội thực tập tại các tập đoàn lớn không?")
 
             hist_ctx = "\n".join([
                 f"{'Học sinh' if t.get('role')=='user' else 'Cố vấn'}: {t.get('content')}" 
@@ -204,20 +215,40 @@ class AdvisorAgent:
             
             persona_ctx = f"\n\nBối cảnh người dùng: {persona_summary}" if persona_summary else ""
             
-            # Sử dụng Chat Prompt thay vì Match Prompt để có phản hồi tự nhiên trong hội thoại
-            prompt = f"{ADVISOR_CHAT_SYSTEM_PROMPT}{persona_ctx}\n\nLịch sử trò chuyện:\n{hist_ctx}\n\nCâu hỏi: {message}"
+            if clarify:
+                # Special prompt for clarification mode
+                prompt = f"""Bạn là Cố vấn học tập tại VinUniversity. Người dùng vừa hỏi một câu hỏi nhưng thông tin chưa đủ rõ ràng để đưa ra lời khuyên chính xác.
+
+Hãy hỏi thêm thông tin một cách thân thiện, không phán xét, và gợi ý họ làm bài trắc nghiệm nếu phù hợp.
+
+{persona_ctx}
+Lịch sử trò chuyện:
+{hist_ctx}
+
+Câu hỏi của học sinh: {message}
+
+Hãy hỏi thêm 2-3 thông tin cụ thể để có thể tư vấn tốt hơn."""
+            else:
+                # Normal advisor chat
+                prompt = f"{self.system_prompt}{persona_ctx}\n\nLịch sử trò chuyện:\n{hist_ctx}\n\nCâu hỏi: {message}"
 
             if not self.llm: return "Hệ thống đang bận. Vui lòng thử lại sau."
             response_text = self.llm.generate(prompt)
 
             if not response_text or response_text == "I don't know":
-                return "Tôi xin lỗi, tôi chưa thể đưa ra lời khuyên lúc này. Bạn có thể hỏi cụ thể hơn không?"
+                if clarify:
+                    return ("Xin chào! Để tôi có thể hỗ trợ bạn tốt hơn, bạn có thể cho tôi biết thêm về sở thích và kỹ năng của mình không? Hoặc bạn có muốn làm bài trắc nghiệm chọn ngành của chúng tôi?")
+                else:
+                    return "Tôi xin lỗi, tôi chưa thể đưa ra lời khuyên lúc này. Bạn có thể hỏi cụ thể hơn không?"
 
             return response_text.strip()
 
         except Exception as e:
             logger.error(f"AdvisorAgent.run failure: {e}")
-            return "Tôi xin lỗi, tôi gặp vấn đề khi xử lý câu hỏi này. Bạn có thể hỏi lại về các ngành học tại VinUni không?"
+            if clarify:
+                return "Xin chào! Để tôi hỗ trợ bạn tốt hơn, hãy cho tôi biết thêm về sở thích của bạn nhé!"
+            else:
+                return "Tôi xin lỗi, tôi gặp vấn đề khi xử lý câu hỏi này. Bạn có thể hỏi lại về các ngành học tại VinUni không?"
 
     # ------------------------------------------------------------------
     # Private helpers
@@ -225,13 +256,13 @@ class AdvisorAgent:
 
     def _build_match_prompt(self, answers: Dict[str, Any], cv_signals: CVSignals = None) -> str:
         """
-        Format the wizard answers into a Gemini user prompt.
+        Format the wizard answers into a model prompt.
 
         Args:
             answers: Dict with interests, strengths, dislikes, work_style.
 
         Returns:
-            Full prompt string combining MATCH_SYSTEM_PROMPT + answers.
+            Full prompt string combining the match system prompt + answers.
         """
         interests = ", ".join(answers.get("interests", []))
         strengths = ", ".join(answers.get("strengths", []))
@@ -256,14 +287,14 @@ class AdvisorAgent:
                 f"- Chức danh: {titles}\n- Kỹ năng: {skills}\n- Gợi ý sơ bộ: {suggested}"
             )
 
-        return f"{MATCH_SYSTEM_PROMPT}\n\nDưới đây là thông tin của học sinh:\n{user_summary}{cv_summary}"
+        return f"{self.match_prompt}\n\nDưới đây là thông tin của học sinh:\n{user_summary}{cv_summary}"
 
     def _validate_and_enrich(self, top3: List[Dict]) -> List[Dict]:
         """
         Validate major IDs and enrich each item with display data.
 
         Args:
-            top3: Raw list of dicts from Gemini response.
+            top3: Raw list of dicts from model response.
 
         Returns:
             Enriched list, or raises ValueError if any major_id is invalid.

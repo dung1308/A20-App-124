@@ -2,19 +2,28 @@ frontend/
   pages/
     WizardPage.jsx
     ReportPage.jsx
-    AdminDashboard.jsx (Visualize PMF metrics and handoff summaries)
+    ConsultantPage.jsx (AI Chat interface)
+    ProfilePage.jsx (Academic profile management)
+    AdminDashboard.jsx (PMF metrics and Audit logs)
+    StaffDashboard.jsx (Handoff management and student context)
   components/
+    Layout/
+      LeftPanel.jsx (Persistent navigation)
+      Header.jsx
     Wizard/
       Step1.jsx
-      Step2.jsx
-      Step3.jsx
-      Step4.jsx
+      ...Step4.jsx
     Report/
       MajorCard.jsx
     Chat/
       ChatBox.jsx
+    Admin/
+      AuditTab.jsx
+      JudgeResultModal.jsx
+    Staff/
+      HandoffList.jsx
   services/
-    api.js (Auth, Chat, Match, Metrics, and Handoff endpoints)
+    api.js (Auth, Chat, Match, Metrics, and Session endpoints)
   hooks/
     useChat.js
   state/

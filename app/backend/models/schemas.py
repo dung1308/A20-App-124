@@ -13,6 +13,7 @@ class User(Base):
     hashed_password = Column(String, nullable=True)
     role = Column(String, default="user")
     permissions = Column(JSON, nullable=True)  # Custom permission overrides
+    blacklisted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -40,6 +41,7 @@ class ChatMessage(Base):
     role = Column(String)  # "user" or "assistant"
     content = Column(Text)
     agent_type = Column(String)  # "rag", "crm", "advisor", "judge", "router"
+    sources = Column(JSON, nullable=True) # Stores RAG sources as a JSON array of objects
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 class ChatSession(Base):
@@ -67,13 +69,23 @@ class AuditLog(Base):
     __tablename__ = "audit_logs"
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String, ForeignKey("users.user_id"), nullable=True)
+    endpoint = Column(String)  # "/api/match", "/api/chat"
+    request_data = Column(JSON, nullable=True)  # Request metadata (no sensitive data)
+    response_status = Column(String)  # "success", "rejected", "error"
+    judge_decision = Column(String, nullable=True)  # Judge agent decision
+    trace_id = Column(String, nullable=True, index=True)
     input_data = Column(Text, nullable=True)
     output_data = Column(Text, nullable=True)
+    input_text = Column(Text, nullable=True)
+    output_text = Column(Text, nullable=True)
     judge_result = Column(JSON, nullable=True)
+    escalation_level = Column(String, nullable=True)
+    escalation_reason = Column(Text, nullable=True)
+    handoff_status = Column(String, default="none", nullable=True)
     route = Column(String, nullable=True)
     response_time_ms = Column(Integer, nullable=True)
-    ai_resolved = Column(Boolean, default=True)
-    fallback = Column(Boolean, default=False)
+    ai_resolved = Column(Boolean, nullable=True)
+    fallback = Column(Boolean, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 class SecurityEvent(Base):

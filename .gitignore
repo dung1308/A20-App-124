@@ -21,3 +21,6 @@ build/
 # Node
 app/frontend/node_modules/
 app/frontend/package-lock.json
+
+# User uploads
+app/backend/uploads/

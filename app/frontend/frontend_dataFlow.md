@@ -49,4 +49,15 @@ The frontend utilizes a centralized state (via Zustand or Redux as per the skele
 
 ## Key API Contracts
 - `POST /api/match`: Returns `{ top3: [...], fallback: boolean, disclaimer: string }`.
-- `POST /api/chat`: Returns `{ response: string, intent: string, status: string }`.
+- `POST /api/chat`: Returns `{ response: string, intent: string, status: string, major?: [], sources?: [], sessionId?: string, sessionTitle?: string }`.
+- `POST /api/upload-cv`: Returns extracted CV text and `cv_signals` used by the wizard and chat persona context.
+- `GET /api/metrics`: Returns PMF/admin metrics such as AI resolution rate, fallback rate, latency, route distribution, token usage, and estimated cost.
+- `GET /api/handoff-summary`: Returns a staff-facing summary for human advisor follow-up.
+
+---
+
+## Frontend TODO for Backend Alignment
+- Mirror backend validation rules in frontend forms for wizard answers, chat length, profile fields, and CV upload constraints.
+- Add contract tests for `/api/match`, `/api/chat`, `/api/upload-cv`, staff metrics, audit logs, and RAG admin controls.
+
+Completed backend-alignment items are tracked in `BACKEND_TODO.md`.

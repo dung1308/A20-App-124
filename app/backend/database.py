@@ -18,6 +18,87 @@ logger = logging.getLogger(__name__)
 engine = None
 SessionLocal = None
 
+def _ensure_audit_log_columns(db_engine) -> None:
+    """Add audit columns used by the pipeline when running on an older DB."""
+    inspector = inspect(db_engine)
+    if "audit_logs" not in inspector.get_table_names():
+        return
+
+    existing = {
+        column["name"]
+        for column in inspector.get_columns("audit_logs")
+    }
+    db_url = str(db_engine.url)
+    if db_url.startswith("sqlite"):
+        column_defs = {
+            "endpoint": "VARCHAR",
+            "request_data": "JSON",
+            "response_status": "VARCHAR",
+            "judge_decision": "VARCHAR",
+            "trace_id": "VARCHAR",
+            "input_data": "TEXT",
+            "output_data": "TEXT",
+            "input_text": "TEXT",
+            "output_text": "TEXT",
+            "judge_result": "JSON",
+            "escalation_level": "VARCHAR",
+            "escalation_reason": "TEXT",
+            "handoff_status": "VARCHAR",
+            "route": "VARCHAR",
+            "response_time_ms": "INTEGER",
+            "ai_resolved": "BOOLEAN",
+            "fallback": "BOOLEAN",
+        }
+    else:
+        column_defs = {
+            "endpoint": "VARCHAR",
+            "request_data": "JSON",
+            "response_status": "VARCHAR",
+            "judge_decision": "VARCHAR",
+            "trace_id": "VARCHAR",
+            "input_data": "TEXT",
+            "output_data": "TEXT",
+            "input_text": "TEXT",
+            "output_text": "TEXT",
+            "judge_result": "JSON",
+            "escalation_level": "VARCHAR",
+            "escalation_reason": "TEXT",
+            "handoff_status": "VARCHAR",
+            "route": "VARCHAR",
+            "response_time_ms": "INTEGER",
+            "ai_resolved": "BOOLEAN",
+            "fallback": "BOOLEAN",
+        }
+
+    missing = [
+        (name, ddl)
+        for name, ddl in column_defs.items()
+        if name not in existing
+    ]
+    if not missing:
+        return
+
+    with db_engine.connect() as conn:
+        for name, ddl in missing:
+            conn.execute(text(f"ALTER TABLE audit_logs ADD COLUMN {name} {ddl}"))
+        conn.commit()
+    logger.info("Audit log schema updated with columns: %s", [name for name, _ in missing])
+
+def _ensure_user_columns(db_engine) -> None:
+    """Add user-management columns used by admin database tools."""
+    inspector = inspect(db_engine)
+    if "users" not in inspector.get_table_names():
+        return
+
+    existing = {column["name"] for column in inspector.get_columns("users")}
+    if "blacklisted" in existing:
+        return
+
+    with db_engine.connect() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN blacklisted BOOLEAN DEFAULT FALSE"))
+        conn.commit()
+    logger.info("Users schema updated with column: blacklisted")
+
 
 def init_database() -> None:
     """
@@ -43,8 +124,19 @@ def init_database() -> None:
             )
         else:
             # For PostgreSQL or other databases
-            logger.info(f"Connecting to PostgreSQL database: {db_url.split('@')[-1]}") # Log host/db only for security
-            engine = create_engine(db_url, echo=False)
+            logger.info(f"Connecting to PostgreSQL database: {db_url.split('@')[-1].split('?')[0]}") 
+            engine = create_engine(
+                db_url, 
+                echo=False,
+                pool_size=5,
+                max_overflow=10,
+                pool_recycle=3600,
+                pool_pre_ping=True
+            )
+
+        # Khởi tạo factory ngay sau khi engine sẵn sàng để tránh lỗi NoneType 
+        # nếu các hàm phía sau (create_all) mất thời gian hoặc gặp lỗi.
+        SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 
         # Enable pgcrypto extension (optional for database-side utilities)
         if not db_url.startswith("sqlite"):
@@ -57,9 +149,11 @@ def init_database() -> None:
         
         # Create all tables defined in Base metadata
         Base.metadata.create_all(bind=engine)
-        SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
+        _ensure_audit_log_columns(engine)
+        _ensure_user_columns(engine)
         
-        logger.info(f"Database initialized successfully: {db_url}")
+        masked_url = db_url.split('@')[-1] if '@' in db_url else db_url
+        logger.info(f"Database initialized successfully: {masked_url}")
         
         # Log existing tables
         inspector = inspect(engine)

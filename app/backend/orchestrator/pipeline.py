@@ -43,6 +43,13 @@ DISCLAIMER = (
 )
 
 
+ESCALATION_MESSAGE = (
+    "Câu trả lời này cần xác nhận từ tư vấn viên tuyển sinh. "
+    "Bạn vui lòng liên hệ trực tiếp với bộ phận tư vấn tuyển sinh VinUni "
+    "để nhận thông tin chính thức và phù hợp với hồ sơ của bạn."
+)
+
+
 class Pipeline:
     """
     Wires all components together and executes the two main flows:
@@ -85,8 +92,9 @@ class Pipeline:
         start_time = time.time()
 
         # 1. Input Guard & Rate Limiter
-        self.input_guard.check(str(answers))
+        self._check_input_or_raise(user_id, str(answers), "match")
         if not self.rate_limiter.allow(user_id):
+            self._record_security_event(user_id, "rate_limit", "medium", {"flow": "match"})
             from fastapi import HTTPException
             raise HTTPException(status_code=429, detail="Bạn đã gửi quá nhiều yêu cầu. Vui lòng thử lại sau.")
 
@@ -123,7 +131,32 @@ class Pipeline:
                 judge_result = self.judge.evaluate(str(answers), str(raw_result))
 
             is_safe = judge_result.get("pass", False)
+            escalation_level = judge_result.get("escalation_level", "NONE")
             latency = int((time.time() - start_time) * 1000)
+
+            if escalation_level in ["MEDIUM", "HIGH"]:
+                logger.warning(
+                    f"Escalation triggered in match for user {user_id}: "
+                    f"{escalation_level} - {judge_result.get('escalation_reason', '')}"
+                )
+                self._audit_log(
+                    user_id,
+                    answers,
+                    ESCALATION_MESSAGE,
+                    judge_result,
+                    route="fallback",
+                    response_time_ms=latency,
+                    ai_resolved=False,
+                    fallback=True,
+                    handoff_status="pending",
+                )
+                return {
+                    "top3": [],
+                    "fallback": True,
+                    "message": ESCALATION_MESSAGE,
+                    "disclaimer": DISCLAIMER,
+                    "escalation_level": escalation_level,
+                }
 
             if not is_safe:
                 logger.warning(f"Judge rejected match result for {user_id}")
@@ -151,6 +184,27 @@ class Pipeline:
         except Exception as e:
             logger.error(f"Pipeline parse_cv failure: {e}")
             return None
+
+    def _check_input_or_raise(self, user_id: str, text: str, flow: str) -> None:
+        """
+        Enforce InputGuard verdicts before routing, retrieval, or LLM calls.
+        """
+        is_safe, reason = self.input_guard.check(text)
+        if is_safe:
+            return
+
+        severity = "high" if reason == "injection_detected" else "medium"
+        self._record_security_event(
+            user_id,
+            reason,
+            severity,
+            {
+                "flow": flow,
+                "input_preview": self.output_guard.redact(str(text))[:500],
+            },
+        )
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail=f"Input blocked by guardrail: {reason}")
 
     # ------------------------------------------------------------------
     # Chat flow
@@ -181,13 +235,15 @@ class Pipeline:
         start_time = time.time()
         
         # 1. Input Guard & Rate Limiter
-        self.input_guard.check(message)
+        self._check_input_or_raise(user_id, message, "chat")
+        message = self.input_guard.sanitize(message)
         if not self.rate_limiter.allow(user_id):
+            self._record_security_event(user_id, "rate_limit", "medium", {"flow": "chat"})
             from fastapi import HTTPException
             raise HTTPException(status_code=429, detail="Tần suất gửi tin nhắn quá nhanh. Vui lòng đợi giây lát.")
 
         # 0. Save user message to database (This triggers auto-rename in db_service)
-        new_title = self.db_service.save_message(user_id, "user", message, session_id=session_id)
+        new_title = self.db_service.save_message(user_id, "user", message, session_id=session_id, sources=[])
 
         # Initialize default judge result to prevent unbound errors
         judge_result = {"pass": True, "score": 1.0}
@@ -205,33 +261,91 @@ class Pipeline:
                 route = self.router.route(message, history)
             
             # 2. Dispatch (Real or Mock) with safe history
-            raw_response = self._dispatch(route, user_id, message, history, persona_summary=persona_summary)
-            safe_response = self.output_guard.redact(raw_response)
+            raw_response = self._dispatch(
+                route,
+                user_id,
+                message,
+                history,
+                persona_summary=persona_summary
+            )
 
-            # 2.5 Save assistant response to database
-            self.db_service.save_message(user_id, "assistant", safe_response, agent_type=route, session_id=session_id)
+            sources = []
+
+            if isinstance(raw_response, dict):
+                response_text = raw_response.get("answer", "")
+                sources = raw_response.get("sources", [])
+            else:
+                response_text = raw_response
+
+            safe_response = self.output_guard.process(response_text)
             
-            # 3. Safety check (Only in real mode)
-            if not USE_MOCK:
-                judge_result = self.judge.evaluate(message, safe_response)
+            # 3. Safety check and escalation detection
+            judge_result = self.judge.evaluate(message, safe_response)
             
-            is_safe = judge_result.get("pass", False)
+            judge_pass = judge_result.get("pass", False)
+            escalation_level = judge_result.get("escalation_level", "NONE")
             latency = int((time.time() - start_time) * 1000)
+            handoff_status = "none"
             
-            if not is_safe:
+            # Handle clarify case - re-route to advisor for clarification
+            if escalation_level in ["MEDIUM", "HIGH"]:
+                logger.warning(
+                    f"Escalation triggered for user {user_id}: "
+                    f"{escalation_level} - {judge_result.get('escalation_reason', '')}"
+                )
+                safe_response = ESCALATION_MESSAGE
+                route = "fallback"
+                status = "escalated"
+                ai_resolved = False
+                fallback = True
+                handoff_status = "pending"
+                sources = []
+            elif judge_pass == "clarify":
+                logger.info(f"Judge requested clarification for user {user_id}. Re-routing to advisor.")
+                clarify_response = self.advisor.run(
+                    message, 
+                    history, 
+                    user_id=user_id, 
+                    persona_summary=persona_summary,
+                    clarify=True  # Special flag for clarification mode
+                )
+                safe_response = self.output_guard.process(clarify_response)
+                route = "advisor"
+                status = "clarified"
+                ai_resolved = True
+                fallback = False
+            elif not judge_pass:
                 logger.warning(f"Judge REJECTED response for user {user_id}. Reason: {judge_result.get('reason', 'Safety violation or API error')}")
                 safe_response = "Tôi xin lỗi, nhưng tôi không thể trả lời câu hỏi này vì lý do an toàn. Bạn có câu hỏi nào khác về VinUni không?"
                 route = "fallback"
-            
-            status = "success" if is_safe else "rejected"
+                status = "rejected"
+                ai_resolved = False
+                fallback = True
+            else:
+                status = "success"
+                ai_resolved = True
+                fallback = False
+
+            # Save only the final user-visible assistant response. This avoids
+            # storing a response that JudgeAgent later rejects.
+            self.db_service.save_message(
+                user_id,
+                "assistant",
+                safe_response,
+                agent_type=route,
+                session_id=session_id,
+                sources=sources
+            )
             
             response_data = {
                 "response": safe_response,
                 "intent": route,
                 "status": status,
                 "major": None,
+                "sources": sources,
                 "sessionId": session_id,
-                "sessionTitle": new_title
+                "sessionTitle": new_title,
+                "escalation_level": escalation_level,
             }
 
             # If route is advisor, extract structured data for the frontend cards
@@ -250,11 +364,17 @@ class Pipeline:
                 except Exception as e:
                     logger.warning(f"Structured advisor parsing failed: {e}")
 
-            # Wrap audit log in try/except to ensure logging failures don't block user response
-            try:
-                self._audit_log(user_id, message, safe_response, judge_result, route=route, response_time_ms=latency, ai_resolved=is_safe, fallback=(route == "fallback"))
-            except Exception as audit_err:
-                logger.error(f"Audit log failed in run_chat (non-blocking): {audit_err}")
+            self._audit_log(
+                user_id,
+                message,
+                safe_response,
+                judge_result,
+                route=route,
+                response_time_ms=latency,
+                ai_resolved=ai_resolved,
+                fallback=fallback,
+                handoff_status=handoff_status,
+            )
             return response_data
 
         except Exception as e:
@@ -289,13 +409,13 @@ class Pipeline:
         Returns:
             Raw response string from the selected agent.
 
-        TODO: Implement all four branches:
-              "crm"      → crm.run(user_id, message)
-              "advisor"  → advisor.run(message, history)
-              "fallback" → return handoff string (optionally call human_fallback.py)
-              default    → rag.run(message)
+        Implemented dispatch branches:
+          - "crm" uses profile-aware CRM responses.
+          - "advisor" uses personalized major guidance.
+          - "rag" uses retrieval-grounded admissions answers.
+          - "fallback" returns a human-handoff prompt.
+          - Unknown routes default to RAG with a warning.
         """
-        # TODO: Replace with real dispatch logic
         if route == "fallback":
             return "Bạn muốn được kết nối với tư vấn viên của chúng tôi không?"
         
@@ -328,7 +448,8 @@ class Pipeline:
         route: str = None,
         response_time_ms: int = None,
         ai_resolved: bool = True,
-        fallback: bool = False
+        fallback: bool = False,
+        handoff_status: str = "none",
     ) -> None:
         """
         Persist an audit record to the database.
@@ -338,11 +459,32 @@ class Pipeline:
         logger.info(f"AUDIT [{user_id}] route={route} pass={judge_result.get('pass')} latency={response_time_ms}ms")
         self.db_service.save_audit_log(
             user_id=user_id, 
-            input_data=redacted_input, 
-            output_data=str(output_data), 
+            input_text=redacted_input, 
+            output_text=str(output_data), 
             judge_result=judge_result,
             route=route,
             response_time_ms=response_time_ms,
             ai_resolved=ai_resolved,
-            fallback=fallback
+            fallback=fallback,
+            handoff_status=handoff_status,
         )
+
+    def _record_security_event(
+        self,
+        user_id: Optional[str],
+        event_type: str,
+        severity: str,
+        details: Dict[str, Any],
+    ) -> None:
+        """
+        Best-effort security-event logging. Never raises into the user flow.
+        """
+        try:
+            self.db_service.save_security_event(
+                user_id=user_id,
+                event_type=event_type,
+                severity=severity,
+                details=details,
+            )
+        except Exception as e:
+            logger.error(f"Security event logging failed: {e}")

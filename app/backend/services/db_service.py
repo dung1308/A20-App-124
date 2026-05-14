@@ -20,8 +20,8 @@ from sqlalchemy import text, func, inspect
 import hashlib
 import secrets
 from config import USE_MOCK
-from models.schemas import User, ChatMessage, ChatSession, Major, Student, AuditLog
-from utils.logger import get_logger
+from models.schemas import User, ChatMessage, ChatSession, Major, Student, AuditLog, SecurityEvent
+from utils.logger import get_logger, get_trace_id
 import database
 
 logger = get_logger(__name__)
@@ -77,49 +77,61 @@ class DBService:
             self._profiles: Dict[str, Dict[str, Any]] = {}
             logger.info("DBService initialised in MOCK mode (in-memory)")
         else:
-            # Determine the actual database type for accurate logging
             from config import get_database_url
-            db_type = "SQLite" if get_database_url().startswith("sqlite") else "PostgreSQL"
+            url = get_database_url()
+            self.is_sqlite = url.startswith("sqlite")
+            db_type = "SQLite" if self.is_sqlite else "PostgreSQL"
             logger.info(f"DBService initialised for {db_type} (SessionLocal accessed dynamically)")
 
     def migrate_db(self):
-        """Auto-migrate schema (e.g., adding 'title' to 'chat_sessions' if missing)."""
+        """Auto-migrate schema (e.g., adding 'prompts' table if missing)."""
         if self.use_mock or not database.get_engine():
             return
             
         try:
             inspector = inspect(database.get_engine())
             
-            # 1. Migrate chat_sessions (add title)
-            if "chat_sessions" in inspector.get_table_names():
-                session_cols = [col['name'] for col in inspector.get_columns("chat_sessions")]
-                if "title" not in session_cols:
-                    logger.info("Migration: Adding 'title' to 'chat_sessions'...")
-                    with database.get_engine().connect() as conn:
-                        conn.execute(text("ALTER TABLE chat_sessions ADD COLUMN title TEXT DEFAULT 'Cuộc hội thoại mới'"))
-                        conn.commit()
-
-            # 2. Migrate audit_logs (add missing PMF/Audit columns)
-            if "audit_logs" in inspector.get_table_names():
-                audit_cols = [col['name'] for col in inspector.get_columns("audit_logs")]
-                new_columns = {
-                    "input_data": "TEXT",
-                    "output_data": "TEXT",
-                    "judge_result": "JSON",
-                    "route": "VARCHAR",
-                    "response_time_ms": "INTEGER",
-                    "ai_resolved": "BOOLEAN DEFAULT TRUE",
-                    "fallback": "BOOLEAN DEFAULT FALSE"
-                }
-                
+            # Create prompts table if missing
+            if "prompts" not in inspector.get_table_names():
+                logger.info("Migration: Creating 'prompts' table...")
                 with database.get_engine().connect() as conn:
-                    for col_name, col_type in new_columns.items():
-                        if col_name not in audit_cols:
-                            logger.info(f"Migration: Adding column '{col_name}' to 'audit_logs'...")
-                            conn.execute(text(f"ALTER TABLE audit_logs ADD COLUMN {col_name} {col_type}"))
+                    if self.is_sqlite:
+                        conn.execute(text("""
+                            CREATE TABLE prompts (
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                agent_name VARCHAR(50) NOT NULL,
+                                version VARCHAR(20) NOT NULL,
+                                content TEXT NOT NULL,
+                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                UNIQUE(agent_name, version)
+                            )
+                        """))
+                    else:
+                        conn.execute(text("""
+                            CREATE TABLE prompts (
+                                id SERIAL PRIMARY KEY,
+                                agent_name VARCHAR(50) NOT NULL,
+                                version VARCHAR(20) NOT NULL,
+                                content TEXT NOT NULL,
+                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                UNIQUE(agent_name, version)
+                            )
+                        """))
                     conn.commit()
-                logger.info("✓ Database migrations completed.")
 
+            # Check for 'sources' column in 'chat_messages' table
+            columns = [c['name'] for c in inspector.get_columns('chat_messages')]
+            if 'sources' not in columns:
+                logger.info("Migration: Adding 'sources' column to 'chat_messages' table...")
+                with database.get_engine().connect() as conn:
+                    if self.is_sqlite:
+                        conn.execute(text("ALTER TABLE chat_messages ADD COLUMN sources JSON"))
+                    else:
+                        # Use JSONB for Postgres as it is more efficient for searches/metadata
+                        conn.execute(text("ALTER TABLE chat_messages ADD COLUMN sources JSONB"))
+                    conn.commit()
+
+            logger.info("✓ Database migrations completed.")
         except Exception as e:
             logger.error(f"Migration failed (non-critical): {e}")
 
@@ -127,7 +139,7 @@ class DBService:
     # Conversation history
     # ------------------------------------------------------------------
 
-    def save_message(self, user_id: str, role: str, content: str, agent_type: str = "", session_id: Optional[str] = None) -> Optional[str]:
+    def save_message(self, user_id: str, role: str, content: str, agent_type: str = "", session_id: Optional[str] = None, sources: Optional[List[Dict[str, Any]]] = None) -> Optional[str]:
         """
         Persist one conversation turn to ConversationHistory.
 
@@ -136,6 +148,7 @@ class DBService:
             role:       "user" or "assistant".
             content:    Message text.
             agent_type: Which agent generated this (rag/crm/advisor/judge).
+            sources:    Optional list of RAG source metadata.
         """
         new_title = None
         if self.use_mock:
@@ -143,6 +156,7 @@ class DBService:
                 "role": role,
                 "content": content,
                 "agent_type": agent_type,
+                "sources": sources,
                 "timestamp": datetime.utcnow(),
                 "session_id": session_id
             })
@@ -177,6 +191,7 @@ class DBService:
                 role=role,
                 content=content,
                 agent_type=agent_type,
+                sources=sources if sources is not None else [], # Ensure empty list instead of NULL
                 timestamp=datetime.utcnow()
             )
             session.add(new_msg)
@@ -189,6 +204,7 @@ class DBService:
                 new_title = chat_session.title
             
             session.commit()
+        logger.info(f"save_message args = {content}")
         return new_title
 
     def get_history(self, user_id: str, limit: int = 20, session_id: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -214,6 +230,7 @@ class DBService:
                     "role": m["role"], 
                     "content": m["content"], 
                     "agent_type": m.get("agent_type"),
+                    "sources": m.get("sources"),
                     "timestamp": m.get("timestamp").isoformat() if m.get("timestamp") else None
                 } for m in msgs[-limit:]
             ]
@@ -236,6 +253,7 @@ class DBService:
                     "role": m.role, 
                     "content": m.content, 
                     "agent_type": m.agent_type,
+                    "sources": m.sources,
                     "timestamp": m.timestamp.isoformat() if m.timestamp else None
                 } for m in reversed(msgs)
             ]
@@ -377,6 +395,10 @@ class DBService:
                     logger.warning(f"DBService.authenticate_user: User not found for email {email}")
                     return None
 
+                if getattr(user, "blacklisted", False):
+                    logger.warning(f"DBService.authenticate_user: Blacklisted user blocked: {email}")
+                    return None
+
                 # Verify password in Python using PBKDF2
                 # Safety check: ensure hashed_password exists (Google users might not have one)
                 if user.hashed_password and self.verify_password(password, user.hashed_password):
@@ -384,7 +406,8 @@ class DBService:
                         "user_id": user.user_id,
                         "email": user.email,
                         "role": user.role,
-                        "permissions": user.permissions
+                        "permissions": user.permissions,
+                        "blacklisted": bool(getattr(user, "blacklisted", False))
                     }
                 
                 logger.warning(f"DBService.authenticate_user: Password mismatch for user: {email}")
@@ -421,6 +444,8 @@ class DBService:
                         "email": u.email,
                         "full_name": u.full_name,
                         "role": u.role,
+                        "permissions": u.permissions or [],
+                        "blacklisted": bool(getattr(u, "blacklisted", False)),
                         "created_at": u.created_at.isoformat() if u.created_at else None
                     } for u in users
                 ]
@@ -458,7 +483,8 @@ class DBService:
                     "email": user.email,
                     "full_name": user.full_name,
                     "role": user.role,
-                    "permissions": user.permissions
+                    "permissions": user.permissions,
+                    "blacklisted": bool(getattr(user, "blacklisted", False))
                 }
                 
                 # Fetch and merge Student academic profile data if it exists
@@ -498,6 +524,7 @@ class DBService:
                 plain_password = profile_data.pop("password", None)
                 role = profile_data.pop("role", None)
                 permissions = profile_data.pop("permissions", None)
+                blacklisted = profile_data.pop("blacklisted", None)
 
                 if user:
                     if email: user.email = email
@@ -507,6 +534,7 @@ class DBService:
                         user.hashed_password = self.hash_password(plain_password)
                     if role: user.role = role
                     if permissions is not None: user.permissions = permissions
+                    if blacklisted is not None: user.blacklisted = bool(blacklisted)
                     user.updated_at = datetime.utcnow()
                 else:
                     new_user = User(
@@ -516,7 +544,8 @@ class DBService:
                         # Hash using PBKDF2
                         hashed_password=self.hash_password(plain_password) if plain_password else None,
                         role=role or "user",
-                        permissions=permissions
+                        permissions=permissions,
+                        blacklisted=bool(blacklisted) if blacklisted is not None else False
                     )
                     session.add(new_user)
 
@@ -585,13 +614,16 @@ class DBService:
     def save_audit_log(
         self,
         user_id: str,
-        input_data: str,
-        output_data: str,
-        judge_result: Dict[str, Any],
+        input_text: str = None,
+        output_text: str = None,
+        judge_result: Dict[str, Any] = None,
         route: str = None,
-        response_time_ms: int = None,
+        response_time_ms: float = 0.0,
         ai_resolved: bool = True,
-        fallback: bool = False
+        fallback: bool = False,
+        input_data: str = None,
+        output_data: str = None,
+        handoff_status: str = "none",
     ) -> None:
         """
         Persist an audit record for compliance and debugging.
@@ -606,17 +638,48 @@ class DBService:
             ai_resolved:  Whether the AI handled the query successfully.
             fallback:     Whether human fallback was triggered.
         """
+        input_text = input_text if input_text is not None else input_data
+        output_text = output_text if output_text is not None else output_data
+        input_data = input_data if input_data is not None else input_text
+        output_data = output_data if output_data is not None else output_text
+        judge_result = judge_result or {}
+        trace_id = get_trace_id()
+        if trace_id == "-":
+            trace_id = f"audit-{secrets.token_hex(8)}"
+        escalation_level = judge_result.get("escalation_level", "NONE")
+        escalation_reason = judge_result.get("escalation_reason", "")
+
         if self.use_mock:
             logger.info(f"DBService.save_audit_log(MOCK) — user={user_id}, route={route}, res={ai_resolved}")
             return
 
         try:
+            if database.SessionLocal is None:
+                logger.error("DBService.save_audit_log failed: database.SessionLocal is not initialized")
+                return
+
             with database.SessionLocal() as session:
+                existing_user = None
+                if user_id:
+                    existing_user = session.query(User).filter(
+                        (User.user_id == user_id) | (func.lower(User.email) == func.lower(user_id))
+                    ).first()
+                if user_id and not existing_user:
+                    existing_user = User(user_id=user_id, email=user_id if "@" in user_id else None)
+                    session.add(existing_user)
+                    session.flush()
+
                 log_entry = AuditLog(
-                    user_id=user_id,
+                    user_id=existing_user.user_id if existing_user else None,
+                    trace_id=trace_id,
                     input_data=input_data,
                     output_data=output_data,
+                    input_text=input_text,
+                    output_text=output_text,
                     judge_result=judge_result,
+                    escalation_level=escalation_level,
+                    escalation_reason=escalation_reason,
+                    handoff_status=handoff_status,
                     route=route,
                     response_time_ms=response_time_ms,
                     ai_resolved=ai_resolved,
@@ -628,6 +691,55 @@ class DBService:
                 logger.debug(f"Audit log persisted for user {user_id}")
         except Exception as e:
             logger.error(f"Failed to save audit log: {e}")
+
+    def save_security_event(
+        self,
+        user_id: Optional[str],
+        event_type: str,
+        severity: str,
+        details: Dict[str, Any],
+    ) -> None:
+        """
+        Persist a guardrail/security event for staff review and incident analysis.
+        This method is best-effort and must never block the user-facing flow.
+        """
+        if self.use_mock:
+            logger.warning(
+                "DBService.save_security_event(MOCK) — user=%s type=%s severity=%s details=%s",
+                user_id,
+                event_type,
+                severity,
+                details,
+            )
+            return
+
+        try:
+            if database.SessionLocal is None:
+                logger.error("DBService.save_security_event failed: database.SessionLocal is not initialized")
+                return
+
+            with database.SessionLocal() as session:
+                existing_user = None
+                if user_id:
+                    existing_user = session.query(User).filter(
+                        (User.user_id == user_id) | (func.lower(User.email) == func.lower(user_id))
+                    ).first()
+                if user_id and not existing_user:
+                    existing_user = User(user_id=user_id, email=user_id if "@" in user_id else None)
+                    session.add(existing_user)
+                    session.flush()
+
+                event = SecurityEvent(
+                    user_id=existing_user.user_id if existing_user else None,
+                    event_type=event_type,
+                    severity=severity,
+                    details=details,
+                    timestamp=datetime.utcnow(),
+                )
+                session.add(event)
+                session.commit()
+        except Exception as e:
+            logger.error(f"Failed to save security event: {e}")
 
     def get_majors(self) -> List[Dict[str, Any]]:
         """
@@ -657,3 +769,51 @@ class DBService:
         except Exception as e:
             logger.error(f"Failed to fetch majors from DB: {e}")
             return []
+
+    # ------------------------------------------------------------------
+    # Prompt management
+    # ------------------------------------------------------------------
+
+    def get_prompt_from_db(self, agent_name: str, version: str = "latest") -> Optional[str]:
+        """Lấy prompt từ database."""
+        if self.use_mock:
+            return None
+
+        if database.SessionLocal is None:
+            return None
+
+        with database.SessionLocal() as session:
+            if version == "latest":
+                query = text("SELECT content FROM prompts WHERE agent_name = :name ORDER BY created_at DESC LIMIT 1")
+                params = {"name": agent_name}
+            else:
+                query = text("SELECT content FROM prompts WHERE agent_name = :name AND version = :version")
+                params = {"name": agent_name, "version": version}
+            
+            result = session.execute(query, params).fetchone()
+            return result[0] if result else None
+
+    def save_prompt_to_db(self, agent_name: str, version: str, content: str) -> bool:
+        """Lưu hoặc cập nhật prompt vào database."""
+        if self.use_mock:
+            return True
+
+        if database.SessionLocal is None:
+            return False
+
+        try:
+            with database.SessionLocal() as session:
+                if self.is_sqlite:
+                    sql = text("INSERT OR REPLACE INTO prompts (agent_name, version, content, created_at) VALUES (:name, :version, :content, :now)")
+                else:
+                    sql = text("""
+                        INSERT INTO prompts (agent_name, version, content, created_at)
+                        VALUES (:name, :version, :content, :now)
+                        ON CONFLICT (agent_name, version) DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                    """)
+                session.execute(sql, {"name": agent_name, "version": version, "content": content, "now": datetime.utcnow()})
+                session.commit()
+                return True
+        except Exception as e:
+            logger.error(f"DBService.save_prompt_to_db failed: {e}")
+            return False

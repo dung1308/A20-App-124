@@ -35,7 +35,19 @@ class MetricService:
                 "avg_response_time_ms": 1250,
                 "ai_resolution_rate": 0.85,
                 "human_fallback_rate": 0.10,
+                "churn_rate_7d": 0.18,
+                "churn_rate_30d": 0.32,
+                "churn": {
+                    "seven_days": {"rate": 0.18, "inactive_users": 9, "previous_active_users": 50},
+                    "thirty_days": {"rate": 0.32, "inactive_users": 16, "previous_active_users": 50}
+                },
                 "route_distribution": {"rag": 100, "crm": 30, "advisor": 15, "fallback": 5},
+                "token_usage": {
+                    "prompt": 45000,
+                    "completion": 15000,
+                    "total": 60000
+                },
+                "estimated_cost": 0.45,
                 "daily_activity": [
                     {"date": (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d"), "admin": 12, "guest": 45},
                     {"date": datetime.utcnow().strftime("%Y-%m-%d"), "admin": 5, "guest": 28}
@@ -47,6 +59,32 @@ class MetricService:
         
         try:
             with database.SessionLocal() as session:
+                now = datetime.utcnow()
+
+                def active_users_between(start_date, end_date):
+                    rows = session.query(AuditLog.user_id)\
+                        .filter(AuditLog.timestamp >= start_date, AuditLog.timestamp < end_date)\
+                        .filter(AuditLog.user_id.isnot(None))\
+                        .distinct()\
+                        .all()
+                    return {row[0] for row in rows if row[0]}
+
+                def churn_for_period(days: int) -> Dict[str, Any]:
+                    current_users = active_users_between(now - timedelta(days=days), now)
+                    previous_users = active_users_between(now - timedelta(days=days * 2), now - timedelta(days=days))
+                    inactive_users = previous_users - current_users
+                    previous_total = len(previous_users)
+                    rate = len(inactive_users) / previous_total if previous_total else 0
+                    return {
+                        "rate": round(rate, 3),
+                        "inactive_users": len(inactive_users),
+                        "previous_active_users": previous_total,
+                        "current_active_users": len(current_users)
+                    }
+
+                churn_7d = churn_for_period(7)
+                churn_30d = churn_for_period(30)
+
                 # 1. Total Requests
                 total = session.query(AuditLog).filter(AuditLog.timestamp >= since_date).count()
                 if total == 0:
@@ -56,7 +94,15 @@ class MetricService:
                         "avg_response_time_ms": 0,
                         "ai_resolution_rate": 0,
                         "human_fallback_rate": 0,
+                        "churn_rate_7d": churn_7d["rate"],
+                        "churn_rate_30d": churn_30d["rate"],
+                        "churn": {
+                            "seven_days": churn_7d,
+                            "thirty_days": churn_30d
+                        },
                         "route_distribution": {},
+                        "token_usage": {"prompt": 0, "completion": 0, "total": 0},
+                        "estimated_cost": 0,
                         "daily_activity": [],
                         "generated_at": datetime.utcnow().isoformat()
                     }
@@ -64,6 +110,21 @@ class MetricService:
                 # 2. Average Latency
                 avg_latency = session.query(func.avg(AuditLog.response_time_ms))\
                     .filter(AuditLog.timestamp >= since_date).scalar() or 0
+
+                # 2.1 Token and Cost Aggregation
+                if all(hasattr(AuditLog, attr) for attr in ["input_tokens", "output_tokens", "cost"]):
+                    usage_res = session.query(
+                        func.sum(AuditLog.input_tokens).label('prompt'),
+                        func.sum(AuditLog.output_tokens).label('completion'),
+                        func.sum(AuditLog.cost).label('cost')
+                    ).filter(AuditLog.timestamp >= since_date).first()
+                    prompt_tokens = int(usage_res.prompt or 0)
+                    completion_tokens = int(usage_res.completion or 0)
+                    estimated_cost = round(float(usage_res.cost or 0), 4)
+                else:
+                    prompt_tokens = 0
+                    completion_tokens = 0
+                    estimated_cost = 0
 
                 # 3. AI Resolution Rate (where AI handled the query successfully)
                 resolved_count = session.query(AuditLog)\
@@ -100,6 +161,18 @@ class MetricService:
                     "avg_response_time_ms": round(float(avg_latency), 2),
                     "ai_resolution_rate": round(resolved_count / total, 3),
                     "human_fallback_rate": round(fallback_count / total, 3),
+                    "churn_rate_7d": churn_7d["rate"],
+                    "churn_rate_30d": churn_30d["rate"],
+                    "churn": {
+                        "seven_days": churn_7d,
+                        "thirty_days": churn_30d
+                    },
+                    "token_usage": {
+                        "prompt": prompt_tokens,
+                        "completion": completion_tokens,
+                        "total": prompt_tokens + completion_tokens
+                    },
+                    "estimated_cost": estimated_cost,
                     "route_distribution": route_dist,
                     "daily_activity": daily_activity,
                     "generated_at": datetime.utcnow().isoformat()

@@ -42,6 +42,7 @@ class RateLimiter:
         # user_id → deque of request timestamps
         self.logs: Dict[str, Deque[float]] = defaultdict(deque)
         self.last_cleanup: float = time.time()
+        self.total_blocked: int = 0
 
     def allow(self, user_id: str) -> bool:
         """
@@ -65,6 +66,7 @@ class RateLimiter:
 
         # Check against limit
         if len(timestamps) >= self.max_requests:
+            self.total_blocked += 1
             logger.warning(f"RateLimiter: user '{user_id}' exceeded limit ({self.max_requests} req/{self.window}s)")
             return False
 
@@ -78,12 +80,14 @@ class RateLimiter:
         Returns:
             Dict with tracked_users count and config values.
 
-        TODO: Add total_blocked counter (increment in allow() on False return).
+        Includes total_blocked to support PMF/admin monitoring of abuse or
+        over-quota traffic.
         """
         return {
             "tracked_users": len(self.logs),
             "max_requests": self.max_requests,
             "window_seconds": self.window,
+            "total_blocked": self.total_blocked,
         }
 
     # ------------------------------------------------------------------
@@ -98,9 +102,8 @@ class RateLimiter:
         Args:
             now: Current timestamp from time.time().
 
-        TODO: Check if (now - self.last_cleanup) > CLEANUP_INTERVAL_SECONDS.
-        TODO: Also trigger if len(self.logs) > MAX_TRACKED_USERS.
-        TODO: Call _cleanup_old_entries(now) and update self.last_cleanup.
+        Cleanup runs after CLEANUP_INTERVAL_SECONDS or when the number of
+        tracked users exceeds MAX_TRACKED_USERS.
         """
         if (
             now - self.last_cleanup > CLEANUP_INTERVAL_SECONDS
@@ -116,10 +119,8 @@ class RateLimiter:
         Args:
             now: Current timestamp.
 
-        TODO: 1. For each user_id, drop timestamps older than (now - self.window).
-        TODO: 2. Collect user_ids whose deque is now empty.
-        TODO: 3. Delete those user_ids from self.logs.
-        TODO: 4. Log how many users were evicted.
+        Drops expired timestamps, removes users with empty histories, and logs
+        the number of evicted users.
         """
         to_remove = []
         for uid, timestamps in self.logs.items():

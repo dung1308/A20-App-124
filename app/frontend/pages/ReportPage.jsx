@@ -5,11 +5,22 @@ import MajorCard from '../components/Report/MajorCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 import ChatBox from '../components/Chat/ChatBox'; // Assuming ChatBox also needs userId
+import api from '../services/api';
+import { toast } from 'react-hot-toast';
 
 const ReportPage = () => {
   const { matchResults } = useStore();
   const { userId, isAuthenticated } = useAuth(); // Get userId and isAuthenticated from AuthContext
   const [showChat, setShowChat] = useState(false);
+
+  const handleConsultationClick = async () => {
+    try {
+      await api.logConsultationClick('report');
+      toast.success('Đã ghi nhận nhu cầu tư vấn. Chuyên viên sẽ có dữ liệu để hỗ trợ bạn.');
+    } catch (err) {
+      toast.error('Không thể ghi nhận yêu cầu tư vấn lúc này.');
+    }
+  };
 
   if (!matchResults) {
     return (
@@ -41,7 +52,7 @@ const ReportPage = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-              {matchResults.top3.map((major) => (
+              {(matchResults.top3 || []).map((major) => (
                 <MajorCard key={major.major_id} major={major} />
               ))}
             </div>
@@ -56,6 +67,15 @@ const ReportPage = () => {
               </div>
             )}
 
+            {matchResults.fallback && (
+              <button
+                onClick={handleConsultationClick}
+                className="mb-8 px-5 py-2.5 bg-amber-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-amber-700 transition-colors"
+              >
+                Đăng ký gặp tư vấn viên
+              </button>
+            )}
+
             <section className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm mb-20">
               {!showChat ? (
                 <div className="text-center py-6">
@@ -63,6 +83,12 @@ const ReportPage = () => {
                   <p className="text-slate-500 mb-8">Hãy trò chuyện với cố vấn AI để giải đáp các thắc mắc về ngành học và lộ trình sự nghiệp.</p>
                   <button className="px-8 py-3 bg-[#fed65b] text-[#745c00] rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-95" onClick={() => setShowChat(true)}>
                     Hỏi thêm câu hỏi
+                  </button>
+                  <button
+                    className="ml-3 px-8 py-3 bg-white border border-blue-900 text-blue-900 rounded-xl font-bold shadow-sm hover:bg-blue-50 transition-all active:scale-95"
+                    onClick={handleConsultationClick}
+                  >
+                    Đăng ký tư vấn chuyên sâu
                   </button>
                 </div>
               ) : (

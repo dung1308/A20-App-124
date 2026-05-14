@@ -178,3 +178,36 @@ Thành viên: Nhóm A20-124
 - Middleware là công cụ mạnh mẽ để tách biệt logic nghiệp vụ và logic hệ thống (như ghi log hành vi).
 - Trong môi trường thực tế, dữ liệu người dùng thường không đầy đủ; luôn cần sử dụng pattern `(data or {})` để bảo vệ ứng dụng khỏi các lỗi crash không đáng có.
 - Việc hiển thị "Tại sao AI thất bại" (Judge Result) quan trọng hơn việc AI trả lời đúng, vì nó giúp đội ngũ nhân viên biết chính xác chỗ nào cần can thiệp.
+
+### Cập nhật ngày 13/05/2026
+#### Đã làm
+- **Backend TODO cleanup**: Cập nhật các TODO/comment trong backend để phản ánh đúng các feature đã implement, đặc biệt ở `AdvisorAgent`, `JudgeAgent`, `InputGuard`, `OutputGuard`, `RateLimiter` và `Pipeline`.
+- **Guardrails & TCR backend hardening**: Bắt buộc thực thi kết quả `InputGuard` trước khi route/RAG/LLM, thêm normalize homoglyph để giảm bypass prompt injection, dùng `OutputGuard.process()` cho response cuối cùng, và chỉ lưu assistant message sau khi Judge chấp nhận hoặc đã chuyển sang fallback an toàn.
+- **Security & audit reliability**: Thêm `save_security_event()` để ghi nhận guardrail/rate-limit event; tự động migrate các cột còn thiếu của `audit_logs` khi khởi tạo DB để tránh lỗi production kiểu `column input_text does not exist`.
+- **Frontend/backend alignment**: Hoàn thành các mục P0 trong `app/frontend/BACKEND_TODO.md`: bỏ các runtime `fetch("http://localhost:8000")`, đưa call backend về `services/api.js`, normalize response `/api/chat`, thêm xử lý 401/403, bảo vệ route `/wizard`, và chuyển RAG ingest streaming sang helper dùng `VITE_API_URL`.
+- **Staff/Admin transparency**: Hiển thị metadata `intent`, `status` và fallback reason cho staff/admin trong chat để debug các case rate limit, judge reject, guardrail block, backend fallback hoặc lỗi network/model.
+- **Railway deployment docs**: Cập nhật `Railway_QuickStart.md` với danh sách biến môi trường cần gửi lên Railway cho backend/frontend: `DATABASE_URL`, `OPENAI_API_KEY`, `SECRET_KEY`, `GOOGLE_CLIENT_ID`, `CORS_ORIGINS`, `VITE_API_URL`, `VITE_GOOGLE_CLIENT_ID`, rate limit, budget và webhook.
+- **Documentation tracking**: Cập nhật `frontend_dataFlow.md` và `BACKEND_TODO.md` để phân biệt phần đã hoàn thành và phần còn lại.
+
+#### Khó nhất tuần này
+- Đồng bộ contract frontend-backend vì backend trả nhiều alias khác nhau (`answer/response`, `major/top3`, `sources/references`). Giải pháp là normalize một lần ở API boundary thay vì xử lý lặp trong từng component.
+- Build/test bị ảnh hưởng bởi môi trường local Windows: `python` không khả dụng trong shell, còn `npm run build` ban đầu bị lỗi quyền `EPERM` với `C:\Users\Admin`. Sau khi chạy build ngoài sandbox, Vite build đã pass.
+
+#### AI tool đã dùng
+| Tool | Dùng để làm gì | Kết quả |
+|---|---|---|
+| OpenAI Codex | Review backend theo TCR, sửa guardrails/audit, refactor frontend API integration, cập nhật docs deploy/journal | Hoàn thành các thay đổi chính, build frontend pass; backend test chưa chạy được do thiếu Python trong shell |
+
+#### Học được
+- Guardrail chỉ có ý nghĩa khi verdict được enforce. Việc gọi `InputGuard.check()` mà không xử lý return value tạo cảm giác an toàn giả.
+- Nên normalize API response ở service layer để UI không bị phụ thuộc vào các biến thể contract của backend.
+- Với Railway/frontend browser, biến `VITE_API_URL` phải dùng public backend URL; `.railway.internal` chỉ phù hợp cho service-to-service trong Railway, không dùng được từ trình duyệt.
+
+#### Nếu làm lại, sẽ làm khác
+- Thiết kế API contract chuẩn cho `/api/chat` ngay từ đầu và tạo fixture test cho frontend để tránh phải hỗ trợ nhiều alias.
+- Thêm migration nhỏ, rõ ràng cho từng thay đổi DB thay vì phân tán giữa `database.py` và `DBService.migrate_db()`.
+
+#### Kế hoạch tiếp theo
+- Thêm validation phía frontend cho wizard answers, profile fields, chat length và CV upload để mirror backend rules.
+- Thêm contract tests cho `/api/match`, `/api/chat`, `/api/upload-cv`, metrics, audit logs và RAG admin controls.
+- Kiểm tra lại `/api/profile/{user_id}/cv` vì frontend service đang reference endpoint này nhưng backend route scan hiện chưa thấy route tương ứng.

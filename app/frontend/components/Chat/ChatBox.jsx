@@ -1,22 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useChat } from '../../hooks/useChat';
 import api from '../../services/api';
+import SourceList from './SourceList';
 
 // For demo purposes, this is hardcoded. 
 const IS_DEMO_MODE = import.meta.env.VITE_USE_MOCK === 'true';
 const DEFAULT_USER = "admin@vinuni.edu.vn";
+const FALLBACK_LABELS = {
+  rate_limit: 'Rate limit',
+  judge_rejected: 'Judge rejected',
+  missing_profile: 'Missing profile',
+  backend_fallback: 'Backend fallback',
+  guardrail_blocked: 'Guardrail blocked',
+  model_or_network_error: 'Model/network error',
+  cancelled: 'Cancelled',
+};
 
 const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
+  const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [copiedIndex, setCopiedIndex] = useState(null);
+  const viewerRole = localStorage.getItem('user_role');
+  const canSeeDebugMeta = viewerRole === 'admin' || viewerRole === 'editor';
   
   /**
    * We use the passed userId (prop) or fall back to the logged-in email.
    * This ensures the DB service in the backend retrieves the correct history.
    */
   const effectiveUserId = userId || localStorage.getItem('user_email') || DEFAULT_USER;
+  const hasWizardCompleted = localStorage.getItem(`wizard_completed_${effectiveUserId}`) === 'true';
   
   const { messages, sendMessage, stopGenerating, loading } = useChat(effectiveUserId, sessionId, onSessionUpdate);
   const messagesEndRef = useRef(null);
@@ -110,6 +125,15 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
           <div className="text-center py-10">
             <span className="material-symbols-outlined text-slate-300 text-5xl mb-2">forum</span>
             <p className="text-slate-400 text-sm">Hãy đặt câu hỏi về các ngành học bạn quan tâm!</p>
+            {!hasWizardCompleted && (
+              <button
+                onClick={() => navigate('/wizard')}
+                className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 bg-white border border-blue-100 text-[#003466] rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition-colors shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[18px]">route</span>
+                Làm Wizard chọn ngành
+              </button>
+            )}
           </div>
         )}
 
@@ -125,7 +149,19 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
               >
                 {m.content}
               </ReactMarkdown>
-              
+
+              {canSeeDebugMeta && m.role === 'assistant' && (m.intent || m.status) && (
+                <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-wider">
+                  {m.intent && <span className="px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100">Intent: {m.intent}</span>}
+                  {m.status && <span className="px-2 py-1 rounded bg-slate-50 text-slate-500 border border-slate-100">Status: {m.status}</span>}
+                  {m.fallbackReason && <span className="px-2 py-1 rounded bg-amber-50 text-amber-700 border border-amber-100">Reason: {FALLBACK_LABELS[m.fallbackReason] || m.fallbackReason}</span>}
+                </div>
+              )}
+
+              {m.role === 'assistant' && (
+                <SourceList sources={m.sources || m.references || []} compact />
+              )}
+
               {/* Render Major Recommendations if available in the LLM response */}
               {m.type === 'recommendation' && Array.isArray(m.data) && m.data.length > 0 && (
                 <div className="mt-4 space-y-3">

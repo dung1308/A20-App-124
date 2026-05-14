@@ -108,3 +108,308 @@
 2026-05-11 09:15:25 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
 2026-05-11 10:56:23 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
 2026-05-11 10:59:06 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:08:02 [-] utils.seed_majors INFO — Majors seeded successfully.
+2026-05-12 10:20:01 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:20:01 [-] services.rag_service INFO — Initializing RAGService
+2026-05-12 10:20:03 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-12 10:20:03 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-12 10:20:03 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-12 10:20:03 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:20:04 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:20:05 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-12 10:20:05 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-12 10:22:04 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:22:04 [-] services.rag_service INFO — Initializing RAGService
+2026-05-12 10:22:04 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-12 10:22:04 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-12 10:22:04 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-12 10:22:05 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:22:06 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:22:06 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-12 10:22:06 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-12 10:25:58 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:25:58 [-] services.rag_service INFO — Initializing RAGService
+2026-05-12 10:25:59 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-12 10:25:59 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-12 10:25:59 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-12 10:25:59 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:26:00 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:26:01 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10902 characters.
+2026-05-12 10:26:01 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-12 10:27:10 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:27:10 [-] services.rag_service INFO — Initializing RAGService
+2026-05-12 10:27:11 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-12 10:27:11 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-12 10:27:11 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-12 10:27:11 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:27:12 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:27:13 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10902 characters.
+2026-05-12 10:27:13 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-12 10:29:50 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:29:50 [-] services.rag_service INFO — Initializing RAGService
+2026-05-12 10:29:51 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-12 10:29:51 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-12 10:29:51 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-12 10:29:51 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:29:52 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 10:29:53 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 10902 characters.
+2026-05-12 10:29:53 [-] services.rag_service INFO — Ingesting CV for user student_test_vinuni.edu.vn
+2026-05-12 11:10:10 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 11:10:10 [-] services.rag_service INFO — Initializing RAGService
+2026-05-12 11:10:11 [-] services.rag_service INFO — Re-ingesting all data...
+2026-05-12 11:10:11 [-] services.rag_service INFO — Ingested 0 admission chunks
+2026-05-12 11:10:11 [-] services.rag_service INFO — Ingested 0 FAQ items
+2026-05-12 11:10:11 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 11:10:12 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 11:10:12 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: eval_eval_001
+2026-05-12 11:10:12 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:12 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-12 11:10:12 [-] orchestrator.router INFO — Routing message: 'Các tiêu chí tuyển sinh chính của VinUni là gì?...'
+2026-05-12 11:10:15 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.96s
+2026-05-12 11:10:15 [-] orchestrator.router INFO — [LLM] Routed to: rag
+2026-05-12 11:10:15 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-12 11:10:17 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.50s
+2026-05-12 11:10:17 [-] services.cost_control INFO — [CostControl] RECORDED expand_query user=[EMAIL] tokens=136+33 cost=$0.00004 (daily_global=$0.0000)
+2026-05-12 11:10:17 [-] services.rag_service INFO — Query expanded: 'Các tiêu chí tuyển sinh chính của VinUni là gì?' → 'Các tiêu chí tuyển sinh chính của trường Đại học V'
+2026-05-12 11:10:18 [-] services.rag_service WARNING — No docs from hybrid → fallback keyword
+2026-05-12 11:10:18 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:18 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-12 11:10:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.35s
+2026-05-12 11:10:20 [-] agents.judge INFO — Judge Result: pass=False, score=10, reason=The response does not provide any actual information regarding the admission criteria of VinUni, making it unhelpful and unrelated to the user's question.
+2026-05-12 11:10:20 [-] orchestrator.pipeline WARNING — Judge REJECTED response for user [EMAIL] Reason: The response does not provide any actual information regarding the admission criteria of VinUni, making it unhelpful and unrelated to the user's question.
+2026-05-12 11:10:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=False latency=7974ms
+2026-05-12 11:10:20 [-] services.db_service ERROR — Failed to save audit log: 'NoneType' object is not callable
+2026-05-12 11:10:24 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.97s
+2026-05-12 11:10:24 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: eval_eval_002
+2026-05-12 11:10:24 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:24 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-12 11:10:24 [-] orchestrator.router INFO — Routing message: 'Học ngành Khoa học Máy tính tại VinUni có gì đặc biệt và sin...'
+2026-05-12 11:10:26 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.77s
+2026-05-12 11:10:26 [-] orchestrator.router INFO — [LLM] Routed to: rag
+2026-05-12 11:10:26 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-12 11:10:27 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.54s
+2026-05-12 11:10:27 [-] services.context_manager WARNING — Expanded query too long (86 tokens), falling back to original
+2026-05-12 11:10:27 [-] services.cost_control INFO — [CostControl] RECORDED expand_query user=[EMAIL] tokens=151+36 cost=$0.00004 (daily_global=$0.0001)
+2026-05-12 11:10:27 [-] services.rag_service INFO — Query expanded: 'Học ngành Khoa học Máy tính tại VinUni có gì đặc b' → 'Học ngành Khoa học Máy tính tại VinUni có gì đặc b'
+2026-05-12 11:10:28 [-] services.rag_service WARNING — No docs from hybrid → fallback keyword
+2026-05-12 11:10:28 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:28 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-12 11:10:31 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.26s
+2026-05-12 11:10:31 [-] agents.judge INFO — Judge Result: pass=False, score=25, reason=The AI response does not provide relevant information about the Computer Science program at VinUni and seems to reference a tool (RAG Agent) without elaborating. It is unclear, unhelpful, and lacks specific insights necessary for a prospective student.
+2026-05-12 11:10:31 [-] orchestrator.pipeline WARNING — Judge REJECTED response for user [EMAIL] Reason: The AI response does not provide relevant information about the Computer Science program at VinUni and seems to reference a tool (RAG Agent) without elaborating. It is unclear, unhelpful, and lacks specific insights necessary for a prospective student.
+2026-05-12 11:10:31 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=False latency=6913ms
+2026-05-12 11:10:31 [-] services.db_service ERROR — Failed to save audit log: 'NoneType' object is not callable
+2026-05-12 11:10:36 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.78s
+2026-05-12 11:10:36 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: eval_eval_003
+2026-05-12 11:10:36 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:36 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-12 11:10:36 [-] orchestrator.router INFO — Routing message: 'Quy trình xét tuyển vòng 2 của VinUni diễn ra như thế nào?...'
+2026-05-12 11:10:38 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.27s
+2026-05-12 11:10:38 [-] orchestrator.router INFO — [LLM] Routed to: rag
+2026-05-12 11:10:38 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-12 11:10:40 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.73s
+2026-05-12 11:10:40 [-] services.cost_control INFO — [CostControl] RECORDED expand_query user=[EMAIL] tokens=144+53 cost=$0.00005 (daily_global=$0.0001)
+2026-05-12 11:10:40 [-] services.rag_service INFO — Query expanded: 'Quy trình xét tuyển vòng 2 của VinUni diễn ra như ' → 'Quy trình xét tuyển vòng 2 của Đại học VinUni bao '
+2026-05-12 11:10:41 [-] services.rag_service WARNING — No docs from hybrid → fallback keyword
+2026-05-12 11:10:41 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:41 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-12 11:10:44 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.22s
+2026-05-12 11:10:44 [-] agents.judge INFO — Judge Result: pass=False, score=30, reason=The response is vague and does not provide any specific information about the admission process for VinUni, making it unhelpful and unrelated to the user's question.
+2026-05-12 11:10:44 [-] orchestrator.pipeline WARNING — Judge REJECTED response for user [EMAIL] Reason: The response is vague and does not provide any specific information about the admission process for VinUni, making it unhelpful and unrelated to the user's question.
+2026-05-12 11:10:44 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=False latency=7829ms
+2026-05-12 11:10:44 [-] services.db_service ERROR — Failed to save audit log: 'NoneType' object is not callable
+2026-05-12 11:10:48 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.47s
+2026-05-12 11:10:48 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: eval_eval_004
+2026-05-12 11:10:48 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:48 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-12 11:10:48 [-] orchestrator.router INFO — Routing message: 'Nếu GPA của mình không quá cao nhưng có nhiều hoạt động ngoạ...'
+2026-05-12 11:10:50 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.58s
+2026-05-12 11:10:50 [-] orchestrator.router INFO — [LLM] Routed to: crm
+2026-05-12 11:10:50 [-] agents.crm INFO — CRMAgent.run() — user: [EMAIL]
+2026-05-12 11:10:50 [-] services.db_service ERROR — DBService.get_student_profile failed: database.SessionLocal is not initialized
+2026-05-12 11:10:50 [-] services.db_service ERROR — DBService.save_message failed: database.SessionLocal is not initialized
+2026-05-12 11:10:50 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-12 11:10:52 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.12s
+2026-05-12 11:10:52 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response encourages the user to provide more information, which is appropriate and helpful. It does not contain any harmful or fabricated content.
+2026-05-12 11:10:52 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=crm pass=True latency=3703ms
+2026-05-12 11:10:52 [-] services.db_service ERROR — Failed to save audit log: 'NoneType' object is not callable
+2026-05-12 11:10:56 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.87s
+2026-05-12 12:13:39 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 12:13:39 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'advisor_match', 'version': 'v1', 'content': '\nBạn là AI tư vấn tuyển sinh VinUni. Phân tích câu trả lời học sinh và chọn đúng 3 ngành phù hợp nhất.\n\nNgành hợp lệ (chỉ dùng các id này):\ncs, e ... (1419 characters truncated) ... ện sự khách quan.\n\nFormat bắt buộc:\n{"answer": "...", "top3": [{"major_id": "...", "match_reason": "...", "match_score": 0}], "fallback": false}\n', 'now': datetime.datetime(2026, 5, 12, 5, 13, 39, 638220)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:13:39 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'advisor', 'version': 'v1', 'content': '\nBạn là Cố vấn học tập tại VinUniversity. Hãy hỗ trợ học sinh tìm hiểu về các ngành học và môi trường tại trường.\nHãy trả lời một cách thân thiện,  ... (21 characters truncated) ... c sinh hỏi về việc chọn ngành, hãy gợi ý họ thực hiện \nbài trắc nghiệm Wizard hoặc thảo luận về sở thích/thế mạnh của họ. Trả lời bằng tiếng Việt.\n', 'now': datetime.datetime(2026, 5, 12, 5, 13, 39, 658119)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:13:39 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'crm', 'version': 'v1', 'content': '\nBạn là trợ lý tư vấn tuyển sinh VinUni với quyền truy cập hồ sơ học sinh.\nTrả lời câu hỏi của học sinh dựa trên thông tin hồ sơ được cung cấp.\nKhông tiết lộ thông tin cá nhân của học sinh cho bên thứ ba.\nTrả lời bằng tiếng Việt, thân thiện và cụ thể.\n', 'now': datetime.datetime(2026, 5, 12, 5, 13, 39, 661899)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:13:39 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'rag', 'version': 'v1', 'content': 'Bạn là trợ lý tuyển sinh của VinUni. Hãy trả lời câu hỏi dựa trên ngữ cảnh được cung cấp bên dưới.\nQUY TẮC QUAN TRỌNG: Bạn phải luôn cung cấp đường  ... (50 characters truncated) ... gữ cảnh cho mỗi thông tin bạn đưa ra.\nNếu ngữ cảnh không chứa thông tin, hãy nói bạn không biết, tuyệt đối không tự bịa thông tin hoặc đường link.\n', 'now': datetime.datetime(2026, 5, 12, 5, 13, 39, 664154)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:13:39 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'judge_safety', 'version': 'v1', 'content': '\nEvaluate whether the AI response is safe, accurate, and appropriate for a Vietnamese high school student using a university admissions chatbot.\n\n ... (339 characters truncated) ... pass: true) only if the response is helpful, honest, and on-topic.\n\nRespond ONLY with JSON: {"pass": true/false, "reason": "...", "score": 0-100}\n', 'now': datetime.datetime(2026, 5, 12, 5, 13, 39, 668911)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:13:39 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'judge_gold', 'version': 'v1', 'content': '\nBạn là chuyên gia kiểm định chất lượng AI (QA Auditor). Nhiệm vụ của bạn là đánh giá câu trả lời của Chatbot dựa trên tiêu chuẩn "Golden Answer".\n ... (684 characters truncated) ... easoning": "Giải thích chi tiết bằng tiếng Việt. Nêu rõ ý nào đạt, ý nào thiếu.",\n  "missing_points": ["Danh sách các ý chính bị thiếu nếu có"]\n}\n', 'now': datetime.datetime(2026, 5, 12, 5, 13, 39, 672364)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:34:14 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-12 12:34:14 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'advisor_match', 'version': 'v2', 'content': '\nBạn là AI tư vấn tuyển sinh VinUni. Phân tích câu trả lời học sinh và chọn đúng 3 ngành phù hợp nhất.\n\nNgành hợp lệ (chỉ dùng các id này):\ncs, e ... (1419 characters truncated) ... ện sự khách quan.\n\nFormat bắt buộc:\n{"answer": "...", "top3": [{"major_id": "...", "match_reason": "...", "match_score": 0}], "fallback": false}\n', 'now': datetime.datetime(2026, 5, 12, 5, 34, 14, 992830)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:34:15 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'advisor', 'version': 'v2', 'content': '\nBạn là Cố vấn học tập tại VinUniversity. Hãy hỗ trợ học sinh tìm hiểu về các ngành học và môi trường tại trường.\nHãy trả lời một cách thân thiện,  ... (21 characters truncated) ... c sinh hỏi về việc chọn ngành, hãy gợi ý họ thực hiện \nbài trắc nghiệm Wizard hoặc thảo luận về sở thích/thế mạnh của họ. Trả lời bằng tiếng Việt.\n', 'now': datetime.datetime(2026, 5, 12, 5, 34, 14, 999118)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:34:15 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'crm', 'version': 'v2', 'content': '\nBạn là trợ lý tư vấn tuyển sinh VinUni với quyền truy cập hồ sơ học sinh.\nTrả lời câu hỏi của học sinh dựa trên thông tin hồ sơ được cung cấp.\nKhông tiết lộ thông tin cá nhân của học sinh cho bên thứ ba.\nTrả lời bằng tiếng Việt, thân thiện và cụ thể.\n', 'now': datetime.datetime(2026, 5, 12, 5, 34, 15, 10549)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:34:15 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'rag', 'version': 'v2', 'content': 'Bạn là trợ lý tuyển sinh của VinUni. Hãy trả lời câu hỏi dựa trên ngữ cảnh được cung cấp bên dưới.\nQUY TẮC QUAN TRỌNG: Bạn phải luôn cung cấp đường  ... (50 characters truncated) ... gữ cảnh cho mỗi thông tin bạn đưa ra.\nNếu ngữ cảnh không chứa thông tin, hãy nói bạn không biết, tuyệt đối không tự bịa thông tin hoặc đường link.\n', 'now': datetime.datetime(2026, 5, 12, 5, 34, 15, 17416)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:34:15 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'judge_safety', 'version': 'v2', 'content': '\nEvaluate whether the AI response is safe, accurate, and appropriate for a Vietnamese high school student using a university admissions chatbot.\n\n ... (339 characters truncated) ... pass: true) only if the response is helpful, honest, and on-topic.\n\nRespond ONLY with JSON: {"pass": true/false, "reason": "...", "score": 0-100}\n', 'now': datetime.datetime(2026, 5, 12, 5, 34, 15, 23849)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-12 12:34:15 [-] services.db_service ERROR — DBService.save_prompt_to_db failed: (psycopg2.errors.UndefinedTable) relation "prompts" does not exist
+LINE 2:                     INSERT INTO prompts (agent_name, version...
+                                        ^
+
+[SQL: 
+                    INSERT INTO prompts (agent_name, version, content, created_at)
+                    VALUES (%(name)s, %(version)s, %(content)s, %(now)s)
+                    ON CONFLICT (agent_name, version) 
+                    DO UPDATE SET content = EXCLUDED.content, created_at = EXCLUDED.created_at
+                ]
+[parameters: {'name': 'judge_gold', 'version': 'v2', 'content': '\nBạn là chuyên gia kiểm định chất lượng AI (QA Auditor). Nhiệm vụ của bạn là đánh giá câu trả lời của Chatbot dựa trên tiêu chuẩn "Golden Answer".\n ... (684 characters truncated) ... easoning": "Giải thích chi tiết bằng tiếng Việt. Nêu rõ ý nào đạt, ý nào thiếu.",\n  "missing_points": ["Danh sách các ý chính bị thiếu nếu có"]\n}\n', 'now': datetime.datetime(2026, 5, 12, 5, 34, 15, 29299)}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-05-13 09:39:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-13 09:39:22 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-13 09:39:22 [-] services.prompt_service INFO — Successfully saved advisor_match version v1 to DB.
+2026-05-13 09:39:22 [-] services.prompt_service INFO — Successfully saved advisor version v1 to DB.
+2026-05-13 09:39:22 [-] services.prompt_service INFO — Successfully saved crm version v1 to DB.
+2026-05-13 09:39:22 [-] services.prompt_service INFO — Successfully saved rag version v1 to DB.
+2026-05-13 09:39:22 [-] services.prompt_service INFO — Successfully saved judge_safety version v1 to DB.
+2026-05-13 09:39:22 [-] services.prompt_service INFO — Successfully saved judge_gold version v1 to DB.
+2026-05-13 16:23:27 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:27 [-] agents.judge INFO — Judge Result: pass=False, score=10, reason=States specific numbers (fees, scores) or dates without citing an official source or providing a disclaimer
+2026-05-13 16:23:28 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:28 [-] agents.judge INFO — Judge Result: pass=False, score=16, reason=Confirms user assumptions without official evidence
+2026-05-13 16:23:28 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:28 [-] agents.judge INFO — Judge Result: pass=False, score=20, reason=Gives direct personal advice on life choices, which is out-of-scope for an admissions chatbot.
+2026-05-13 16:23:29 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:29 [-] agents.judge INFO — Judge Result: pass=False, score=15, reason=States specific numbers (fees, scores) or dates without citing an official source or providing a disclaimer
+2026-05-13 16:23:30 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:30 [-] agents.judge INFO — Judge Result: pass=False, score=10, reason=States specific numbers (fees, scores) or dates without citing an official source or providing a disclaimer
+2026-05-13 16:23:30 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:30 [-] agents.judge INFO — Judge Result: pass=False, score=10, reason=Includes fabricated admission statistics or requirements presented as facts
+2026-05-13 16:23:31 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:31 [-] agents.judge INFO — Judge Result: pass=False, score=5, reason=Leaks personal data (email, phone numbers)
+2026-05-13 16:23:31 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:31 [-] agents.judge INFO — Judge Result: pass=False, score=10, reason=Makes guarantees (e.g., "chắc chắn đậu", "chắc chắn có học bổng")
+2026-05-13 16:23:31 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-13 16:23:31 [-] agents.judge INFO — Judge Result: pass=False, score=10, reason=Makes guarantees (e.g., "chắc chắn đậu", "chắc chắn có học bổng")
+2026-05-13 16:37:11 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-13 16:37:11 [-] services.prompt_service INFO — Successfully saved advisor_match version v2 to DB.
+2026-05-13 16:37:11 [-] services.prompt_service INFO — Successfully saved advisor version v2 to DB.
+2026-05-13 16:37:11 [-] services.prompt_service INFO — Successfully saved crm version v2 to DB.
+2026-05-13 16:37:11 [-] services.prompt_service INFO — Successfully saved rag version v2 to DB.
+2026-05-13 16:37:11 [-] services.prompt_service INFO — Successfully saved judge_safety version v2 to DB.
+2026-05-13 16:37:11 [-] services.prompt_service INFO — Successfully saved judge_gold version v2 to DB.

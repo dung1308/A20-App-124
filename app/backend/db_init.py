@@ -31,7 +31,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 from database import init_database, recreate_database, get_engine
-from config import USE_MOCK, DATABASE_URL
+from config import USE_MOCK, get_database_url
 
 def seed_admissions_data():
     """Seed the database with sample admissions requirements (synchronized with create_db.py)."""
@@ -43,18 +43,42 @@ def seed_admissions_data():
             sample_data = [
                 AdmissionsData(
                     major_id="cs",
-                    requirements="GPA >= 8.0, IELTS >= 6.5, Math score >= 8.0",
+                    requirements="GPA >= 3.5, IELTS >= 6.5, Math score >= 8.0",
                     description="Ngành Khoa học Máy tính yêu cầu nền tảng toán học vững và khả năng lập trình."
                 ),
                 AdmissionsData(
                     major_id="ee",
-                    requirements="GPA >= 7.5, IELTS >= 6.0, Physics/Math score >= 7.5",
+                    requirements="GPA >= 3.2, IELTS >= 6.0, Physics/Math score >= 7.5",
                     description="Ngành Kỹ thuật Điện — Điện tử phù hợp với học sinh thích vật lý và công nghệ."
                 ),
-                # ... other majors omitted for brevity, ensure they match create_db.py
+                AdmissionsData(
+                    major_id="me",
+                    requirements="GPA >= 3.2, IELTS >= 6.0, Math/Physics score >= 7.5",
+                    description="Ngành Cơ khí dành cho học sinh yêu thích thiết kế và sản xuất."
+                ),
+                AdmissionsData(
+                    major_id="bme",
+                    requirements="GPA >= 3.5, IELTS >= 6.5, Biology/Math score >= 8.0",
+                    description="Ngành Y sinh kết hợp y học và kỹ thuật."
+                ),
+                AdmissionsData(
+                    major_id="ba",
+                    requirements="GPA >= 3.0, IELTS >= 6.5, Essay score >= 8.0",
+                    description="Ngành Quản trị Kinh doanh phát triển kỹ năng lãnh đạo."
+                ),
+                AdmissionsData(
+                    major_id="finance",
+                    requirements="GPA >= 3.2, IELTS >= 6.5, Math score >= 7.5",
+                    description="Ngành Tài chính tập trung vào phân tích và đầu tư."
+                ),
+                AdmissionsData(
+                    major_id="data_science",
+                    requirements="GPA >= 3.5, IELTS >= 6.5, Math/Statistics score >= 8.0",
+                    description="Ngành Khoa học Dữ liệu sử dụng AI và big data."
+                ),
                 AdmissionsData(
                     major_id="architecture",
-                    requirements="GPA >= 7.5, IELTS >= 6.5, Portfolio required",
+                    requirements="GPA >= 3.2, IELTS >= 6.5, Portfolio required",
                     description="Ngành Kiến trúc yêu cầu sáng tạo và kỹ năng vẽ."
                 ),
             ]
@@ -76,7 +100,9 @@ def main():
         logger.warning("USE_MOCK=True — skipping database initialization")
         return
     
-    logger.info(f"Database URL: {DATABASE_URL}")
+    db_url = get_database_url()
+    masked_url = db_url.split('@')[-1] if '@' in db_url else db_url
+    logger.info(f"Database URL: {masked_url}")
     
     # Check for --recreate flag
     recreate = "--recreate" in sys.argv

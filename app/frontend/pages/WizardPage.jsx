@@ -148,6 +148,7 @@ const WizardPage = () => {
         localStorage.setItem(`wizard_completed_${email}`, 'true');
       }
       navigate('/dashboard');
+      navigate('/report');
     } catch (err) {
       console.error("Match submission failed:", err);
       alert("Không thể tải kết quả. Vui lòng kiểm tra lại thông tin hoặc thử lại sau.");

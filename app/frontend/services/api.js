@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -9,6 +10,82 @@ const apiClient = axios.create({
   },
 });
 
+const normalizeChatResponse = (data = {}) => {
+  const recommendations = data.major || data.top3 || [];
+  const sources = data.sources || data.references || [];
+
+  return {
+    ...data,
+    response: data.response || data.answer || '',
+    answer: data.answer || data.response || '',
+    recommendations,
+    major: recommendations,
+    top3: recommendations,
+    sources,
+    references: sources,
+    fallback: Boolean(data.fallback),
+    status: data.status || 'success',
+    intent: data.intent || data.agent || null,
+    sessionId: data.sessionId || data.session_id || null,
+    sessionTitle: data.sessionTitle || data.session_title || null,
+  };
+};
+
+const authHeaders = () => {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+const clearAuthAndRedirect = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user_email');
+  localStorage.removeItem('user_role');
+  localStorage.removeItem('user_name');
+  localStorage.removeItem('user_avatar');
+  localStorage.removeItem('user_permissions');
+  toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+  if (window.location.pathname !== '/login') {
+    window.location.assign('/login');
+  }
+};
+
+const streamJsonLines = async (url, onData) => {
+  const response = await fetch(url, { headers: authHeaders() });
+  if (response.status === 401) {
+    clearAuthAndRedirect();
+    throw new Error('Unauthorized');
+  }
+  if (response.status === 403) {
+    toast.error('Bạn không có quyền thực hiện thao tác này.');
+    throw new Error('Forbidden');
+  }
+  if (!response.ok) {
+    throw new Error(`Stream request failed with status ${response.status}`);
+  }
+  if (!response.body) {
+    throw new Error('Streaming is not supported by this browser.');
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const payload = JSON.parse(line.substring(6));
+      onData(payload);
+    }
+  }
+};
+
 // Interceptor to attach JWT token from localStorage to all requests
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
@@ -18,6 +95,22 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const requestUrl = error.config?.url || '';
+
+    if (status === 401 && !requestUrl.includes('/api/auth/')) {
+      clearAuthAndRedirect();
+    } else if (status === 403) {
+      toast.error('Bạn không có quyền thực hiện thao tác này.');
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 const api = {
   // Authentication Endpoints
   login: (credentials) => apiClient.post('/api/auth/login', credentials).then(res => res.data),
@@ -26,7 +119,7 @@ const api = {
 
   // Chat and Session Management
   postChat: (payload, options = {}) => 
-    apiClient.post('/api/chat', payload, options).then(res => res.data),
+    apiClient.post('/api/chat', payload, options).then(res => normalizeChatResponse(res.data)),
   
   getSessions: (userId) => 
     apiClient.get(`/api/chat/sessions/${userId}`).then(res => res.data),
@@ -41,6 +134,9 @@ const api = {
     apiClient.delete(`/api/chat/sessions/${sessionId}`).then(res => res.data),
   
   downloadHistory: (sessionId) => 
+    apiClient.get(`/api/chat/sessions/${sessionId}/download`, { responseType: 'blob' }),
+
+  downloadSessionHistory: (sessionId) => 
     apiClient.get(`/api/chat/sessions/${sessionId}/download`, { responseType: 'blob' }),
 
   // Wizard and Profile Endpoints
@@ -74,8 +170,52 @@ const api = {
   getHandoffSummary: (userId) => 
     apiClient.get('/api/handoff-summary', { params: { user_id: userId } }).then(res => res.data),
 
+  // Admin and Staff Operations
+  getAuditLogs: (params = {}) =>
+    apiClient.get('/api/admin/audit-logs', { params }).then(res => res.data),
+
+  getAdminBoard: (hours = 336) =>
+    apiClient.get('/api/admin/board', { params: { hours } }).then(res => res.data),
+
+  getPendingHandoffs: () =>
+    apiClient.get('/api/admin/pending-handoffs').then(res => res.data),
+
+  updateHandoffStatus: (traceId, status) =>
+    apiClient.post(`/api/admin/handoff/${traceId}`, { status }).then(res => res.data),
+
+  logEmailSent: (userId) =>
+    apiClient.post('/api/audit/email-sent', { user_id: userId }).then(res => res.data),
+
+  logConsultationClick: (source = 'report') =>
+    apiClient.post('/api/audit/consultation-click', { source }).then(res => res.data),
+
   // Database & System Health
   getDbStatus: () => apiClient.get('/api/system/db-status').then(res => res.data),
+  getAdminUsers: () => apiClient.get('/api/admin/users').then(res => res.data),
+  createAdminUser: (payload) => apiClient.post('/api/admin/users', payload).then(res => res.data),
+  updateAdminUserRole: (userId, role) =>
+    apiClient.patch(`/api/admin/users/${encodeURIComponent(userId)}/role`, { role }).then(res => res.data),
+  grantAdminUserPermission: (userId, permission) =>
+    apiClient.post(`/api/admin/users/${encodeURIComponent(userId)}/permissions/grant`, { permission }).then(res => res.data),
+  revokeAdminUserPermission: (userId, permission) =>
+    apiClient.post(`/api/admin/users/${encodeURIComponent(userId)}/permissions/revoke`, { permission }).then(res => res.data),
+  updateAdminUserBlacklist: (userId, blacklisted) =>
+    apiClient.patch(`/api/admin/users/${encodeURIComponent(userId)}/blacklist`, { blacklisted }).then(res => res.data),
+
+  // RAG Admin
+  getRagStatus: () => apiClient.get('/api/admin/rag/status').then(res => res.data),
+
+  updateRagConfig: (intervalHours) =>
+    apiClient.post('/api/admin/rag/config', { interval_hours: intervalHours }).then(res => res.data),
+
+  getRagIngestStreamUrl: () => `${API_BASE_URL}/api/admin/rag/ingest/stream`,
+
+  streamRagIngest: (onData) => streamJsonLines(`${API_BASE_URL}/api/admin/rag/ingest/stream`, onData),
+
+  getAssetUrl: (path) => {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+  },
 
   /**
    * Generic POST method to support components using direct endpoint calls.

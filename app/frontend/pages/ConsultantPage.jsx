@@ -5,6 +5,7 @@ import { useChat } from '../hooks/useChat';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import ErrorBoundary from '../components/ErrorBoundary';
+import SourceList from '../components/Chat/SourceList';
 
 const majorNameMap = {
   'cs': 'Khoa học Máy tính',
@@ -18,10 +19,22 @@ const majorNameMap = {
   'architecture': 'Kiến trúc'
 };
 
+const fallbackLabels = {
+  rate_limit: 'Rate limit',
+  judge_rejected: 'Judge rejected',
+  missing_profile: 'Missing profile',
+  backend_fallback: 'Backend fallback',
+  guardrail_blocked: 'Guardrail blocked',
+  model_or_network_error: 'Model/network error',
+  cancelled: 'Cancelled',
+};
+
 const ConsultantPage = () => {
   const { matchResults } = useStore();
   const navigate = useNavigate();
-  const { userId, isAuthenticated } = useAuth(); // Moved up to ensure userId is available
+  const { userId, isAuthenticated, role } = useAuth(); // Moved up to ensure userId is available
+  const canSeeDebugMeta = role === 'admin' || role === 'editor';
+  const hasWizardCompleted = userId ? localStorage.getItem(`wizard_completed_${userId}`) === 'true' : false;
   const [currentSessionId, setCurrentSessionId] = useState('new');
   const [sessions, setSessions] = useState([]);
 
@@ -43,10 +56,16 @@ const ConsultantPage = () => {
     setMessages, 
     sendMessage, 
     loading: isTyping 
-  } = useChat(userId, currentSessionId, (newId) => {
-    if (currentSessionId === 'new') {
+  } = useChat(userId, currentSessionId, (newId, newTitle) => {
+    // Transition from 'new' placeholder to a real session ID
+    if (currentSessionId === 'new' && newId) {
       setCurrentSessionId(newId);
-      fetchSessions(); // Refresh list to show the newly created session
+      fetchSessions(); // Refresh the list to include the new record
+    } else if (newTitle) {
+      // Auto-rename logic: update the specific session title in local state immediately
+      setSessions(prev => prev.map(s => 
+        (s.id === newId || s.sessionId === newId) ? { ...s, title: newTitle } : s
+      ));
     }
   });
 
@@ -145,8 +164,15 @@ const ConsultantPage = () => {
                     <span className={`material-symbols-outlined text-[20px] ${isActive ? 'text-blue-600' : 'text-slate-400'}`}>
                       chat_bubble
                     </span>
-                    <div className="flex-1 overflow-hidden text-sm font-semibold truncate text-slate-700">
-                      {s.sessionTitle || s.title || 'Cuộc trò chuyện mới'}
+                    <div className="flex-1 overflow-hidden">
+                      <p className="text-sm font-semibold truncate text-slate-700">
+                        {s.sessionTitle || s.title || 'Cuộc trò chuyện mới'}
+                      </p>
+                      {s.created_at && (
+                        <p className="text-[10px] opacity-40 mt-0.5">
+                          {new Date(s.created_at).toLocaleDateString('vi-VN')}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </button>
@@ -167,6 +193,25 @@ const ConsultantPage = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <main ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-8 md:px-12 lg:px-24 scroll-smooth chat-scrollbar">
           <div className="max-w-4xl mx-auto space-y-8">
+            {messages.length === 0 && !hasWizardCompleted && (
+              <div className="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 border border-blue-100">
+                    <span className="material-symbols-outlined">route</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-blue-900">Bạn chưa làm Wizard chọn ngành</p>
+                    <p className="text-xs text-slate-500 mt-1">Nếu muốn nhận Top 3 ngành phù hợp, vào Wizard để trả lời 4 bước về sở thích, thế mạnh và phong cách làm việc.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => navigate('/wizard')}
+                  className="px-5 py-3 bg-[#003466] text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-lg active:scale-95 transition-all shrink-0"
+                >
+                  Mở Wizard
+                </button>
+              </div>
+            )}
             {messages.map((msg, index) => {
               let displayContent = msg.content;
               let recommendationData = msg.type === 'recommendation' ? msg.data : null;
@@ -186,7 +231,18 @@ const ConsultantPage = () => {
                       : 'bg-white text-[#0d1c2e] border-slate-200 rounded-tl-none'
                   }`}>
                     <p className="text-[16px] leading-relaxed">{displayContent}</p>
+                    {canSeeDebugMeta && msg.role === 'assistant' && (msg.intent || msg.status) && (
+                      <div className="mt-4 flex flex-wrap gap-2 text-[10px] font-black uppercase tracking-wider">
+                        {msg.intent && <span className="px-2 py-1 rounded bg-blue-50 text-blue-700 border border-blue-100">Intent: {msg.intent}</span>}
+                        {msg.status && <span className="px-2 py-1 rounded bg-slate-50 text-slate-500 border border-slate-100">Status: {msg.status}</span>}
+                        {msg.fallbackReason && <span className="px-2 py-1 rounded bg-amber-50 text-amber-700 border border-amber-100">Reason: {fallbackLabels[msg.fallbackReason] || msg.fallbackReason}</span>}
+                      </div>
+                    )}
                   </div>
+
+                  {msg.role === 'assistant' && (
+                    <SourceList sources={msg.sources || msg.references || []} showEmpty />
+                  )}
 
                   {/* Recommendation Grid */}
                   {recommendationData && (
@@ -252,6 +308,14 @@ const ConsultantPage = () => {
         <div className="p-6 bg-white border-t border-slate-200">
           <div className="max-w-4xl mx-auto">
             <div className="flex gap-3 mb-4 overflow-x-auto pb-1 no-scrollbar">
+              {!hasWizardCompleted && (
+                <button 
+                  onClick={() => navigate('/wizard')}
+                  className="whitespace-nowrap px-3 py-1.5 bg-[#003466] text-white rounded-full text-xs font-semibold hover:bg-blue-900 transition-colors border border-[#003466]"
+                >
+                  Làm Wizard chọn ngành
+                </button>
+              )}
               {['So sánh mức lương', 'Triển vọng nghề nghiệp', 'Phân tích hồ sơ'].map((hint) => (
                 <button 
                   key={hint}

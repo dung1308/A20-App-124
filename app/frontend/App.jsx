@@ -34,6 +34,15 @@ const StaffRoute = ({ children }) => {
   return children;
 };
 
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) return null;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
 function App() {
   return (
     <div className="app-container">
@@ -64,7 +73,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/wizard" element={<WizardPage />} />
+          <Route path="/wizard" element={<ProtectedRoute><WizardPage /></ProtectedRoute>} />
 
           {/* Protected Routes sharing sidebar and navigation */}
           <Route element={<AuthenticatedLayout />}>
@@ -77,7 +86,7 @@ function App() {
           <Route path="/system/tokens" element={<TokenUsagePage />} />
           <Route path="/staff" element={<StaffRoute><StaffDashboard /></StaffRoute>} />
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/system/database" element={<DatabaseManagementPage />} />
+          <Route path="/system/database" element={<AdminRoute><DatabaseManagementPage /></AdminRoute>} />
         </Route>
         </Routes>
       </AuthProvider>

@@ -69,7 +69,7 @@ const SessionSidebar = ({ userId, activeSessionId, onSelectSession, refreshTrigg
               <span className="material-symbols-outlined text-lg opacity-50">chat_bubble</span>
               <div className="flex-1 overflow-hidden">
                 <p className="text-sm truncate pr-6">
-                  {session.title || "Hội thoại mới"}
+                  {session.sessionTitle || session.title || "Cuộc trò chuyện mới"}
                 </p>
                 <p className="text-[10px] opacity-40">
                   {new Date(session.created_at).toLocaleDateString('vi-VN')}

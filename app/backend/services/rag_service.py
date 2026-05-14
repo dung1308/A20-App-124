@@ -36,14 +36,15 @@ from typing import List, Dict, Any, Tuple, Optional
 
 import numpy as np
 import chromadb
+from rank_bm25 import BM25Okapi
 
 from chromadb.config import Settings
-
 from openai import OpenAI
 from services.ltr import LearningToRank
 from services.llm_client import LLMClient
 from services.context_manager import ContextManager
-from services.cost_control import CostController
+from services.cost_control import CostController, _count_tokens, _estimate_cost
+from services.db_service import DBService
 from services.features import extract_features
 from utils.logger import get_logger
 from utils.observability import ObservabilityMiddleware, RequestSpan
@@ -79,21 +80,34 @@ GENERIC_FALLBACK = (
 # ---------------------------------------------------------------------------
 
 QUERY_EXPANSION_PROMPT = (
-    "Viết lại câu hỏi sau của học sinh để cụ thể hơn và tối ưu hơn cho việc tìm kiếm thông tin. "
-    "Sử dụng lịch sử trò chuyện để giải quyết các đại từ hoặc ngữ cảnh bị thiếu. "
-    "Return ONLY the rewritten query, nothing else.\n\n"
-    "Lịch sử trò chuyện:\n{history}\n"
-    "Original query: {query}\n"
-    "Rewritten query:"
+    """
+    Rewrite the user query into a standalone retrieval query.
+
+    Rules:
+    - Preserve original intent
+    - Do NOT add new topics
+    - Do NOT infer unrelated information
+    - Keep it concise
+    - Only resolve ambiguous references
+
+    Conversation:
+    {history}
+
+    User query:
+    {query}
+
+    Standalone retrieval query:
+    """
 )
 
 ANSWER_GENERATION_PROMPT = (
     "Bạn là trợ lý tư vấn tuyển sinh của VinUni.\n"
-    "Trả lời câu hỏi của học sinh CHỈ sử dụng thông tin từ Context dưới đây.\n"
-    "Nếu Context không có đủ thông tin, hãy trả lời là bạn chưa có thông tin chính xác.\n\n"
+    "Trả lời CHỈ dựa trên Context.\n"
+    "Nếu Context có Source URL, hãy đính kèm link liên quan ở cuối câu trả lời.\n"
+    "Không tự tạo URL.\n\n"
     "Context:\n{context}\n\n"
-    "Câu hỏi của học sinh: {query}\n\n"
-    "Trả lời:"
+    "Question: {query}\n\n"
+    "Answer:"
 )
 
 # ---------------------------------------------------------------------------
@@ -112,12 +126,166 @@ DEMO_CORPUS: List[Dict[str, str]] = [
     {"id": "architecture", "text": "Kiến trúc..."},
 ]
 
+REFERENTIAL_PATTERNS = [
+    "trường này",
+    "ngành này",
+    "ngành đó",
+    "ở đây",
+    "nó",
+    "học phí bao nhiêu",
+]
+
 
 # ---------------------------------------------------------------------------
 # RAGService
 # ---------------------------------------------------------------------------
 
 class RAGService:
+    def embed_text(self, text: str):
+        if USE_MOCK:
+            return None
+        try:
+            response = self.llm.client.embeddings.create(
+                model="text-embedding-3-small",
+                input=text
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            logger.error(f"Embedding failed: {e}")
+            return None
+
+    def classify_intent(self, query: str) -> str:
+        q = query.lower()
+        patterns = {
+            "tuition": [
+                "học phí",
+                "tuition",
+                "fee",
+                "fees",
+                "chi phí"
+            ],
+            "scholarship": [
+                "học bổng",
+                "scholarship",
+                "financial aid"
+            ],
+            "deadline": [
+                "deadline",
+                "hạn nộp",
+                "khi nào đóng",
+                "application date"
+            ],
+            "admission": [
+                "xét tuyển",
+                "tuyển sinh",
+                "apply",
+                "ứng tuyển",
+                "admission"
+            ],
+            "major": [
+                "ngành",
+                "major",
+                "program",
+                "chuyên ngành"
+            ]
+        }
+        for intent, keywords in patterns.items():
+            if any(k in q for k in keywords):
+                return intent
+        return "general"
+
+    def _call_llm_with_timeout(
+        self,
+        prompt:   str,
+        timeout:  float = 8,
+        span:     Optional['RequestSpan'] = None,
+        step_name: str = "llm_call",
+    ) -> Optional[str]:
+        """
+        Submit self.llm.generate(prompt) to a thread pool and wait at most
+        `timeout` seconds. Returns None on timeout or any exception.
+        If a RequestSpan is provided, the sub-step timing and any errors
+        are recorded directly onto the span for the TRACE summary.
+        """
+        future = self._executor.submit(self.llm.generate, prompt)
+        ctx = span.step(step_name) if span else _noop_context()
+        with ctx:
+            try:
+                result = future.result(timeout=timeout)
+                return result
+            except Exception as exc:
+                msg = str(exc)
+                logger.warning(f"[LLMError] {step_name}: {msg}")
+                if span:
+                    span.add_llm_error("api_error", msg)
+                future.cancel()
+                return None
+
+    def expand_query(
+        self,
+        query:   str,
+        history: List[Dict[str, Any]] = None,
+        user_id: str = "system",
+        span:    Optional['RequestSpan'] = None,
+    ) -> str:
+        """
+        Rewrite the query for better retrieval coverage.
+        Best-effort: any failure silently returns the original query.
+        """
+        # Format history turns for context
+        history_text = ""
+        if history:
+            if isinstance(history, str):
+                history_text = history
+            else:
+                history_text = "\n".join([
+                    f"{'Học sinh' if t.get('role')=='user' else 'Trợ lý'}: {t.get('content')}"
+                    for t in history[-3:]
+                ])
+        prompt = QUERY_EXPANSION_PROMPT.format(query=query, history=history_text or "Không có lịch sử.")
+        # Layer 4: cost gate
+        if not self.cost.allow(user_id, prompt, estimated_output_tokens=30, call_type="expand_query"):
+            logger.info("[CostBlock] expand_query skipped — budget exceeded")
+            if span:
+                span.add_llm_error("cost_block", "expand_query budget exceeded")
+            return query
+        # Layer 1: timeout-guarded call
+        result = self._call_llm_with_timeout(
+            prompt, timeout=QUERY_EXPAND_TIMEOUT,
+            span=span, step_name="expand_query",
+        )
+        if not result or result == "I don't know":
+            return query
+        # Layer 3: reject oversized expansions
+        validated = self.ctx.validate_expanded_query(query, result)
+        self.cost.record(user_id, prompt, validated, call_type="expand_query")
+        logger.info(f"Query expanded: '{query[:50]}' → '{validated[:50]}'")
+        return validated
+
+    def build_retrieval_history(
+        self,
+        history: List[Dict[str, Any]],
+        max_turns: int = 4,
+    ) -> str:
+        """
+        Định dạng lại lịch sử hội thoại cho truy vấn RAG.
+        """
+        if not history:
+            return ""
+        recent = history[-max_turns:]
+        lines = []
+        for msg in recent:
+            role = msg.get("role", "")
+            content = msg.get("content", "").strip()
+            if not content:
+                continue
+            if role == "user":
+                prefix = "User"
+            else:
+                prefix = "Assistant"
+            lines.append(f"{prefix}: {content}")
+        return "\n".join(lines)
+
     def __init__(self):
         logger.info("Initializing RAGService")
 
@@ -134,225 +302,90 @@ class RAGService:
             return
 
         # REAL MODE — Chroma
-
+        self.faq_bm25_docs = []
+        self.faq_bm25_meta = []
+        self.faq_bm25 = None
         self.client = chromadb.PersistentClient(
             path="./chroma_db"
         )
-        # Explicitly set embedding_function=None to prevent Chroma from downloading default models.
-        self.admission_collection = self.client.get_or_create_collection(name="admissions", embedding_function=None)
-        self.faq_collection       = self.client.get_or_create_collection(name="faq", embedding_function=None)
+        self.admission_collection = self.client.get_or_create_collection(name="admissions")
+        self.faq_collection       = self.client.get_or_create_collection(name="faq")
         self.cv_collections: Dict[str, Any] = {}
         self.reranker       = LearningToRank()
 
-        self.client.delete_collection("faq")
-        self.faq_collection = self.client.get_or_create_collection(name="faq", embedding_function=None)
-
-        self.client.delete_collection("admissions")
-        self.admission_collection = self.client.get_or_create_collection(name="admissions", embedding_function=None)
-
-        logger.info("Re-ingesting all data...")
-        self._ingest_admissions()
-        self.ingest_faq_folder()
-
-    # ------------------------------------------------------------------
-    # Layer 1: TIMEOUT WRAPPER
-    # ------------------------------------------------------------------
-
-    def _call_llm_with_timeout(
-        self,
-        prompt:   str,
-        timeout:  float = LLM_TIMEOUT_SECONDS,
-        span:     Optional[RequestSpan] = None,
-        step_name: str = "llm_call",
-    ) -> Optional[str]:
-        """
-        Submit self.llm.generate(prompt) to a thread pool and wait at most
-        `timeout` seconds. Returns None on timeout or any exception.
-
-        If a RequestSpan is provided, the sub-step timing and any errors
-        are recorded directly onto the span for the TRACE summary.
-        """
-        future = self._executor.submit(self.llm.generate, prompt)
-
-        ctx = span.step(step_name) if span else _noop_context()
-        with ctx:
-            try:
-                result = future.result(timeout=timeout)
-                return result
-            except FuturesTimeoutError:
-                msg = f"LLM call '{step_name}' exceeded {timeout}s"
-                logger.warning(f"[Timeout] {msg}")
-                if span:
-                    span.add_llm_error("timeout", msg)
-                future.cancel()
-                return None
-            except Exception as exc:
-                msg = str(exc)
-                logger.warning(f"[LLMError] {step_name}: {msg}")
-                if span:
-                    span.add_llm_error("api_error", msg)
-                return None
-
-    # ------------------------------------------------------------------
-    # Layer 2: FALLBACK STRATEGY
-    # ------------------------------------------------------------------
-
-    def _fallback_response(
-        self,
-        query:  str,
-        chunks: List[str],
-        span:   Optional[RequestSpan] = None,
-    ) -> str:
-        """
-        Tier A — top RAG chunk returned directly.
-        Tier B — keyword-matched rule-based response.
-        Tier C — generic catch-all with contact info.
-        """
-        # Tier A
-        if chunks:
-            logger.info("[Fallback] Returning top RAG chunk directly")
-            if span:
-                span.set_fallback("chunk")
-            return f"[Based on available information]\n\n{chunks[0]}"
-
-        # Tier B
-        q_lower = query.lower()
-        for keyword, response in RULE_BASED_FALLBACKS.items():
-            if keyword in q_lower:
-                logger.info(f"[Fallback] Rule-based match on keyword='{keyword}'")
-                if span:
-                    span.set_fallback("rule")
-                return response
-
-        # Tier C
-        logger.info("[Fallback] Using generic fallback response")
-        if span:
-            span.set_fallback("generic")
-        return GENERIC_FALLBACK
-
-    # ------------------------------------------------------------------
-    # LLM helpers  (layers 1-4, span-aware)
-    # ------------------------------------------------------------------
-    def embed_text(self, text: str):
-        if USE_MOCK:
-            return None
-
         try:
-            response = self.llm.client.embeddings.create(
-                model=EMBEDDING_MODEL,
-                input=text
-            )
-            return response.data[0].embedding
+            self.faq_collection.count()
+            self.admission_collection.count()
+
+            if self.faq_collection.count() == 0:
+                logger.info("FAQ collection empty -> ingesting")
+                self.ingest_faq_folder()
+
+            if self.admission_collection.count() == 0:
+                logger.info("Admissions collection empty -> ingesting")
+                self._ingest_admissions()
+            self.build_bm25_index()
+
         except Exception as e:
-            logger.error(f"Embedding failed: {e}")
-            return None
+            logger.error(f"Collection init failed: {e}")
 
-    def expand_query(
+    def bm25_search(
         self,
-        query:   str,
-        history: List[Dict[str, Any]] = None,
-        user_id: str = "system",
-        span:    Optional[RequestSpan] = None,
-    ) -> str:
-        """
-        Rewrite the query for better retrieval coverage.
-        Best-effort: any failure silently returns the original query.
-        """
-        # Format history turns for context
-        history_text = ""
-        if history:
-            history_text = "\n".join([
-                f"{'Học sinh' if t.get('role')=='user' else 'Trợ lý'}: {t.get('content')}" 
-                for t in history[-3:] # Use last 3 turns for context
-            ])
+        query: str,
+        top_k: int = 10
+    ):
 
-        prompt = QUERY_EXPANSION_PROMPT.format(query=query, history=history_text or "Không có lịch sử.")
+        if self.faq_bm25 is None:
+            return []
 
-        # Layer 4: cost gate
-        if not self.cost.allow(user_id, prompt, estimated_output_tokens=30, call_type="expand_query"):
-            logger.info("[CostBlock] expand_query skipped — budget exceeded")
-            if span:
-                span.add_llm_error("cost_block", "expand_query budget exceeded")
-            return query
-
-        # Layer 1: timeout-guarded call
-        result = self._call_llm_with_timeout(
-            prompt, timeout=QUERY_EXPAND_TIMEOUT,
-            span=span, step_name="expand_query",
+        tokenized_query = re.findall(
+            r"\w+",
+            query.lower()
         )
 
-        if not result or result == "I don't know":
-            return query
+        scores = self.faq_bm25.get_scores(tokenized_query)
 
-        # Layer 3: reject oversized expansions
-        validated = self.ctx.validate_expanded_query(query, result)
-        self.cost.record(user_id, prompt, validated, call_type="expand_query")
-        logger.info(f"Query expanded: '{query[:50]}' → '{validated[:50]}'")
-        return validated
+        ranked_idx = np.argsort(scores)[::-1][:top_k]
 
-    def generate_answer(
-        self,
-        query:          str,
-        context_chunks: List[str],
-        user_id:        str = "system",
-        span:           Optional[RequestSpan] = None,
-    ) -> str:
-        """
-        Synthesize a final answer from retrieved context.
-        All four safety layers applied in sequence.
+        results = []
 
-        Layer 3 → token budget fitting + prompt trimming
-        Layer 4 → cost gate
-        Layer 1 → timeout-guarded LLM call
-        Layer 2 → fallback on any failure
-        """
-        # Layer 3a: fit chunks to token budget
-        fitted_chunks = self.ctx.fit_chunks_to_budget(context_chunks)
-        if span:
-            span.set_token_stats(self.ctx.token_stats(fitted_chunks))
+        for idx in ranked_idx:
 
-        if not fitted_chunks:
-            logger.warning("[ContextManager] No chunks survived budget fitting — fallback")
-            return self._fallback_response(query, context_chunks, span=span)
+            score = scores[idx]
 
-        context = "\n\n".join(fitted_chunks)
-        prompt  = ANSWER_GENERATION_PROMPT.format(context=context, query=query)
+            if score <= 0:
+                continue
 
-        # Layer 3b: hard-trim prompt if still oversized
-        prompt = self.ctx.trim_prompt(prompt)
+            results.append({
+                "text": self.faq_bm25_docs[idx],
+                "metadata": self.faq_bm25_meta[idx],
+                "bm25_score": float(score)
+            })
 
-        # Layer 4: cost gate
-        if not self.cost.allow(
-            user_id, prompt,
-            estimated_output_tokens=self.ctx.max_answer_tokens,
-            call_type="generate_answer",
-        ):
-            logger.warning("[CostBlock] generate_answer blocked — returning fallback")
-            if span:
-                span.set_fallback("blocked").set_status("blocked")
-            return self._fallback_response(query, fitted_chunks, span=span)
+        return results
 
-        # Layer 1: timeout-guarded LLM call
-        answer = self._call_llm_with_timeout(
-            prompt, timeout=LLM_TIMEOUT_SECONDS,
-            span=span, step_name="generate_answer",
+    def build_bm25_index(self):
+
+        logger.info("Building FAQ BM25 index...")
+
+        faq = self.faq_collection.get(
+            include=["documents", "metadatas"]
         )
 
-        # Layer 2: fallback if LLM returned nothing
-        if not answer or answer == "I don't know":
-            return self._fallback_response(query, fitted_chunks, span=span)
+        docs = faq.get("documents", [])
+        metas = faq.get("metadatas", [])
 
-        # Record actual cost
-        cost = self.cost.record(user_id, prompt, answer, call_type="generate_answer")
-        if span:
-            span.set_cost(cost)
+        self.faq_bm25_docs = docs
+        self.faq_bm25_meta = metas
 
-        logger.info(f"generate_answer OK — query='{query[:60]}'")
-        return answer
+        tokenized_corpus = [
+            re.findall(r"\w+", doc.lower())
+            for doc in docs
+        ]
 
-    # ------------------------------------------------------------------
-    # Retrieval
-    # ------------------------------------------------------------------
+        self.faq_bm25 = BM25Okapi(tokenized_corpus)
+
+        logger.info(f"FAQ BM25 built with {len(docs)} docs")
 
     def retrieve(
         self,
@@ -362,79 +395,111 @@ class RAGService:
         expand: bool = True,
         span: Optional[RequestSpan] = None,
         history: List[Dict[str, Any]] = None,
-    ) -> List[str]:
-
-        retrieval_query = (
-            self.expand_query(query, user_id=user_id or "system", span=span, history=history)
-            if expand else query
-        )
+    ) -> List[Dict[str, Any]]:
+        """
+        Nâng cấp: Sử dụng Hybrid Search (Vector + BM25) trên toàn bộ collections.
+        Loại bỏ hard-routing theo domain để tránh việc miss tài liệu khi phân loại sai.
+        """
+        retrieval_query = query
+        if expand:
+            retrieval_history = self.build_retrieval_history(history)
+            retrieval_query = self.expand_query(
+                query=query,
+                user_id=user_id or "system",
+                span=span,
+                history=retrieval_history,
+            )
+        logger.info(f"[RETRIEVAL_QUERY] {retrieval_query}")
+        
+        # Dùng câu query ĐÃ EXPAND để phân loại intent (đề phòng bạn cần dùng log)
+        intent = self.classify_intent(query.lower())
+        if intent == "general":
+            intent = self.classify_intent(retrieval_query.lower())
+        logger.info(f"[QUERY_INTENT] {intent}")
 
         if USE_MOCK:
-            return self._keyword_search(retrieval_query, top_k)
+            return [
+                {"text": text, "metadata": {"source": "mock"}}
+                for text in self._keyword_search(retrieval_query, top_k)
+            ]
 
-        # embedding
+        all_candidates = []
+        
+        # ==========================================
+        # 1. VECTOR SEARCH TRÊN CẢ 2 COLLECTIONS
+        # ==========================================
         query_embedding = self.embed_text(retrieval_query)
-        if query_embedding is None:
-            logger.warning("Embedding failed → fallback keyword search")
-            return self._keyword_search(retrieval_query, top_k)
+        if query_embedding is not None:
+            for coll_name, collection in [("admission", self.admission_collection), ("faq", self.faq_collection)]:
+                try:
+                    res = collection.query(
+                        query_embeddings=[query_embedding],
+                        n_results=top_k * 2,
+                        include=["documents", "distances", "metadatas"]
+                    )
+                    
+                    # Trích xuất dữ liệu an toàn
+                    docs = res.get("documents", [[]])[0] or []
+                    dists = res.get("distances", [[]])[0] or []
+                    metas = res.get("metadatas", [[]])[0] or [{} for _ in docs]
+                    
+                    for d, dist, meta in zip(docs, dists, metas):
+                        all_candidates.append({
+                            "text": d,
+                            "distance": dist, # Chroma dùng L2 distance: Càng nhỏ càng tốt
+                            "metadata": meta
+                        })
+                except Exception as e:
+                    logger.error(f"Chroma query failed on {coll_name}: {e}")
 
-        # query both collections (HYBRID)
-        step_ctx = span.step("chroma_query") if span else _noop_context()
-        with step_ctx:
-            try:
-                res_adm = self.admission_collection.query(
-                    query_embeddings=[query_embedding],
-                    n_results=top_k,
-                    include=["documents", "distances", "metadatas"]
-                )
+        # ==========================================
+        # 2. BỔ SUNG KEYWORD SEARCH (BM25) TỪ FAQ
+        # ==========================================
+        bm25_results = self.bm25_search(retrieval_query, top_k=top_k)
+        for item in bm25_results:
+            # Chuyển đổi BM25 Score thành Distance ảo để có thể mix chung với Vector
+            # Điểm BM25 càng cao -> distance ảo càng thấp
+            pseudo_distance = max(0.5, 1.5 - (item.get("bm25_score", 0) / 10)) 
+            all_candidates.append({
+                "text": item.get("text"),
+                "distance": pseudo_distance,
+                "metadata": item.get("metadata", {})
+            })
 
-                res_faq = self.faq_collection.query(
-                    query_embeddings=[query_embedding],
-                    n_results=top_k,
-                    include=["documents", "distances", "metadatas"]
-                )
+        # ==========================================
+        # 3. SẮP XẾP, LỌC TRÙNG VÀ LẤY TOP_K
+        # ==========================================
+        # Ưu tiên tài liệu có distance nhỏ nhất
+        all_candidates = sorted(all_candidates, key=lambda x: x["distance"])
+        
+        results = []
+        added_texts = set()
+        
+        for c in all_candidates:
+            if c["text"] in added_texts:
+                continue
+            added_texts.add(c["text"])
+            results.append({
+                "text": c["text"],
+                "metadata": c["metadata"]
+            })
+            if len(results) >= top_k:
+                break
 
-            except Exception as e:
-                logger.error(f"Chroma query failed: {e}")
-                return self._keyword_search(retrieval_query, top_k)
+        # ==========================================
+        # 4. FALLBACK CUỐI CÙNG
+        # ==========================================
+        if not results:
+            logger.warning("No candidates found -> fallback keyword")
+            return [
+                {
+                    "text": text,
+                    "metadata": {"source": "keyword"}
+                }
+                for text in self._keyword_search(retrieval_query, top_k)
+            ]
 
-        # extract safely
-        def safe_extract(res):
-            if not res or "documents" not in res:
-                return [], [], []
-            docs = res.get("documents", [[]])[0] or []
-            dists = res.get("distances", [[]])[0] or []
-            metas = res.get("metadatas", [[]])[0] or [{} for _ in docs]
-            return docs, dists, metas
-
-        docs_adm, dist_adm, meta_adm = safe_extract(res_adm)
-        docs_faq, dist_faq, meta_faq = safe_extract(res_faq)
-
-        # merge (HYBRID CORE)
-        docs = docs_adm + docs_faq
-        distances = dist_adm + dist_faq
-        metadatas = meta_adm + meta_faq
-
-        if not docs:
-            logger.warning("No docs from hybrid → fallback keyword")
-            return self._keyword_search(retrieval_query, top_k)
-
-        # rerank
-        rerank_ctx = span.step("reranker") if span else _noop_context()
-        with rerank_ctx:
-            try:
-                reranked = self.reranker.rerank(
-                    query=retrieval_query,
-                    docs=docs,
-                    distances=distances,
-                    metadatas=metadatas,
-                    top_k=top_k,
-                )
-            except Exception as e:
-                logger.error(f"Reranker failed: {e}")
-                return docs[:top_k]
-
-        return reranked
+        return results
 
     # ------------------------------------------------------------------
     # Layer 5: PRIMARY ENTRY POINT — full observability trace
@@ -452,11 +517,6 @@ class RAGService:
 
         Wraps the full pipeline inside an ObservabilityMiddleware trace:
           retrieve → context-fit → generate (timeout + fallback + cost)
-
-        Every sub-step is timed. On exit, a single TRACE log line is emitted
-        with: trace_id, user_id, route, latency_ms, step timings,
-        retrieved_docs, llm_errors, fallback_used, cost_usd, token_stats,
-        final_status.
         """
         _user_id = user_id or "anonymous"
 
@@ -487,7 +547,7 @@ class RAGService:
             # only set "ok" if no fallback was triggered.
             if span.fallback_used == "none":
                 span.set_status("ok")
-
+        logger.info(f"[DEBUG_DOCS] {docs}")
         return answer
 
     # ------------------------------------------------------------------
@@ -616,14 +676,21 @@ class RAGService:
                 idx += 1
 
         if ids:
-            self.faq_collection.add(
+            self.faq_collection.upsert(
                 ids=ids,
                 documents=documents,
                 embeddings=embeddings,
                 metadatas=metadatas
             )
+            # To accurately count added/updated, we'd need to query existing IDs before upsert.
+            # For simplicity, we'll assume all are "added" if collection was empty,
+            # or "updated" if it wasn't. A more precise count would involve fetching all IDs.
+            # For now, we'll return a simple count based on the number of items processed.
+            return len(ids), 0 # Simplified: assuming all are added for now, or updated if they existed.
 
         logger.info(f"Ingested {len(ids)} FAQ items")
+        return 0, 0
+
     def _ingest_admissions(self, data_dir="data/admissions"):
         import json
         from pathlib import Path
@@ -671,14 +738,17 @@ class RAGService:
                     })
 
         if ids:
-            self.admission_collection.add(
+            self.admission_collection.upsert(
                 ids=ids,
                 documents=documents,
                 embeddings=embeddings,
                 metadatas=metadatas
             )
+            # Similar simplification as above.
+            return len(ids), 0 # Simplified: assuming all are added for now, or updated if they existed.
 
         logger.info(f"Ingested {len(ids)} admission chunks")
+        return 0, 0
 
     def ingest_cv(self, user_id: str, cv_text: str):
         if USE_MOCK:

@@ -1,0 +1,85 @@
+[
+  {
+    "id": "eval_001",
+    "category": "Admissions Criteria",
+    "query": "Các tiêu chí tuyển sinh chính của VinUni là gì?",
+    "expected_behavior": "Chatbot phải giải thích về mô hình 5 đặc điểm cốt lõi (A-A-C-C-E) và bắt buộc phải kèm theo đường link minh chứng từ trang admissions.vinuni.edu.vn.",
+    "key_points": [
+      "A - Outstanding Ability (Khả năng vượt trội)",
+      "A - Aspiration (Khát vọng)",
+      "C - Creativity (Sáng tạo)",
+      "C - Commitment (Cam kết)",
+      "E - Empathy (Đồng cảm)"
+    ],
+    "required_tone": "Professional, informative",
+    "source_reference": "ung-tuyen-vao-vinuni (1).json"
+  },
+  {
+    "id": "eval_002",
+    "category": "Academic Programs",
+    "query": "VinUni có những viện và ngành đào tạo nào?",
+    "expected_behavior": "Chatbot liệt kê đủ 4 viện: Kinh doanh Quản trị, Khoa học Sức khỏe, Kỹ thuật và Khoa học Máy tính, Khoa học và Giáo dục Khai phóng kèm các ngành tương ứng.",
+    "key_points": [
+      "Viện Kinh doanh Quản trị (QTR Kinh doanh)",
+      "Viện Khoa học Sức khỏe (Bác sĩ, Điều dưỡng)",
+      "Viện Kỹ thuật và Khoa học Máy tính (KH Máy tính, KT Điện, KT Cơ khí, KH Dữ liệu)",
+      "Viện Khoa học và Giáo dục Khai phóng (Truyền thông, Tâm lý, Kinh tế)"
+    ],
+    "required_tone": "Clear, structured",
+    "source_reference": "fnq (1).json"
+  },
+  {
+    "id": "eval_003",
+    "category": "Scholarships",
+    "query": "Thông tin chi tiết về các loại học bổng tại VinUni?",
+    "expected_behavior": "Chatbot phải nêu được các mức học bổng từ Chủ tịch, Hiệu trưởng đến Tài năng chuyên ngành và các học bổng đặc thù như WIT hay Dean Choi.",
+    "key_points": [
+      "Học bổng Chủ tịch (100% + chi phí sinh hoạt)",
+      "Học bổng Hiệu trưởng (90%) và Viện trưởng (80%)",
+      "Học bổng WIT (Woman in Tech - 5%)",
+      "Hỗ trợ Phát triển Giáo dục 35% cho mọi sinh viên trúng tuyển"
+    ],
+    "required_tone": "Detailed, encouraging",
+    "source_reference": "nhung-moc-quan-trong (1).json"
+  },
+  {
+    "id": "eval_004",
+    "category": "Admission Deadlines",
+    "query": "Thời gian nộp hồ sơ các đợt tuyển sinh năm 2026 là khi nào?",
+    "expected_behavior": "Chatbot cung cấp chính xác 3 mốc thời gian cho đợt Early, Regular và Rolling Round.",
+    "key_points": [
+      "Early Round: 15/10/2025 - 15/01/2026",
+      "Regular Round: 15/02 - 15/05/2026",
+      "Rolling Round: 15/06 - 15/08/2026"
+    ],
+    "required_tone": "Precise, helpful",
+    "source_reference": "nhung-moc-quan-trong (1).json"
+  },
+  {
+    "id": "eval_005",
+    "category": "Application Checklist",
+    "query": "Hồ sơ ứng tuyển VinUni cần chuẩn bị những gì?",
+    "expected_behavior": "Chatbot liệt kê danh mục hồ sơ bao gồm CV, bài luận, chứng chỉ tiếng Anh và thông tin người giới thiệu.",
+    "key_points": [
+      "CV dài 1 trang",
+      "Bài luận ngắn (1 câu hỏi duy nhất)",
+      "Hồ sơ học thuật (GPA, giải thưởng)",
+      "Thông tin liên lạc của 2 người tham chiếu/giới thiệu"
+    ],
+    "required_tone": "Structured, guiding",
+    "source_reference": "ung-tuyen-vao-vinuni (1).json"
+  },
+  {
+    "id": "eval_006",
+    "category": "Application Process",
+    "query": "Quy trình xét tuyển vòng 2 của VinUni diễn ra như thế nào?",
+    "expected_behavior": "Mô tả chi tiết vòng đánh giá cá nhân, tuyệt đối không từ chối trả lời vì lý do an toàn sai lệch.",
+    "key_points": [
+      "Vòng 2: Đánh giá cá nhân (Phỏng vấn)",
+      "Thử thách dựa trên kịch bản với giảng viên",
+      "Hình thức: Trực tiếp hoặc trực tuyến qua Zoom"
+    ],
+    "required_tone": "Professional, clear",
+    "source_reference": "ung-tuyen-vao-vinuni (1).json"
+  }
+]

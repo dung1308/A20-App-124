@@ -24,6 +24,19 @@ logger = get_logger(__name__)
 MIN_LENGTH: int = 1
 MAX_LENGTH: int = 5000
 
+HOMOGLYPH_TRANSLATION = str.maketrans({
+    "\u0430": "a", "\u0410": "A",
+    "\u0435": "e", "\u0415": "E",
+    "\u043e": "o", "\u041e": "O",
+    "\u0440": "p", "\u0420": "P",
+    "\u0441": "c", "\u0421": "C",
+    "\u0445": "x", "\u0425": "X",
+    "\u0443": "y", "\u0423": "Y",
+    "\u0456": "i", "\u0406": "I",
+    "\u0458": "j", "\u0408": "J",
+    "\u0455": "s", "\u0405": "S",
+})
+
 # TODO: Expand this list with additional Vietnamese and English injection patterns
 INJECTION_PATTERNS: list[str] = [
     r"ignore\s+(all\s+)?previous\s+instructions",
@@ -40,6 +53,9 @@ INJECTION_PATTERNS: list[str] = [
 # TODO: Add more out-of-scope topic patterns relevant to admissions chatbot
 BLOCKED_TOPIC_PATTERNS: list[str] = [
     r"\b(bomb|weapon|hack|exploit)\b",
+    r"\b(pháp lý|pháp luật|luật sư|tư vấn pháp lý|hợp đồng|tranh chấp|kiện cáo)\b",
+    r"\b(tài chính cá nhân|tư vấn tài chính|đầu tư|chứng khoán|nợ|thuế|bảo hiểm|làm giàu|tiền ảo|crypto)\b",
+    r"\b(sức khỏe|bệnh|bệnh lý|tâm lý|trầm cảm|lo âu|stress|tự tử|suicide|vaccine|ung thư|uống thuốc|thuốc giảm cân|thuốc ngủ)\b",
 ]
 
 
@@ -60,14 +76,16 @@ class InputGuard:
               is_safe=True  → input is acceptable, proceed.
               is_safe=False → input blocked; reason describes why.
 
-        TODO: 1. Check len(text) < MIN_LENGTH → return (False, "input_too_short").
-        TODO: 2. Check len(text) > MAX_LENGTH → return (False, "input_too_long").
-        TODO: 3. Loop through INJECTION_PATTERNS with re.search(pattern, text, re.IGNORECASE).
-                 On match → log warning + return (False, "injection_detected").
-        TODO: 4. Loop through BLOCKED_TOPIC_PATTERNS.
-                 On match → return (False, "blocked_topic").
-        TODO: 5. All checks pass → return (True, "ok").
+        Implemented checks:
+          - Enforce minimum and maximum length limits.
+          - Block prompt-injection, XSS, and SQL-injection patterns.
+          - Block clearly out-of-scope topics for the admissions chatbot.
+          - Return (True, "ok") only after all checks pass.
         """
+        if text is None:
+            return False, "input_too_short"
+
+        text = self.sanitize(str(text))
         logger.debug(f"InputGuard.check() — length {len(text)}")
 
         if len(text) < MIN_LENGTH:
@@ -86,7 +104,7 @@ class InputGuard:
             if re.search(pattern, text, re.IGNORECASE):
                 return False, "blocked_topic"
 
-        return True, "CLEAN"
+        return True, "ok"
 
     def sanitize(self, text: str) -> str:
         """
@@ -100,9 +118,8 @@ class InputGuard:
         Returns:
             Lightly sanitised string.
 
-        TODO: Add normalisation for Unicode homoglyphs (e.g., Cyrillic 'а' → 'a')
-              if injection attempts using look-alike characters are detected.
+        Uses Unicode NFKC normalization plus a small explicit homoglyph map for
+        common Cyrillic look-alike characters seen in prompt-injection bypasses.
         """
-        # TODO: Add homoglyph normalisation if needed
-        normalized = unicodedata.normalize('NFKC', text)
+        normalized = unicodedata.normalize('NFKC', str(text)).translate(HOMOGLYPH_TRANSLATION)
         return " ".join(normalized.split())

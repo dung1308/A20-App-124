@@ -3,15 +3,15 @@ services:
     image: postgres:15-alpine
     container_name: vinuni_db_container
     environment:
-      POSTGRES_DB: vinuni_db
-      POSTGRES_USER: vinuni_user2
-      POSTGRES_PASSWORD: "your pass" # Matches DATABASE_SETUP.md
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vinuni_user2 -d vinuni_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,9 +22,22 @@ services:
       dockerfile: Dockerfile
     container_name: vinuni_backend
     environment:
-      - DATABASE_URL=postgresql://vinuni_user2:13082001@db:5432/vinuni_db
-      - USE_MOCK=False
-      - LOG_LEVEL=INFO
+      - DATABASE_URL=${DATABASE_URL}
+      - USE_MOCK=${USE_MOCK}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL}
+      - PROMPT_VERSION=${PROMPT_VERSION}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_SIGNUP_KEY=${ADMIN_SIGNUP_KEY}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - HUMAN_WEBHOOK=${HUMAN_WEBHOOK}
+      - RATE_LIMIT_MAX_REQUESTS=${RATE_LIMIT_MAX_REQUESTS}
+      - RATE_LIMIT_WINDOW_SECONDS=${RATE_LIMIT_WINDOW_SECONDS}
+      - DAILY_LLM_BUDGET=${DAILY_LLM_BUDGET}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - LOG_LEVEL=${LOG_LEVEL}
     ports:
       - "8000:8000"
     depends_on:
@@ -39,7 +52,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
+      - VITE_API_URL=${VITE_API_URL}
     depends_on:
       - backend
 
