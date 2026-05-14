@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "AI_TOOL_NAME=copilot python3 ~/scripts/log_hook.py",
+        "timeout": 10
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "AI_TOOL_NAME=copilot python3 ~/scripts/log_hook.py",
+        "timeout": 10
+      }
+    ]
+  }
+}

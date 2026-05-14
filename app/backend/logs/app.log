@@ -3335,3 +3335,255 @@ WHERE users.user_id = %(user_id_1)s OR lower(users.email) = lower(%(lower_1)s)
 2026-05-14 10:00:29 [-] main INFO — Running background task synchronization...
 2026-05-14 10:00:29 [-] services.db_service INFO — ✓ Database migrations completed.
 2026-05-14 10:00:29 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 10:04:25 [-] main INFO — Database initialized at module level.
+2026-05-14 10:04:26 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 10:04:26 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 10:04:26 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 10:04:27 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 10:04:27 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 10:04:28 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 10:04:30 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 10:04:30 [-] main INFO — Running background task synchronization...
+2026-05-14 10:04:30 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 10:04:30 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 10:07:30 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 6f1be07a-ea1b-4bf2-a036-589dd7b20cd8
+2026-05-14 10:07:30 [-] services.db_service INFO — save_message args = Triển vọng nghề nghiệp
+2026-05-14 10:07:30 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 10:07:30 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-14 10:07:55 [-] services.llm_client WARNING — LLM retry 1: Connection error.
+2026-05-14 10:07:57 [-] services.llm_client WARNING — LLM retry 2: Connection error.
+2026-05-14 10:08:00 [-] services.llm_client WARNING — LLM retry 3: Connection error.
+2026-05-14 10:08:01 [-] services.llm_client ERROR — LLM failed after retries
+2026-05-14 10:08:01 [-] orchestrator.router WARNING — Empty LLM response → default to 'rag'
+2026-05-14 10:08:01 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-14 10:08:01 [-] agents.rag INFO — [USER_QUERY] Triển vọng nghề nghiệp
+2026-05-14 10:08:02 [-] services.llm_client WARNING — LLM retry 1: Connection error.
+2026-05-14 10:08:05 [-] services.llm_client WARNING — LLM retry 2: Connection error.
+2026-05-14 10:08:05 [-] services.rag_service WARNING — [LLMError] expand_query: 
+2026-05-14 10:08:05 [-] services.rag_service INFO — [RETRIEVAL_QUERY] Triển vọng nghề nghiệp
+2026-05-14 10:08:05 [-] services.rag_service INFO — [QUERY_INTENT] general
+2026-05-14 10:08:06 [-] services.rag_service ERROR — Embedding failed: Connection error.
+2026-05-14 10:08:06 [-] agents.rag INFO — [SOURCE_METADATA] Question: Cơ hội nghề nghiệp của tôi sau khi học tại VinUni như nào?
+                Answer: VinUni cung cấp cho sinh viên các cơ hội phát triển sự nghiệp đa dạng và độc đáo: 1. Làm việc tại các doanh nghiệp hàng đầu trong và ngoài nước: Ernst & Young, Deloitte, BCG, Việt Nam Airlines, FPT Telecom, InterContinental Hotels Group, Marriott, Business Council Việt Nam-Campuchia, Techcombank, Woori Bank, các startup tiên phong, cũng như các tổ chức phi chính phủ khác.. Các công ty trong hệ sinh thái của Vingroup như Vinpearl, Vincom Retail, VinAI, VinBrain, VinBigdata, VinFast, Vinmec, Vinschool… đều rất quan tâm và hỗ trợ tích cực cho sinh viên VinUni thông qua việc cung cấp môi trường thực tập, dự án nghiên cứu và cơ hội nghề nghiệp, đây là những lợi thế vượt trội mà ít trường đại học có được. 2. Học tiếp lên cao: theo đuổi các chương trình thạc sĩ / tiến sĩ tại VinUni hoặc học các chương trình tích hợp song bằng tại các trường đối tác. (3) Khởi nghiệp làm chủ doanh nghiệp hoặc làm trong các công ty start-up: thực tế đã có sinh viên khởi nghiệp ngay trong quá trình học, ví dụ UpYouth. Sinh viên được cài nhúng và thử thách tại môi trường E-Lab của VinUni. {'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/viec-lam-thuc-tap/', 'source': None, 'section': 'FAQ', 'type': 'faq'}
+2026-05-14 10:08:06 [-] agents.rag INFO — [SOURCE_METADATA] Question: Chương trình hỗ trợ khởi nghiệp ở VinUni là như thế nào?
+                Answer: Với một trong những giá trị cốt lõi của VinUni là chú trọng vào vai trò “lãnh đạo” của sinh viên, các dự án có tiềm năng nhất sẽ được các cố vấn của Trung tâm Khởi nghiệp E-Lab (bao gồm những doanh nhân/nhà quản lý, đồng sáng lập và lãnh đạo cấp C tại Finhay, MoMo, Amazon Web Services…) kèm cặp sát sao và hỗ trợ phát triển ý tưởng hàng tuần. Khi ý tưởng hoàn thiện, sinh viên sẽ được tài trợ 2.000 USD/dự án để thử nghiệm giai đoạn ươm tạo trong Chương trình Vườn ươm. Những dự án xuất sắc nhất sẽ được chọn vào vòng Tăng tốc với nhiều hỗ trợ và tài trợ lên đến 10.000 USD/đội. {'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/viec-lam-thuc-tap/', 'source': None, 'section': 'FAQ', 'type': 'faq'}
+2026-05-14 10:08:06 [-] agents.rag INFO — [SOURCE_METADATA] Question: Tôi có được lựa chọn bạn cùng phòng không? Sinh viên nam và nữ có khu vực riêng không?
+                Answer: VinUni sẽ chịu trách nhiệm phân phòng cho sinh viên dựa trên sự đa dạng về ngành học và vùng miền để tạo điều kiện phát triển cũng như nâng cao tinh thần đồng đội, tinh thần trách nhiệm và tính độc lập. Đồng thời, trường cũng cung cấp khu nội trú riêng cho sinh viên nam và nữ. {'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/cuoc-song-tai-ky-tuc-xa/', 'source': None, 'section': 'FAQ', 'type': 'faq'}
+2026-05-14 10:08:06 [-] agents.rag INFO — [RAG_PROMPT_PREVIEW]
+
+
+Bạn là trợ lý tuyển sinh chính thức của VinUni.
+
+Nhiệm vụ:
+- Trả lời câu hỏi dựa trên Context được cung cấp
+- Không bịa thông tin
+- Nếu Context không chứa câu trả lời:
+  "Mình chưa có thông tin chính xác về điều này.
+   Hãy kiểm tra trực tiếp tại vinuni.edu.vn
+   hoặc liên hệ tư vấn viên."
+
+Quy tắc:
+- Trả lời bằng tiếng Việt
+- Ngắn gọn
+- Chính xác
+- Dễ hiểu
+- Có thể dùng bullet points nếu phù hợp
+
+
+
+
+Conversation History:
+
+
+Context:
+Question: Cơ hội nghề nghiệp của tôi sau khi học tại VinUni như nào?
+                Answer: VinUni cung cấp cho sinh viên các cơ hội phát triển sự nghiệp đa dạng và độc đáo: 1. Làm việc tại các doanh nghiệp hàng đầu trong và ngoài nước: Ernst & Young, Deloitte, BCG, Việt Nam Airlines, FPT Telecom, InterContinental Hotels Group, Marriott, Business Council Việt Nam-Campuchia, Techcombank, Woori Bank, các startup tiên phong, cũng như các tổ chức phi chính phủ khác.. Các công ty trong hệ sinh thái của Vingroup như Vinpearl, Vincom Retail, VinAI, VinBrain, Vi
+2026-05-14 10:08:07 [-] services.llm_client WARNING — LLM retry 3: Connection error.
+2026-05-14 10:08:08 [-] agents.rag ERROR — RAGAgent failure: Connection error.
+Traceback (most recent call last):
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_transports\default.py", line 101, in map_httpcore_exceptions
+    yield
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_transports\default.py", line 250, in handle_request
+    resp = self._pool.handle_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 256, in handle_request
+    raise exc from None
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_sync\connection_pool.py", line 236, in handle_request
+    response = connection.handle_request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 101, in handle_request
+    raise exc
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 78, in handle_request
+    stream = self._connect(request)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_sync\connection.py", line 124, in _connect
+    stream = self._network_backend.connect_tcp(**kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_backends\sync.py", line 207, in connect_tcp
+    with map_exceptions(exc_map):
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpcore\_exceptions.py", line 14, in map_exceptions
+    raise to_exc(exc) from exc
+httpcore.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_base_client.py", line 1037, in request
+    response = self._send_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_client.py", line 440, in _send_request
+    return self._send_with_auth_retry(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_client.py", line 418, in _send_with_auth_retry
+    response = super()._send_request(request, stream=stream, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_base_client.py", line 964, in _send_request
+    return self._client.send(request, stream=stream, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_client.py", line 914, in send
+    response = self._send_handling_auth(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_client.py", line 942, in _send_handling_auth
+    response = self._send_handling_redirects(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_client.py", line 979, in _send_handling_redirects
+    response = self._send_single_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_client.py", line 1014, in _send_single_request
+    response = transport.handle_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_transports\default.py", line 249, in handle_request
+    with map_httpcore_exceptions():
+         ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Admin\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\httpx\_transports\default.py", line 118, in map_httpcore_exceptions
+    raise mapped_exc(message) from exc
+httpx.ConnectError: [Errno 11001] getaddrinfo failed
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "E:\VinUNI_thuc_chien_project\A20-App-Dung\app\backend\agents\rag.py", line 175, in run
+    response = self.model.generate_content(prompt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\VinUNI_thuc_chien_project\A20-App-Dung\app\backend\config.py", line 151, in generate_content
+    response = client.chat.completions.create(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_utils\_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\resources\chat\completions\completions.py", line 1215, in create
+    return self._post(
+           ^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\VinUNI_thuc_chien_project\A20-App-124\.venv\Lib\site-packages\openai\_base_client.py", line 1072, in request
+    raise APIConnectionError(request=request) from err
+openai.APIConnectionError: Connection error.
+2026-05-14 10:08:08 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 10:08:08 [-] services.llm_client ERROR — LLM failed after retries
+2026-05-14 10:08:19 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 10.71s
+2026-05-14 10:08:19 [-] agents.judge INFO — Judge Result: clarify - Query needs more information
+2026-05-14 10:08:19 [-] orchestrator.pipeline INFO — Judge requested clarification for user [EMAIL] Re-routing to advisor.
+2026-05-14 10:08:19 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=True)
+2026-05-14 10:08:21 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.71s
+2026-05-14 10:08:21 [-] services.db_service INFO — save_message args = Chào bạn! Cảm ơn bạn đã liên hệ với mình về triển vọng nghề nghiệp. Để mình có thể tư vấn chính xác hơn, bạn có thể cho mình biết thêm một chút thông tin không? 
+
+1. Bạn đang học ngành gì hoặc có dự định theo đuổi lĩnh vực nào trong tương lai?
+2. Bạn đã có bất kỳ kinh nghiệm làm việc hoặc thực tập nào chưa?
+3. Bạn có những sở thích hay kỹ năng gì mà bạn muốn phát huy trong công việc sau này?
+
+Nếu bạn muốn, mình cũng có thể gợi ý cho bạn một bài trắc nghiệm nghề nghiệp thú vị để khám phá thêm về những lựa chọn phù hợp với bản thân! Bạn nghĩ sao?
+2026-05-14 10:08:21 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 10:08:21 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=clarify latency=48360ms
+2026-05-14 10:08:21 [-] main INFO — Chat response {'response': 'Chào bạn! Cảm ơn bạn đã liên hệ với mình về triển vọng nghề nghiệp. Để mình có thể tư vấn chính xác hơn, bạn có thể cho mình biết thêm một chút thông tin không? \n\n1. Bạn đang học ngành gì hoặc có dự định theo đuổi lĩnh vực nào trong tương lai?\n2. Bạn đã có bất kỳ kinh nghiệm làm việc hoặc thực tập nào chưa?\n3. Bạn có những sở thích hay kỹ năng gì mà bạn muốn phát huy trong công việc sau này?\n\nNếu bạn muốn, mình cũng có thể gợi ý cho bạn một bài trắc nghiệm nghề nghiệp thú vị để khám phá thêm về những lựa chọn phù hợp với bản thân! Bạn nghĩ sao?', 'intent': 'advisor', 'status': 'clarified', 'major': None, 'sources': [], 'sessionId': '6f1be07a-ea1b-4bf2-a036-589dd7b20cd8', 'sessionTitle': 'Triển vọng nghề nghiệp', 'escalation_level': 'NONE'}
+2026-05-14 10:08:44 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 6f1be07a-ea1b-4bf2-a036-589dd7b20cd8
+2026-05-14 10:08:44 [-] services.db_service INFO — save_message args = Tôi có kinh nghiệm làm khoa học dữ liệu
+2026-05-14 10:08:44 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 10:08:44 [-] orchestrator.router INFO — Routing message: 'Tôi có kinh nghiệm làm khoa học dữ liệu...'
+2026-05-14 10:08:44 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.59s
+2026-05-14 10:08:44 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 10:08:44 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 10:08:49 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.33s
+2026-05-14 10:08:49 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 10:08:51 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.34s
+2026-05-14 10:08:51 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is helpful and relevant to the user's experience in data science, providing appropriate suggestions for related fields of study and encouraging further inquiry.
+2026-05-14 10:08:51 [-] services.db_service INFO — save_message args = Cố vấn: Chào bạn! Rất vui khi biết bạn đã có kinh nghiệm trong lĩnh vực khoa học dữ liệu. Đây là một ngành đang rất phát triển và có nhiều triển vọng nghề nghiệp trong tương lai. 
+
+Các ngành học tại VinUniversity, đặc biệt là trong lĩnh vực công nghệ và khoa học, có thể rất phù hợp với bạn. Nếu bạn thích phân tích dữ liệu, lập trình, hay phát triển thuật toán thì các chương trình liên quan đến Khoa học máy tính, Khoa học dữ liệu hoặc Kỹ thuật dữ liệu có thể là lựa chọn tuyệt vời.
+
+Ngoài ra, bạn có thể tham gia bài trắc nghiệm Wizard mà mình đã nhắc đến để khám phá sâu hơn về những lĩnh vực khác mà bạn có thể quan tâm hoặc phù hợp với sở thích và kỹ năng của mình. 
+
+Nếu bạn có câu hỏi cụ thể hơn về các ngành học hay môi trường học tập tại VinUniversity, hãy cho mình biết nhé! Mình rất sẵn lòng giúp đỡ bạn.
+2026-05-14 10:08:51 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 10:08:51 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=7264ms
+2026-05-14 10:08:51 [-] main INFO — Chat response {'response': 'Cố vấn: Chào bạn! Rất vui khi biết bạn đã có kinh nghiệm trong lĩnh vực khoa học dữ liệu. Đây là một ngành đang rất phát triển và có nhiều triển vọng nghề nghiệp trong tương lai. \n\nCác ngành học tại VinUniversity, đặc biệt là trong lĩnh vực công nghệ và khoa học, có thể rất phù hợp với bạn. Nếu bạn thích phân tích dữ liệu, lập trình, hay phát triển thuật toán thì các chương trình liên quan đến Khoa học máy tính, Khoa học dữ liệu hoặc Kỹ thuật dữ liệu có thể là lựa chọn tuyệt vời.\n\nNgoài ra, bạn có thể tham gia bài trắc nghiệm Wizard mà mình đã nhắc đến để khám phá sâu hơn về những lĩnh vực khác mà bạn có thể quan tâm hoặc phù hợp với sở thích và kỹ năng của mình. \n\nNếu bạn có câu hỏi cụ thể hơn về các ngành học hay môi trường học tập tại VinUniversity, hãy cho mình biết nhé! Mình rất sẵn lòng giúp đỡ bạn.', 'intent': 'advisor', 'status': 'success', 'major': None, 'sources': [], 'sessionId': '6f1be07a-ea1b-4bf2-a036-589dd7b20cd8', 'sessionTitle': None, 'escalation_level': 'NONE'}
+2026-05-14 10:09:10 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 6f1be07a-ea1b-4bf2-a036-589dd7b20cd8
+2026-05-14 10:09:10 [-] services.db_service INFO — save_message args = Có Major nào tôi nên chọn
+2026-05-14 10:09:10 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 10:09:10 [-] orchestrator.router INFO — Routing message: 'Có Major nào tôi nên chọn...'
+2026-05-14 10:09:11 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.86s
+2026-05-14 10:09:11 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 10:09:11 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 10:09:17 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 5.97s
+2026-05-14 10:09:17 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 10:09:19 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.89s
+2026-05-14 10:09:19 [-] agents.judge INFO — Judge Result: pass=True, score=100, reason=The response provides helpful guidance on selecting a major while encouraging self-reflection through a suggested quiz. It avoids any harmful or misleading content, making it suitable for a Vietnamese high school student seeking university admission advice.
+2026-05-14 10:09:19 [-] services.db_service INFO — save_message args = Cố vấn: Chào bạn! Việc chọn ngành học là một quyết định quan trọng và cần cân nhắc kỹ lưỡng. Với kinh nghiệm của bạn trong lĩnh vực khoa học dữ liệu, mình gợi ý bạn có thể xem xét các ngành như:
+
+1. **Khoa học Dữ liệu**: Đây là lựa chọn rất phù hợp nếu bạn muốn phát triển sâu hơn trong việc phân tích và xử lý dữ liệu, cũng như ứng dụng các phương pháp học máy.
+   
+2. **Khoa học Máy tính**: Nếu bạn yêu thích lập trình và phát triển phần mềm, ngành này sẽ giúp bạn trang bị kiến thức vững chắc trong lĩnh vực công nghệ.
+
+3. **Kỹ thuật Dữ liệu**: Nếu bạn muốn làm việc với hạ tầng dữ liệu và tối ưu hóa quá trình xử lý dữ liệu, ngành này cũng rất tiềm năng.
+
+Mình khuyên bạn cũng nên thử bài trắc nghiệm Wizard mà mình đã nhắc đến. Bài trắc nghiệm này sẽ giúp bạn hiểu rõ hơn về sở thích và thế mạnh của bản thân, từ đó tìm ra ngành học phù hợp nhất với bạn.
+
+Nếu bạn còn có câu hỏi nào khác về các ngành học hoặc môi trường học tại VinUniversity, đừng ngần ngại cho mình biết nhé! Mình luôn sẵn lòng hỗ trợ bạn.
+2026-05-14 10:09:19 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 10:09:19 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=8725ms
+2026-05-14 10:09:19 [-] main INFO — Chat response {'response': 'Cố vấn: Chào bạn! Việc chọn ngành học là một quyết định quan trọng và cần cân nhắc kỹ lưỡng. Với kinh nghiệm của bạn trong lĩnh vực khoa học dữ liệu, mình gợi ý bạn có thể xem xét các ngành như:\n\n1. **Khoa học Dữ liệu**: Đây là lựa chọn rất phù hợp nếu bạn muốn phát triển sâu hơn trong việc phân tích và xử lý dữ liệu, cũng như ứng dụng các phương pháp học máy.\n   \n2. **Khoa học Máy tính**: Nếu bạn yêu thích lập trình và phát triển phần mềm, ngành này sẽ giúp bạn trang bị kiến thức vững chắc trong lĩnh vực công nghệ.\n\n3. **Kỹ thuật Dữ liệu**: Nếu bạn muốn làm việc với hạ tầng dữ liệu và tối ưu hóa quá trình xử lý dữ liệu, ngành này cũng rất tiềm năng.\n\nMình khuyên bạn cũng nên thử bài trắc nghiệm Wizard mà mình đã nhắc đến. Bài trắc nghiệm này sẽ giúp bạn hiểu rõ hơn về sở thích và thế mạnh của bản thân, từ đó tìm ra ngành học phù hợp nhất với bạn.\n\nNếu bạn còn có câu hỏi nào khác về các ngành học hoặc môi trường học tại VinUniversity, đừng ngần ngại cho mình biết nhé! Mình luôn sẵn lòng hỗ trợ bạn.', 'intent': 'advisor', 'status': 'success', 'major': None, 'sources': [], 'sessionId': '6f1be07a-ea1b-4bf2-a036-589dd7b20cd8', 'sessionTitle': None, 'escalation_level': 'NONE'}
+2026-05-14 10:13:58 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 197151d0-db40-45b6-8e97-85c42722288d
+2026-05-14 10:13:58 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.
+2026-05-14 10:13:58 [-] services.db_service INFO — save_message args = So sánh mức lương
+2026-05-14 10:13:58 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 10:13:58 [-] orchestrator.router INFO — Routing message: 'So sánh mức lương...'
+2026-05-14 10:13:59 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.27s
+2026-05-14 10:13:59 [-] orchestrator.router INFO — [LLM] Routed to: fallback
+2026-05-14 10:13:59 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 10:14:01 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.18s
+2026-05-14 10:14:01 [-] agents.judge INFO — Judge Result: clarify - Query needs more information
+2026-05-14 10:14:01 [-] orchestrator.pipeline INFO — Judge requested clarification for user [EMAIL] Re-routing to advisor.
+2026-05-14 10:14:01 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=True)
+2026-05-14 10:14:04 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.26s
+2026-05-14 10:14:04 [-] services.db_service INFO — save_message args = Chào bạn! Cảm ơn bạn đã liên hệ với mình. Để có thể so sánh mức lương một cách chính xác hơn, mình cần thêm một số thông tin cụ thể từ bạn:
+
+1. Bạn đang quan tâm đến ngành học nào cụ thể trong lĩnh vực công nghệ hoặc các ngành khác không?
+2. Bạn có đang xem xét tới các vị trí công việc cụ thể nào mà bạn muốn tìm hiểu mức lương không?
+3. Bạn có muốn biết về mức lương trung bình trong ngành ở khu vực nào (ví dụ: Việt Nam, nước ngoài, hay khu vực cụ thể)?
+
+Thông tin này sẽ giúp mình đưa ra những so sánh phù hợp hơn cho bạn. Nếu bạn muốn, bạn cũng có thể thử làm bài trắc nghiệm Wizard để có thêm gợi ý về nghề nghiệp và mức lương tiềm năng nhé! Chờ thông tin từ bạn!
+2026-05-14 10:14:04 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 10:14:04 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=clarify latency=2455ms
+2026-05-14 10:14:04 [-] main INFO — Chat response {'response': 'Chào bạn! Cảm ơn bạn đã liên hệ với mình. Để có thể so sánh mức lương một cách chính xác hơn, mình cần thêm một số thông tin cụ thể từ bạn:\n\n1. Bạn đang quan tâm đến ngành học nào cụ thể trong lĩnh vực công nghệ hoặc các ngành khác không?\n2. Bạn có đang xem xét tới các vị trí công việc cụ thể nào mà bạn muốn tìm hiểu mức lương không?\n3. Bạn có muốn biết về mức lương trung bình trong ngành ở khu vực nào (ví dụ: Việt Nam, nước ngoài, hay khu vực cụ thể)?\n\nThông tin này sẽ giúp mình đưa ra những so sánh phù hợp hơn cho bạn. Nếu bạn muốn, bạn cũng có thể thử làm bài trắc nghiệm Wizard để có thêm gợi ý về nghề nghiệp và mức lương tiềm năng nhé! Chờ thông tin từ bạn!', 'intent': 'advisor', 'status': 'clarified', 'major': None, 'sources': [], 'sessionId': '197151d0-db40-45b6-8e97-85c42722288d', 'sessionTitle': None, 'escalation_level': 'NONE'}
+2026-05-14 10:14:29 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 197151d0-db40-45b6-8e97-85c42722288d
+2026-05-14 10:14:29 [-] services.db_service INFO — save_message args = Tôi muốn vào công nghệ và muốn làm ở Việt Nam
+2026-05-14 10:14:29 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 10:14:29 [-] orchestrator.router INFO — Routing message: 'Tôi muốn vào công nghệ và muốn làm ở Việt Nam...'
+2026-05-14 10:14:29 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.71s
+2026-05-14 10:14:29 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 10:14:29 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 10:14:50 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 20.29s
+2026-05-14 10:14:50 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 10:14:58 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 8.33s
+2026-05-14 10:14:58 [-] agents.judge INFO — Judge Result: pass=False, score=40, reason=Response includes specific salary ranges without citing an official source or stating they are for reference only, which violates safety and accuracy guidelines.
+2026-05-14 10:14:58 [-] orchestrator.pipeline WARNING — Judge REJECTED response for user [EMAIL] Reason: Response includes specific salary ranges without citing an official source or stating they are for reference only, which violates safety and accuracy guidelines.
+2026-05-14 10:14:58 [-] services.db_service INFO — save_message args = Tôi xin lỗi, nhưng tôi không thể trả lời câu hỏi này vì lý do an toàn. Bạn có câu hỏi nào khác về VinUni không?
+2026-05-14 10:14:58 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=False latency=29347ms
+2026-05-14 10:14:58 [-] main INFO — Chat response {'response': 'Tôi xin lỗi, nhưng tôi không thể trả lời câu hỏi này vì lý do an toàn. Bạn có câu hỏi nào khác về VinUni không?', 'intent': 'fallback', 'status': 'rejected', 'major': None, 'sources': [], 'sessionId': '197151d0-db40-45b6-8e97-85c42722288d', 'sessionTitle': None, 'escalation_level': 'NONE'}
+2026-05-14 10:21:40 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.

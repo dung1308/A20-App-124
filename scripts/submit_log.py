@@ -6,9 +6,17 @@ Called by git pre-push hook or manually.
 import json
 import os
 import sys
+import io
 import urllib.request
 import urllib.error
 from pathlib import Path
+
+# --- UTF-8 fix for Windows ---
+if sys.platform == "win32":
+    if hasattr(sys.stdout, "buffer"):
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    if hasattr(sys.stderr, "buffer"):
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 try:
     from dotenv import load_dotenv
@@ -23,7 +31,7 @@ LOG_FILE = Path(os.environ.get("AI_LOG_DIR", ".ai-log")) / "session.jsonl"
 
 def main():
     if not SERVER_URL:
-        print("[ai-log] AI_LOG_SERVER not set — skipping submission.", file=sys.stderr)
+        print("[ai-log] AI_LOG_SERVER not set - skipping submission.", file=sys.stderr)
         sys.exit(0)
 
     if not LOG_FILE.exists() or LOG_FILE.stat().st_size == 0:
@@ -57,9 +65,9 @@ def main():
 
     try:
         with urllib.request.urlopen(req, timeout=10) as resp:
-            print(f"[ai-log] Submitted {len(entries)} entries → {resp.status}", file=sys.stderr)
+            print(f"[ai-log] Submitted {len(entries)} entries -> {resp.status}", file=sys.stderr)
     except urllib.error.URLError as e:
-        print(f"[ai-log] Submit failed: {e} — logs kept locally.", file=sys.stderr)
+        print(f"[ai-log] Submit failed: {e} - logs kept locally.", file=sys.stderr)
         sys.exit(0)  # Don't block push on server error
 
 
