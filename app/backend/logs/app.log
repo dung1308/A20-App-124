@@ -3734,3 +3734,458 @@ Thông tin này sẽ giúp mình đưa ra những so sánh phù hợp hơn cho b
 2026-05-14 15:48:08 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2758 characters.
 2026-05-14 15:48:08 [-] services.rag_service INFO — Ingesting CV for user admin_vinuni.edu.vn
 2026-05-14 15:48:19 [-] main INFO — Profile updated for user: [EMAIL]
+2026-05-14 15:51:00 [-] main INFO — Database initialized at module level.
+2026-05-14 15:51:01 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 15:51:01 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 15:51:01 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 15:51:02 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 15:51:02 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 15:51:03 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 15:51:03 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 15:51:03 [-] main INFO — Running background task synchronization...
+2026-05-14 15:51:03 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 15:51:03 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 15:56:25 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 9dfd9f94-7c96-404f-8fdf-ecb02780b95d
+2026-05-14 15:56:25 [-] services.db_service INFO — save_message args = Triển vọng nghề nghiệp
+2026-05-14 15:56:25 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 15:56:25 [-] orchestrator.router INFO — Routing message: 'Triển vọng nghề nghiệp...'
+2026-05-14 15:56:28 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.09s
+2026-05-14 15:56:28 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 15:56:28 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 15:56:34 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 6.52s
+2026-05-14 15:56:34 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 15:56:36 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.65s
+2026-05-14 15:56:36 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response is helpful and on-topic, providing guidance on career prospects and suggesting an aptitude test while inviting further questions.
+2026-05-14 15:56:36 [-] services.db_service INFO — save_message args = Chào bạn!
+
+Với kinh nghiệm và bộ kỹ năng ấn tượng mà bạn có, triển vọng nghề nghiệp của bạn tại VinUniversity là vô cùng sáng sủa. Tại đây, chúng tôi cung cấp nhiều ngành học liên quan đến công nghệ, quản lý sản phẩm, và nhiều lĩnh vực khác mà có thể phù hợp với bạn.
+
+Nếu bạn đang xem xét việc chọn ngành học, tôi gợi ý bạn nên thực hiện bài trắc nghiệm Wizard của trường. Bài trắc nghiệm này sẽ giúp bạn khám phá sở thích và thế mạnh của mình, từ đó đưa ra những gợi ý ngành học phù hợp nhất với bạn. Bên cạnh đó, bạn cũng có thể chia sẻ thêm về sở thích và mong muốn của mình, để chúng tôi có thể trao đổi và giúp bạn tìm ra con đường tốt nhất nhé!
+
+Nếu bạn cần thêm thông tin về các ngành học, môi trường học tập, hoặc triển vọng nghề nghiệp, hãy cho tôi biết nhé!
+2026-05-14 15:56:36 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 15:56:36 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=11327ms
+2026-05-14 15:56:36 [-] main INFO — Chat response {'response': 'Chào bạn!\n\nVới kinh nghiệm và bộ kỹ năng ấn tượng mà bạn có, triển vọng nghề nghiệp của bạn tại VinUniversity là vô cùng sáng sủa. Tại đây, chúng tôi cung cấp nhiều ngành học liên quan đến công nghệ, quản lý sản phẩm, và nhiều lĩnh vực khác mà có thể phù hợp với bạn.\n\nNếu bạn đang xem xét việc chọn ngành học, tôi gợi ý bạn nên thực hiện bài trắc nghiệm Wizard của trường. Bài trắc nghiệm này sẽ giúp bạn khám phá sở thích và thế mạnh của mình, từ đó đưa ra những gợi ý ngành học phù hợp nhất với bạn. Bên cạnh đó, bạn cũng có thể chia sẻ thêm về sở thích và mong muốn của mình, để chúng tôi có thể trao đổi và giúp bạn tìm ra con đường tốt nhất nhé!\n\nNếu bạn cần thêm thông tin về các ngành học, môi trường học tập, hoặc triển vọng nghề nghiệp, hãy cho tôi biết nhé!', 'intent': 'advisor', 'status': 'success', 'major': None, 'sources': [], 'sessionId': '9dfd9f94-7c96-404f-8fdf-ecb02780b95d', 'sessionTitle': 'Triển vọng nghề nghiệp', 'escalation_level': 'NONE'}
+2026-05-14 15:56:51 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2758 characters.
+2026-05-14 15:56:51 [-] services.rag_service INFO — Ingesting CV for user admin_vinuni.edu.vn
+2026-05-14 15:57:17 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2758 characters.
+2026-05-14 15:57:17 [-] services.rag_service INFO — Ingesting CV for user admin_vinuni.edu.vn
+2026-05-14 15:58:00 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-14 15:58:00 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-14 15:58:08 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 7.59s
+2026-05-14 15:58:08 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 15:58:10 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.60s
+2026-05-14 15:58:10 [-] agents.judge INFO — Judge Result: pass=True, score=85, reason=The response provides a helpful and appropriate evaluation of the user's interests and strengths, suggesting relevant university majors. The response is based on general knowledge and does not contain harmful or discriminatory content, guarantees, or fabricated statistics. It also references official sources correctly.
+2026-05-14 15:58:10 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=9227ms
+2026-05-14 15:58:10 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-14 15:58:10 [-] services.rag_service INFO — Ingesting CV for user admin_vinuni.edu.vn
+2026-05-14 15:58:10 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-14 15:58:44 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2758 characters.
+2026-05-14 15:58:44 [-] services.rag_service INFO — Ingesting CV for user admin_vinuni.edu.vn
+2026-05-14 15:58:56 [-] main INFO — Profile updated for user: [EMAIL]
+2026-05-14 16:00:01 [-] main INFO — RAG sync interval updated to 48 hours
+2026-05-14 16:00:03 [-] main INFO — RAG sync interval updated to 24 hours
+2026-05-14 16:00:25 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 16:00:25 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 16:07:25 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 3015992f-5425-426d-9bc4-bc7affc35446
+2026-05-14 16:07:25 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.
+2026-05-14 16:07:25 [-] services.db_service INFO — save_message args = Hello
+2026-05-14 16:07:25 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 16:07:25 [-] orchestrator.router INFO — Routing message: 'Hello...'
+2026-05-14 16:07:26 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.90s
+2026-05-14 16:07:26 [-] orchestrator.router INFO — [LLM] Routed to: fallback
+2026-05-14 16:07:26 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 16:07:27 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.48s
+2026-05-14 16:07:27 [-] agents.judge INFO — Judge Result: clarify - Query needs more information
+2026-05-14 16:07:27 [-] orchestrator.pipeline INFO — Judge requested clarification for user [EMAIL] Re-routing to advisor.
+2026-05-14 16:07:27 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=True)
+2026-05-14 16:07:30 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.93s
+2026-05-14 16:07:30 [-] services.db_service INFO — save_message args = Chào bạn! Rất vui khi bạn đang tìm kiếm lời khuyên về ngành học tại VinUniversity. Để giúp mình có cái nhìn rõ hơn về bạn, bạn có thể cho mình biết thêm về những mục tiêu nghề nghiệp của bạn trong tương lai không? Bạn có đam mê đặc biệt nào trong lĩnh vực nào không? Ngoài ra, nếu bạn đang cân nhắc giữa các ngành học, mình khuyên bạn nên làm bài trắc nghiệm xác định sở thích và khả năng nghề nghiệp. Điều đó có thể giúp mình hiểu rõ hơn về các lĩnh vực phù hợp với bạn!
+2026-05-14 16:07:30 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 16:07:30 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=clarify latency=2385ms
+2026-05-14 16:07:30 [-] main INFO — Chat response {'response': 'Chào bạn! Rất vui khi bạn đang tìm kiếm lời khuyên về ngành học tại VinUniversity. Để giúp mình có cái nhìn rõ hơn về bạn, bạn có thể cho mình biết thêm về những mục tiêu nghề nghiệp của bạn trong tương lai không? Bạn có đam mê đặc biệt nào trong lĩnh vực nào không? Ngoài ra, nếu bạn đang cân nhắc giữa các ngành học, mình khuyên bạn nên làm bài trắc nghiệm xác định sở thích và khả năng nghề nghiệp. Điều đó có thể giúp mình hiểu rõ hơn về các lĩnh vực phù hợp với bạn!', 'intent': 'advisor', 'status': 'clarified', 'major': None, 'sources': [], 'sessionId': '3015992f-5425-426d-9bc4-bc7affc35446', 'sessionTitle': 'Hello', 'escalation_level': 'NONE'}
+2026-05-14 20:50:50 [-] main INFO — Database initialized at module level.
+2026-05-14 20:50:51 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:50:51 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:50:51 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 20:50:52 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 20:50:52 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 20:50:53 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:50:53 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:50:54 [-] main INFO — Running background task synchronization...
+2026-05-14 20:50:54 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 20:50:54 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 20:52:27 [-] main INFO — Database initialized at module level.
+2026-05-14 20:52:28 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:52:28 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:52:28 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 20:52:30 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 20:52:30 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 20:52:30 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:52:31 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 20:52:31 [-] main INFO — Running background task synchronization...
+2026-05-14 20:52:31 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 20:52:31 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 20:54:17 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2758 characters.
+2026-05-14 20:54:17 [-] services.rag_service INFO — Ingesting CV for user 123455_123455.com
+2026-05-14 20:54:49 [-] orchestrator.pipeline INFO — run_match for user: [EMAIL]
+2026-05-14 20:54:49 [-] agents.advisor INFO — AdvisorAgent.match_majors() called
+2026-05-14 20:54:56 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 6.92s
+2026-05-14 20:54:56 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 20:54:58 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.96s
+2026-05-14 20:54:58 [-] agents.judge INFO — Judge Result: pass=True, score=100, reason=The response provides useful insights regarding the user's interests and strengths while suggesting relevant majors. It includes verified sources for further information and does not contain any harmful or inaccurate content.
+2026-05-14 20:54:58 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=8894ms
+2026-05-14 20:54:58 [-] main INFO — Student profile persisted to SQL for: [EMAIL]
+2026-05-14 20:54:58 [-] services.rag_service INFO — Ingesting CV for user 123455_123455.com
+2026-05-14 20:54:58 [-] main INFO — Wizard answers indexed for user context: [EMAIL]
+2026-05-14 20:55:11 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: d0f918d1-e48a-42bb-ad29-53c694dca912
+2026-05-14 20:55:11 [-] services.db_service INFO — save_message args = Tôi muốn tìm hiểu sâu hơn về ngành Quản trị Kinh doanh
+2026-05-14 20:55:11 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 20:55:11 [-] orchestrator.router INFO — Routing message: 'Tôi muốn tìm hiểu sâu hơn về ngành Quản trị Kinh doanh...'
+2026-05-14 20:55:11 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.80s
+2026-05-14 20:55:11 [-] orchestrator.router INFO — [LLM] Routed to: rag
+2026-05-14 20:55:11 [-] agents.rag INFO — RAGAgent: Processing query for [EMAIL]
+2026-05-14 20:55:11 [-] agents.rag INFO — [USER_QUERY] Tôi muốn tìm hiểu sâu hơn về ngành Quản trị Kinh doanh
+2026-05-14 20:55:13 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.78s
+2026-05-14 20:55:13 [-] services.cost_control INFO — [CostControl] RECORDED expand_query user=[EMAIL] tokens=293+19 cost=$0.00006 (daily_global=$0.0001)
+2026-05-14 20:55:13 [-] services.rag_service INFO — Query expanded: 'Tôi muốn tìm hiểu sâu hơn về ngành Quản trị Kinh d' → 'Tìm hiểu về ngành Quản trị Kinh doanh.'
+2026-05-14 20:55:13 [-] services.rag_service INFO — [RETRIEVAL_QUERY] Tìm hiểu về ngành Quản trị Kinh doanh.
+2026-05-14 20:55:13 [-] services.rag_service INFO — [QUERY_INTENT] major
+2026-05-14 20:55:13 [-] agents.rag INFO — [SOURCE_METADATA] Question: VinUni có những ngành đào tạo nào?
+                Answer: VinUni gồm 4 Viện và sẽ cung cấp những chương trình sau đây: Viện Kinh doanh Quản trị: Cử nhân Quản trị Kinh doanh với 6 chuyên ngành: Tài chính (4 năm) Marketing (4 năm) Quản lý chuỗi Cung ứng và Vận hành (4 năm) Quản trị Khách sạn (4 năm) Khởi nghiệp (4 năm) Phân tích kinh doanh (4 năm) Viện Khoa học Sức khỏe: Bác sĩ y khoa (6 năm) Cử nhân Điều dưỡng (4 năm) Viện Kỹ thuật và Khoa học Máy tính: Cử nhân Khoa học máy tính (4 năm) Cử nhân Kỹ thuật điện (4 năm) Cử nhân Kỹ thuật cơ khí (4 năm) Viện Khoa học và Giáo dục khai phóng: – Chương trình GenEd hướng tới 6 yếu tố thành công trong DNA của sinh viên tốt nghiệp VinUni. Các môn học liên ngành trong khoa học tự nhiên, khoa học xã hội, nghệ thuật, nhân văn và công nghệ. Tâm lý học Truyền thông Kinh tế học {'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/', 'source': None, 'section': 'FAQ', 'type': 'faq'}
+2026-05-14 20:55:13 [-] agents.rag INFO — [SOURCE_METADATA] Question: Chương trình giảng dạy được thiết kể bới trường nào và có được kiểm định không?
+                Answer: Chương trình giảng dạy đã được đồng thiết kế và xác thực chất lượng bởi hai trường đại học top thế giới là Cornell và Pennsylvania. Chương trình được xây dựng trên các tiêu chuẩn kiểm định của từng Chương trình như AACSB cho ngành kinh doanh – quản trị, ABET cho ngành kỹ thuật và khoa học máy tính, ACEN cho ngành điều dưỡng, … {'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/chuong-trinh-dao-tao/', 'source': None, 'section': 'FAQ', 'type': 'faq'}
+2026-05-14 20:55:13 [-] agents.rag INFO — [SOURCE_METADATA] Question: Cơ hội nghề nghiệp của tôi sau khi học tại VinUni như nào?
+                Answer: VinUni cung cấp cho sinh viên các cơ hội phát triển sự nghiệp đa dạng và độc đáo: 1. Làm việc tại các doanh nghiệp hàng đầu trong và ngoài nước: Ernst & Young, Deloitte, BCG, Việt Nam Airlines, FPT Telecom, InterContinental Hotels Group, Marriott, Business Council Việt Nam-Campuchia, Techcombank, Woori Bank, các startup tiên phong, cũng như các tổ chức phi chính phủ khác.. Các công ty trong hệ sinh thái của Vingroup như Vinpearl, Vincom Retail, VinAI, VinBrain, VinBigdata, VinFast, Vinmec, Vinschool… đều rất quan tâm và hỗ trợ tích cực cho sinh viên VinUni thông qua việc cung cấp môi trường thực tập, dự án nghiên cứu và cơ hội nghề nghiệp, đây là những lợi thế vượt trội mà ít trường đại học có được. 2. Học tiếp lên cao: theo đuổi các chương trình thạc sĩ / tiến sĩ tại VinUni hoặc học các chương trình tích hợp song bằng tại các trường đối tác. (3) Khởi nghiệp làm chủ doanh nghiệp hoặc làm trong các công ty start-up: thực tế đã có sinh viên khởi nghiệp ngay trong quá trình học, ví dụ UpYouth. Sinh viên được cài nhúng và thử thách tại môi trường E-Lab của VinUni. {'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/viec-lam-thuc-tap/', 'source': None, 'section': 'FAQ', 'type': 'faq'}
+2026-05-14 20:55:13 [-] agents.rag INFO — [RAG_PROMPT_PREVIEW]
+
+
+Bạn là trợ lý tuyển sinh chính thức của VinUni.
+
+Nhiệm vụ:
+- Trả lời câu hỏi dựa trên Context được cung cấp
+- Không bịa thông tin
+- Nếu Context không chứa câu trả lời:
+  "Mình chưa có thông tin chính xác về điều này.
+   Hãy kiểm tra trực tiếp tại vinuni.edu.vn
+   hoặc liên hệ tư vấn viên."
+
+Quy tắc:
+- Trả lời bằng tiếng Việt
+- Ngắn gọn
+- Chính xác
+- Dễ hiểu
+- Có thể dùng bullet points nếu phù hợp
+
+
+
+
+Conversation History:
+assistant: Chào bạn! Với sở thích về kinh doanh và thế mạnh lãnh đạo, mình thấy bạn có rất nhiều tiềm năng để phát triển trong các lĩnh vực liên quan. Thêm vào đó, kinh nghiệm dày dạn trong các vai trò liên quan đến quản lý sản phẩm của bạn sẽ hỗ trợ tốt cho lựa chọn ngành học. Tuy nhiên, việc không thích nói trước đám đông có thể là yếu tố cần cân nhắc trong một số ngành. Dưới đây là ba ngành mà mình nghĩ phù hợp nhất với bạn:
+
+Context:
+Question: VinUni có những ngành đào tạo nào?
+                Answer: VinUni gồm 4 Viện và sẽ cung cấp những chương trình sau đây: 
+2026-05-14 20:55:14 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 20:55:16 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.20s
+2026-05-14 20:55:16 [-] agents.judge INFO — Judge Result: pass=True, score=100, reason=The response encourages the user to check an official source for accurate information, which is appropriate, and does not contain harmful or inaccurate content.
+2026-05-14 20:55:16 [-] services.db_service INFO — save_message args = Mình chưa có thông tin chính xác về điều này.  
+Hãy kiểm tra trực tiếp tại vinuni.edu.vn  
+hoặc liên hệ tư vấn viên.
+2026-05-14 20:55:16 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=rag pass=True latency=4908ms
+2026-05-14 20:55:16 [-] main INFO — Chat response {'response': 'Mình chưa có thông tin chính xác về điều này.  \nHãy kiểm tra trực tiếp tại vinuni.edu.vn  \nhoặc liên hệ tư vấn viên.', 'intent': 'rag', 'status': 'success', 'major': None, 'sources': [{'title': 'FAQ', 'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/', 'source_type': 'official'}, {'title': 'FAQ', 'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/chuong-trinh-dao-tao/', 'source_type': 'official'}, {'title': 'FAQ', 'url': 'https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/viec-lam-thuc-tap/', 'source_type': 'official'}], 'sessionId': 'd0f918d1-e48a-42bb-ad29-53c694dca912', 'sessionTitle': 'Tôi muốn tìm hiểu sâu hơn về ngành Quản trị Kinh d...', 'escalation_level': 'NONE', 'fallback_card': None, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}], 'decision_trace': {'flow': 'chat', 'route': 'rag', 'status': 'success', 'judge_pass': True, 'escalation_level': 'NONE', 'escalation_reason': 'The response encourages the user to check an official source for accurate information, which is appropriate, and does not contain harmful or inaccurate content.', 'context_received': False, 'source_count': 3}, 'suggested_resources': [{'id': 'wizard', 'title': 'Major matching wizard', 'surface': 'wizard'}, {'id': 'admissions', 'title': 'Admissions resources', 'surface': 'resources'}]}
+2026-05-14 20:55:58 [-] agents.cv_agent INFO — [CV_AGENT] Analyzing CV text. Received length: 2758 characters.
+2026-05-14 20:55:58 [-] services.rag_service INFO — Ingesting CV for user 123455_123455.com
+2026-05-14 20:56:07 [-] main INFO — Profile updated for user: [EMAIL]
+2026-05-14 20:59:55 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 34b449e3-f0b5-4df6-9264-bc68ac5218c6
+2026-05-14 20:59:55 [-] guards.rate_limiter INFO — RateLimiter: evicted 1 inactive users.
+2026-05-14 20:59:56 [-] services.db_service INFO — save_message args = Tôi muốn có người tư vấn
+2026-05-14 20:59:56 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 20:59:56 [-] orchestrator.router INFO — Routing message: 'Tôi muốn có người tư vấn...'
+2026-05-14 20:59:56 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.98s
+2026-05-14 20:59:56 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 20:59:56 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 21:00:01 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 4.08s
+2026-05-14 21:00:01 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 21:00:02 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.36s
+2026-05-14 21:00:02 [-] agents.judge INFO — Judge Result: pass=True, score=100, reason=The response is helpful by providing guidance on exploring study fields at VinUniversity and suggests a relevant quiz. It encourages further discussion, making it appropriate for a high school student seeking university admission advice.
+2026-05-14 21:00:02 [-] services.db_service INFO — save_message args = Cố vấn: Chào bạn! Rất vui khi bạn muốn tìm hiểu thêm về các ngành học tại VinUniversity. Với kinh nghiệm và kỹ năng ấn tượng trong lĩnh vực quản lý sản phẩm của bạn, có nhiều ngành học có thể phù hợp và giúp phát triển sự nghiệp của bạn.
+
+Nếu bạn đang phân vân chọn ngành, mình gợi ý bạn thử bài trắc nghiệm Wizard trên trang web của VinUni. Bài trắc nghiệm này sẽ giúp bạn khám phá sở thích và điểm mạnh của mình, từ đó đưa ra định hướng ngành học phù hợp hơn. Ngoài ra, bạn cũng có thể chia sẻ thêm về những sở thích, mục tiêu nghề nghiệp của mình, để chúng ta có thể thảo luận chi tiết hơn về những ngành học phù hợp với bạn.
+
+VinUniversity cung cấp một môi trường học tập hiện đại và đầy sáng tạo, cùng với đội ngũ giảng viên giàu kinh nghiệm. Môi trường này sẽ giúp bạn tiếp cận những kiến thức tiên tiến cũng như phát triển kỹ năng thực tiễn.
+
+Bạn có muốn khám phá thêm về ngành học nào cụ thể hay có câu hỏi gì khác không?
+2026-05-14 21:00:02 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 21:00:02 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=6445ms
+2026-05-14 21:00:02 [-] main INFO — Chat response {'response': 'Cố vấn: Chào bạn! Rất vui khi bạn muốn tìm hiểu thêm về các ngành học tại VinUniversity. Với kinh nghiệm và kỹ năng ấn tượng trong lĩnh vực quản lý sản phẩm của bạn, có nhiều ngành học có thể phù hợp và giúp phát triển sự nghiệp của bạn.\n\nNếu bạn đang phân vân chọn ngành, mình gợi ý bạn thử bài trắc nghiệm Wizard trên trang web của VinUni. Bài trắc nghiệm này sẽ giúp bạn khám phá sở thích và điểm mạnh của mình, từ đó đưa ra định hướng ngành học phù hợp hơn. Ngoài ra, bạn cũng có thể chia sẻ thêm về những sở thích, mục tiêu nghề nghiệp của mình, để chúng ta có thể thảo luận chi tiết hơn về những ngành học phù hợp với bạn.\n\nVinUniversity cung cấp một môi trường học tập hiện đại và đầy sáng tạo, cùng với đội ngũ giảng viên giàu kinh nghiệm. Môi trường này sẽ giúp bạn tiếp cận những kiến thức tiên tiến cũng như phát triển kỹ năng thực tiễn.\n\nBạn có muốn khám phá thêm về ngành học nào cụ thể hay có câu hỏi gì khác không?', 'intent': 'advisor', 'status': 'success', 'major': None, 'sources': [], 'sessionId': '34b449e3-f0b5-4df6-9264-bc68ac5218c6', 'sessionTitle': 'Tôi muốn có người tư vấn', 'escalation_level': 'NONE', 'fallback_card': None, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}], 'decision_trace': {'flow': 'chat', 'route': 'advisor', 'status': 'success', 'judge_pass': True, 'escalation_level': 'NONE', 'escalation_reason': 'The response is helpful by providing guidance on exploring study fields at VinUniversity and suggests a relevant quiz. It encourages further discussion, making it appropriate for a high school student seeking university admission advice.', 'context_received': False, 'source_count': 0}, 'suggested_resources': [{'id': 'wizard', 'title': 'Major matching wizard', 'surface': 'wizard'}]}
+2026-05-14 21:00:14 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 34b449e3-f0b5-4df6-9264-bc68ac5218c6
+2026-05-14 21:00:14 [-] services.db_service INFO — save_message args = Tôi gọi tư vấn ở đâu
+2026-05-14 21:00:14 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 21:00:14 [-] orchestrator.router INFO — Routing message: 'Tôi gọi tư vấn ở đâu...'
+2026-05-14 21:00:15 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.97s
+2026-05-14 21:00:15 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 21:00:15 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 21:00:19 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.50s
+2026-05-14 21:00:19 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 21:00:20 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.46s
+2026-05-14 21:00:20 [-] agents.judge INFO — Judge Result: pass=True, score=100, reason=The response provides helpful information on how to contact VinUniversity for admissions consultation, guiding the user to the official website for accurate details.
+2026-05-14 21:00:20 [-] services.db_service INFO — save_message args = Chào bạn! Rất vui khi bạn quan tâm đến việc tìm hiểu thêm về VinUniversity. Để đặt lịch tư vấn hoặc gọi điện thoại trực tiếp, bạn có thể liên hệ qua các thông tin đã được cung cấp trên trang web chính thức của VinUni. 
+
+Thông thường, bạn có thể tìm thấy thông tin liên hệ trong phần "Liên hệ" hoặc "Tư vấn tuyển sinh". Tại đó, sẽ có số điện thoại và email để bạn có thể tha hồ hỏi đáp và nhận hỗ trợ về các vấn đề liên quan tới ngành học cũng như quy trình nhập học.
+
+Nếu bạn cần thêm thông tin cụ thể hơn hoặc có thắc mắc nào khác về ngành học và môi trường học tại VinUniversity, hãy cho mình biết nhé! Mình luôn sẵn sàng giúp đỡ bạn.
+2026-05-14 21:00:20 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 21:00:20 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=5944ms
+2026-05-14 21:00:20 [-] main INFO — Chat response {'response': 'Chào bạn! Rất vui khi bạn quan tâm đến việc tìm hiểu thêm về VinUniversity. Để đặt lịch tư vấn hoặc gọi điện thoại trực tiếp, bạn có thể liên hệ qua các thông tin đã được cung cấp trên trang web chính thức của VinUni. \n\nThông thường, bạn có thể tìm thấy thông tin liên hệ trong phần "Liên hệ" hoặc "Tư vấn tuyển sinh". Tại đó, sẽ có số điện thoại và email để bạn có thể tha hồ hỏi đáp và nhận hỗ trợ về các vấn đề liên quan tới ngành học cũng như quy trình nhập học.\n\nNếu bạn cần thêm thông tin cụ thể hơn hoặc có thắc mắc nào khác về ngành học và môi trường học tại VinUniversity, hãy cho mình biết nhé! Mình luôn sẵn sàng giúp đỡ bạn.', 'intent': 'advisor', 'status': 'success', 'major': None, 'sources': [], 'sessionId': '34b449e3-f0b5-4df6-9264-bc68ac5218c6', 'sessionTitle': None, 'escalation_level': 'NONE', 'fallback_card': None, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}], 'decision_trace': {'flow': 'chat', 'route': 'advisor', 'status': 'success', 'judge_pass': True, 'escalation_level': 'NONE', 'escalation_reason': 'The response provides helpful information on how to contact VinUniversity for admissions consultation, guiding the user to the official website for accurate details.', 'context_received': False, 'source_count': 0}, 'suggested_resources': [{'id': 'wizard', 'title': 'Major matching wizard', 'surface': 'wizard'}]}
+2026-05-14 21:03:56 [-] main INFO — Database initialized at module level.
+2026-05-14 21:03:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:03:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:03:57 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:03:58 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:03:58 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:03:59 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:03:59 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:03:59 [-] main INFO — Running background task synchronization...
+2026-05-14 21:03:59 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:03:59 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:04:08 [-] main INFO — Database initialized at module level.
+2026-05-14 21:04:08 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:08 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:08 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:04:09 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:04:09 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:04:10 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:10 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:10 [-] main INFO — Running background task synchronization...
+2026-05-14 21:04:10 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:04:10 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:04:20 [-] main INFO — Database initialized at module level.
+2026-05-14 21:04:21 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:21 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:21 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:04:22 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:04:22 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:04:23 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:23 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:23 [-] main INFO — Running background task synchronization...
+2026-05-14 21:04:23 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:04:23 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:04:32 [-] main INFO — Database initialized at module level.
+2026-05-14 21:04:33 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:33 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:33 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:04:34 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:04:34 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:04:35 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:36 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:04:36 [-] main INFO — Running background task synchronization...
+2026-05-14 21:04:36 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:04:36 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:11:44 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 34b449e3-f0b5-4df6-9264-bc68ac5218c6
+2026-05-14 21:11:44 [-] services.db_service INFO — save_message args = Tôi muốn gọi người tư vấn
+2026-05-14 21:11:44 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 21:11:44 [-] orchestrator.router INFO — Routing message: 'Tôi muốn gọi người tư vấn...'
+2026-05-14 21:11:46 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.61s
+2026-05-14 21:11:46 [-] orchestrator.router INFO — [LLM] Routed to: advisor
+2026-05-14 21:11:46 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=False)
+2026-05-14 21:11:49 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 2.62s
+2026-05-14 21:11:49 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 21:11:50 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.42s
+2026-05-14 21:11:50 [-] agents.judge INFO — Judge Result: pass=True, score=90, reason=The response provides helpful and relevant information for the user to connect with an admissions advisor, and invites further questions, maintaining a supportive tone.
+2026-05-14 21:11:50 [-] services.db_service INFO — save_message args = Cố vấn: Chào bạn! Rất vui khi bạn muốn gọi để được tư vấn. Để gặp người tư vấn trực tiếp, bạn có thể gọi đến số điện thoại được cung cấp trên trang web chính thức của VinUniversity tại phần "Liên hệ" hoặc gửi email đến địa chỉ liên hệ được nêu. Nhân viên tư vấn sẽ rất vui lòng hỗ trợ bạn về mọi thắc mắc liên quan đến ngành học, quy trình nhập học và các thông tin khác.
+
+Nếu bạn có câu hỏi cụ thể nào mà muốn tìm hiểu trước khi gọi, hãy cho mình biết nhé! Mình rất sẵn lòng giúp đỡ bạn.
+2026-05-14 21:11:50 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 21:11:50 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=True latency=6674ms
+2026-05-14 21:11:50 [-] main INFO — Chat response {'response': 'Cố vấn: Chào bạn! Rất vui khi bạn muốn gọi để được tư vấn. Để gặp người tư vấn trực tiếp, bạn có thể gọi đến số điện thoại được cung cấp trên trang web chính thức của VinUniversity tại phần "Liên hệ" hoặc gửi email đến địa chỉ liên hệ được nêu. Nhân viên tư vấn sẽ rất vui lòng hỗ trợ bạn về mọi thắc mắc liên quan đến ngành học, quy trình nhập học và các thông tin khác.\n\nNếu bạn có câu hỏi cụ thể nào mà muốn tìm hiểu trước khi gọi, hãy cho mình biết nhé! Mình rất sẵn lòng giúp đỡ bạn.', 'intent': 'advisor', 'status': 'success', 'major': None, 'sources': [], 'sessionId': '34b449e3-f0b5-4df6-9264-bc68ac5218c6', 'sessionTitle': None, 'escalation_level': 'NONE', 'fallback_card': None, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}], 'decision_trace': {'flow': 'chat', 'route': 'advisor', 'status': 'success', 'judge_pass': True, 'escalation_level': 'NONE', 'escalation_reason': 'The response provides helpful and relevant information for the user to connect with an admissions advisor, and invites further questions, maintaining a supportive tone.', 'context_received': False, 'source_count': 0}, 'suggested_resources': [{'id': 'wizard', 'title': 'Major matching wizard', 'surface': 'wizard'}]}
+2026-05-14 21:12:16 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 34b449e3-f0b5-4df6-9264-bc68ac5218c6
+2026-05-14 21:12:16 [-] services.db_service INFO — save_message args = Liên hệ
+2026-05-14 21:12:16 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 21:12:16 [-] orchestrator.router INFO — Routing message: 'Liên hệ...'
+2026-05-14 21:12:17 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.82s
+2026-05-14 21:12:17 [-] orchestrator.router INFO — [LLM] Routed to: fallback
+2026-05-14 21:12:17 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 21:12:18 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.26s
+2026-05-14 21:12:18 [-] agents.judge INFO — Judge Result: pass=True, score=100, reason=The response is relevant to the user's input about contacting support and is appropriate.
+2026-05-14 21:12:18 [-] services.db_service INFO — save_message args = Bạn muốn được kết nối với tư vấn viên của chúng tôi không?
+2026-05-14 21:12:18 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=fallback pass=True latency=2088ms
+2026-05-14 21:12:18 [-] main INFO — Chat response {'response': 'Bạn muốn được kết nối với tư vấn viên của chúng tôi không?', 'intent': 'fallback', 'status': 'fallback', 'major': None, 'sources': [], 'sessionId': '34b449e3-f0b5-4df6-9264-bc68ac5218c6', 'sessionTitle': None, 'escalation_level': 'NONE', 'fallback_card': {'reason_code': 'human_handoff_required', 'reason': "The response is relevant to the user's input about contacting support and is appropriate.", 'next_action': 'request_human_fallback', 'cta': {'label': 'Request human advisor', 'action': 'human_fallback'}}, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}, {'id': 'request_human_fallback', 'label': 'Request human advisor'}], 'decision_trace': {'flow': 'chat', 'route': 'fallback', 'status': 'fallback', 'judge_pass': True, 'escalation_level': 'NONE', 'escalation_reason': "The response is relevant to the user's input about contacting support and is appropriate.", 'context_received': False, 'source_count': 0}, 'suggested_resources': [{'id': 'human-fallback', 'title': 'Human advisor support', 'surface': 'staff_handoff'}]}
+2026-05-14 21:12:21 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 34b449e3-f0b5-4df6-9264-bc68ac5218c6
+2026-05-14 21:12:21 [-] services.db_service INFO — save_message args = Có
+2026-05-14 21:12:21 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 21:12:21 [-] orchestrator.router INFO — Routing message: 'Có...'
+2026-05-14 21:12:22 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.47s
+2026-05-14 21:12:22 [-] orchestrator.router INFO — [LLM] Routed to: fallback
+2026-05-14 21:12:22 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 21:12:22 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.76s
+2026-05-14 21:12:22 [-] agents.judge INFO — Judge Result: clarify - Query needs more information
+2026-05-14 21:12:22 [-] orchestrator.pipeline INFO — Judge requested clarification for user [EMAIL] Re-routing to advisor.
+2026-05-14 21:12:22 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=True)
+2026-05-14 21:12:26 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.60s
+2026-05-14 21:12:26 [-] services.db_service INFO — save_message args = Chào bạn! Mình rất vui khi biết bạn muốn được kết nối với tư vấn viên. Để giúp mình hiểu rõ hơn và có thể hỗ trợ tốt nhất cho bạn, bạn có thể cho mình biết một số thông tin sau không?
+
+1. Bạn đang quan tâm đến ngành học nào tại VinUniversity?
+2. Bạn có câu hỏi cụ thể nào mà bạn muốn tư vấn viên giải đáp không?
+3. Bạn có thời gian nào phù hợp để nhận được cuộc gọi tư vấn không?
+
+Nếu bạn chưa chắc chắn về ngành học thích hợp, mình cũng có thể gợi ý cho bạn làm bài trắc nghiệm định hướng nghề nghiệp để giúp bạn tìm ra sự lựa chọn phù hợp. Hãy cho mình biết nhé!
+2026-05-14 21:12:26 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 21:12:26 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=clarify latency=1233ms
+2026-05-14 21:12:26 [-] main INFO — Chat response {'response': 'Chào bạn! Mình rất vui khi biết bạn muốn được kết nối với tư vấn viên. Để giúp mình hiểu rõ hơn và có thể hỗ trợ tốt nhất cho bạn, bạn có thể cho mình biết một số thông tin sau không?\n\n1. Bạn đang quan tâm đến ngành học nào tại VinUniversity?\n2. Bạn có câu hỏi cụ thể nào mà bạn muốn tư vấn viên giải đáp không?\n3. Bạn có thời gian nào phù hợp để nhận được cuộc gọi tư vấn không?\n\nNếu bạn chưa chắc chắn về ngành học thích hợp, mình cũng có thể gợi ý cho bạn làm bài trắc nghiệm định hướng nghề nghiệp để giúp bạn tìm ra sự lựa chọn phù hợp. Hãy cho mình biết nhé!', 'intent': 'advisor', 'status': 'clarified', 'major': None, 'sources': [], 'sessionId': '34b449e3-f0b5-4df6-9264-bc68ac5218c6', 'sessionTitle': None, 'escalation_level': 'NONE', 'fallback_card': None, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}], 'decision_trace': {'flow': 'chat', 'route': 'advisor', 'status': 'clarified', 'judge_pass': 'clarify', 'escalation_level': 'NONE', 'escalation_reason': 'Query needs more information', 'context_received': False, 'source_count': 0}, 'suggested_resources': [{'id': 'wizard', 'title': 'Major matching wizard', 'surface': 'wizard'}]}
+2026-05-14 21:12:43 [-] services.db_service INFO — save_message args = Tôi muốn kết nối với tư vấn viên
+2026-05-14 21:12:43 [-] services.db_service INFO — save_message args = Mình đã gửi yêu cầu tới tư vấn viên. Admin/editor sẽ thấy job này trong trang Staff và có thể nhận phiên để hỗ trợ bạn.
+2026-05-14 21:13:28 [-] services.db_service INFO — save_message args = ChuyÃªn viÃªn tÆ° váº¥n ([EMAIL]): Hello, what would you like to know
+2026-05-14 21:14:00 [-] orchestrator.pipeline INFO — run_chat for user: [EMAIL], session: 34b449e3-f0b5-4df6-9264-bc68ac5218c6
+2026-05-14 21:14:00 [-] services.db_service INFO — save_message args = Hello, I want you to tell me who are you
+2026-05-14 21:14:00 [-] orchestrator.pipeline INFO — Pipeline operating in REAL mode
+2026-05-14 21:14:00 [-] orchestrator.router INFO — Routing message: 'Hello, I want you to tell me who are you...'
+2026-05-14 21:14:01 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 0.94s
+2026-05-14 21:14:01 [-] orchestrator.router INFO — [LLM] Routed to: fallback
+2026-05-14 21:14:01 [-] agents.judge INFO — JudgeAgent.evaluate() called
+2026-05-14 21:14:03 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 1.42s
+2026-05-14 21:14:03 [-] agents.judge INFO — Judge Result: clarify - Query needs more information
+2026-05-14 21:14:03 [-] orchestrator.pipeline INFO — Judge requested clarification for user [EMAIL] Re-routing to advisor.
+2026-05-14 21:14:03 [-] agents.advisor INFO — AdvisorAgent.run() called (clarify=True)
+2026-05-14 21:14:06 [-] services.llm_client INFO — LLM latency (gpt-4o-mini): 3.23s
+2026-05-14 21:14:06 [-] services.db_service INFO — save_message args = Chào bạn! Mình rất vui khi bạn muốn biết thêm về chúng mình. Để có thể cung cấp thông tin tỉ mỉ và phù hợp nhất, bạn có thể cho mình biết thêm một chút không?
+
+1. Bạn đang quan tâm đến những chương trình học nào tại VinUniversity?
+2. Bạn có câu hỏi cụ thể nào về thông tin trường hoặc ngành học mà bạn muốn tìm hiểu không?
+
+Nếu bạn không chắc chắn về ngành học phù hợp với mình, mình cũng có thể gợi ý cho bạn làm bài trắc nghiệm định hướng nghề nghiệp. Điều này có thể giúp bạn tìm ra sự lựa chọn thích hợp nhất. Hãy cho mình biết nhé!
+2026-05-14 21:14:06 [-] orchestrator.pipeline WARNING — Structured advisor parsing failed: Expecting value: line 1 column 1 (char 0)
+2026-05-14 21:14:06 [-] orchestrator.pipeline INFO — AUDIT [[EMAIL]] route=advisor pass=clarify latency=2364ms
+2026-05-14 21:14:06 [-] main INFO — Chat response {'response': 'Chào bạn! Mình rất vui khi bạn muốn biết thêm về chúng mình. Để có thể cung cấp thông tin tỉ mỉ và phù hợp nhất, bạn có thể cho mình biết thêm một chút không?\n\n1. Bạn đang quan tâm đến những chương trình học nào tại VinUniversity?\n2. Bạn có câu hỏi cụ thể nào về thông tin trường hoặc ngành học mà bạn muốn tìm hiểu không?\n\nNếu bạn không chắc chắn về ngành học phù hợp với mình, mình cũng có thể gợi ý cho bạn làm bài trắc nghiệm định hướng nghề nghiệp. Điều này có thể giúp bạn tìm ra sự lựa chọn thích hợp nhất. Hãy cho mình biết nhé!', 'intent': 'advisor', 'status': 'clarified', 'major': None, 'sources': [], 'sessionId': '34b449e3-f0b5-4df6-9264-bc68ac5218c6', 'sessionTitle': None, 'escalation_level': 'NONE', 'fallback_card': None, 'recovery_actions': [{'id': 'retry', 'label': 'Retry'}, {'id': 'edit_profile', 'label': 'Edit Profile'}, {'id': 'open_wizard', 'label': 'Update Wizard answers'}, {'id': 'open_resources', 'label': 'Open Resources'}], 'decision_trace': {'flow': 'chat', 'route': 'advisor', 'status': 'clarified', 'judge_pass': 'clarify', 'escalation_level': 'NONE', 'escalation_reason': 'Query needs more information', 'context_received': False, 'source_count': 0}, 'suggested_resources': [{'id': 'wizard', 'title': 'Major matching wizard', 'surface': 'wizard'}]}
+2026-05-14 21:28:43 [-] main INFO — Database initialized at module level.
+2026-05-14 21:28:43 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:28:43 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:28:43 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:28:44 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:28:44 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:28:45 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:28:46 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:28:46 [-] main INFO — Running background task synchronization...
+2026-05-14 21:28:46 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:28:46 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:29:14 [-] main INFO — Database initialized at module level.
+2026-05-14 21:29:16 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:29:16 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:29:16 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:29:20 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:29:20 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:29:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:29:22 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:29:23 [-] main INFO — Running background task synchronization...
+2026-05-14 21:29:23 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:29:23 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:30:12 [-] main INFO — Database initialized at module level.
+2026-05-14 21:30:14 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:14 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:14 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:30:17 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:30:17 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:30:20 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:21 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:22 [-] main INFO — Running background task synchronization...
+2026-05-14 21:30:22 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:30:22 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:30:47 [-] main INFO — Database initialized at module level.
+2026-05-14 21:30:48 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:48 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:48 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:30:48 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:30:48 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:30:49 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:49 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:30:49 [-] main INFO — Running background task synchronization...
+2026-05-14 21:30:49 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:30:49 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:31:27 [-] main INFO — Database initialized at module level.
+2026-05-14 21:31:28 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:31:28 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:31:28 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:31:29 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:31:29 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:31:30 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:31:30 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:31:31 [-] main INFO — Running background task synchronization...
+2026-05-14 21:31:31 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:31:31 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:34:55 [-] main INFO — Database initialized at module level.
+2026-05-14 21:34:56 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:34:56 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:34:56 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:34:57 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:34:57 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:34:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:34:58 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:34:58 [-] main INFO — Running background task synchronization...
+2026-05-14 21:34:58 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:34:58 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:35:14 [-] main INFO — Database initialized at module level.
+2026-05-14 21:35:15 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:15 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:15 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:35:16 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:35:16 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:35:17 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:18 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:18 [-] main INFO — Running background task synchronization...
+2026-05-14 21:35:18 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:35:18 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:35:27 [-] main INFO — Database initialized at module level.
+2026-05-14 21:35:27 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:27 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:27 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:35:28 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:35:28 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:35:29 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:29 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:30 [-] main INFO — Running background task synchronization...
+2026-05-14 21:35:30 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:35:30 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:35:41 [-] main INFO — Database initialized at module level.
+2026-05-14 21:35:42 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:42 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:42 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:35:43 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:35:43 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:35:44 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:45 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:45 [-] main INFO — Running background task synchronization...
+2026-05-14 21:35:45 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:35:45 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:35:54 [-] main INFO — Database initialized at module level.
+2026-05-14 21:35:55 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:55 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:55 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:35:56 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:35:56 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:35:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:57 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:35:58 [-] main INFO — Running background task synchronization...
+2026-05-14 21:35:58 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:35:58 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:37:30 [-] main INFO — Database initialized at module level.
+2026-05-14 21:37:31 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:31 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:31 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:37:32 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:37:32 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:37:33 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:34 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:34 [-] main INFO — Running background task synchronization...
+2026-05-14 21:37:34 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:37:34 [-] main INFO — Background sync thread started. Interval: 24h
+2026-05-14 21:37:44 [-] main INFO — Database initialized at module level.
+2026-05-14 21:37:45 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:45 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:45 [-] services.rag_service INFO — Initializing RAGService
+2026-05-14 21:37:46 [-] services.rag_service INFO — Building FAQ BM25 index...
+2026-05-14 21:37:46 [-] services.rag_service INFO — FAQ BM25 built with 50 docs
+2026-05-14 21:37:47 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:47 [-] services.db_service INFO — DBService initialised for PostgreSQL (SessionLocal accessed dynamically)
+2026-05-14 21:37:48 [-] main INFO — Running background task synchronization...
+2026-05-14 21:37:48 [-] services.db_service INFO — ✓ Database migrations completed.
+2026-05-14 21:37:48 [-] main INFO — Background sync thread started. Interval: 24h

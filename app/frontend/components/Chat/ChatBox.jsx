@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useChat } from '../../hooks/useChat';
 import api from '../../services/api';
 import SourceList from './SourceList';
+import HumanCounsellorPopup from './HumanCounsellorPopup';
 
 // For demo purposes, this is hardcoded. 
 const IS_DEMO_MODE = import.meta.env.VITE_USE_MOCK === 'true';
@@ -19,13 +20,14 @@ const FALLBACK_LABELS = {
   cancelled: 'Cancelled',
 };
 
-const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
+const ChatBox = ({ userId, sessionId, onSessionUpdate, initialContext = null }) => {
   const navigate = useNavigate();
   const [input, setInput] = useState('');
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [uploadingPdf, setUploadingPdf] = useState(false);
   const [pendingPdfContext, setPendingPdfContext] = useState(null);
+  const [handoffStatus, setHandoffStatus] = useState(null);
   const fileInputRef = useRef(null);
   const viewerRole = localStorage.getItem('user_role');
   const canSeeDebugMeta = viewerRole === 'admin' || viewerRole === 'editor';
@@ -48,12 +50,24 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
     scrollToBottom();
   }, [messages, loading]);
 
+  useEffect(() => {
+    const latestHandoff = [...messages].reverse().find((message) => message.traceId && message.handoffStatus);
+    if (latestHandoff) {
+      setHandoffStatus({
+        trace_id: latestHandoff.traceId,
+        handoff_status: latestHandoff.handoffStatus,
+        reason: latestHandoff.fallbackCard?.reason || 'Student requested a human counselor.'
+      });
+    }
+  }, [messages]);
+
   const handleSend = () => {
     if (!input.trim() || loading) return;
     sendMessage(input, pendingPdfContext ? {
       contextText: pendingPdfContext.text,
-      contextLabel: `PDF attached: ${pendingPdfContext.filename}`
-    } : {});
+      contextLabel: `PDF attached: ${pendingPdfContext.filename}`,
+      context: initialContext
+    } : { context: initialContext });
     setInput('');
     setPendingPdfContext(null);
     setShowAttachMenu(false);
@@ -130,9 +144,17 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
   const handleRequestHandoff = async () => {
     try {
       // Triggers the creation of a handoff summary for human advisors
-      await api.getHandoffSummary(effectiveUserId);
+      const result = await api.requestHandoff({
+        session_id: sessionId,
+        message: 'Student clicked request human counselor from ChatBox.'
+      });
       toast.success("Yêu cầu đã được gửi! Chuyên viên sẽ sớm liên hệ với bạn qua email.", {
         duration: 5000,
+      });
+      setHandoffStatus({
+        trace_id: result.traceId || result.trace_id,
+        handoff_status: 'pending',
+        reason: result.fallbackCard?.reason || 'Student requested a human counselor.'
       });
     } catch (error) {
       console.error("Handoff request failed:", error);
@@ -140,7 +162,26 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
     }
   };
 
+  useEffect(() => {
+    let mounted = true;
+    const loadHandoffStatus = async () => {
+      try {
+        const data = await api.getHandoffStatus();
+        if (mounted) setHandoffStatus(data.handoff || null);
+      } catch {
+        if (mounted) setHandoffStatus(null);
+      }
+    };
+    loadHandoffStatus();
+    const interval = setInterval(loadHandoffStatus, 10000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
+    <>
     <div className="flex flex-col h-[min(680px,calc(100vh-8rem))] min-h-[420px] bg-slate-50 rounded-2xl overflow-hidden border border-slate-200">
       {IS_DEMO_MODE && (
         <div className="bg-amber-50 text-amber-800 text-[10px] text-center py-1 font-bold uppercase tracking-wider border-b border-amber-100">
@@ -161,6 +202,18 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
           </button>
         )}
       </div>
+
+      {handoffStatus && (
+        <div className="px-4 py-3 bg-amber-50 border-b border-amber-100 text-xs text-amber-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <p className="font-black uppercase tracking-wider">Human fallback: {handoffStatus.handoff_status}</p>
+            <p className="mt-0.5">{handoffStatus.reason || 'A staff member can review this session if needed.'}</p>
+          </div>
+          {handoffStatus.latest_staff_message && (
+            <p className="font-bold text-amber-900">Latest staff reply available in chat.</p>
+          )}
+        </div>
+      )}
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 chat-scrollbar bg-slate-50/50">
@@ -211,6 +264,32 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
                 <SourceList sources={m.sources || m.references || []} compact />
               )}
 
+              {m.role === 'assistant' && m.fallbackCard && (
+                <div className="mt-3 rounded-xl border border-amber-100 bg-amber-50 p-3 text-xs text-amber-800">
+                  <p className="font-black uppercase tracking-wider">{m.fallbackCard.reason_code || 'Fallback'}</p>
+                  <p className="mt-1 leading-5">{m.fallbackCard.reason}</p>
+                  {(m.recoveryActions || []).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {m.recoveryActions.map((action) => (
+                        <button
+                          key={action.id}
+                          type="button"
+                          onClick={() => {
+                            if (action.id === 'open_wizard') navigate('/wizard');
+                            if (action.id === 'edit_profile') navigate('/profile');
+                            if (action.id === 'open_resources') navigate('/resources');
+                            if (action.id === 'request_human_fallback') handleRequestHandoff();
+                          }}
+                          className="px-2 py-1 bg-white border border-amber-100 rounded-lg text-[10px] font-black uppercase tracking-wider"
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Render Major Recommendations if available in the LLM response */}
               {m.type === 'recommendation' && Array.isArray(m.data) && m.data.length > 0 && (
                 <div className="mt-4 space-y-3">
@@ -237,7 +316,30 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
                           View Details
                         </a>
                       )}
+                      {major.match_breakdown?.matched_signals?.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {major.match_breakdown.matched_signals.slice(0, 4).map((signal, sidx) => (
+                            <span key={`${signal.label}-${sidx}`} className="px-2 py-1 bg-white border border-blue-100 text-blue-700 rounded text-[10px] font-bold">
+                              {signal.label}: {String(signal.value)}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
+                  ))}
+                </div>
+              )}
+
+              {m.role === 'assistant' && (m.suggestedResources || []).length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {m.suggestedResources.map((resource) => (
+                    <button
+                      key={resource.id}
+                      onClick={() => navigate(resource.surface === 'wizard' ? '/wizard' : '/resources')}
+                      className="px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-black uppercase tracking-wider text-slate-600"
+                    >
+                      {resource.title}
+                    </button>
                   ))}
                 </div>
               )}
@@ -336,10 +438,11 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
             <button
               onClick={() => setShowAttachMenu(!showAttachMenu)}
               disabled={loading || uploadingPdf}
-              className="w-11 h-11 bg-white border border-slate-200 text-[#003466] rounded-xl flex items-center justify-center hover:bg-slate-50 disabled:opacity-40"
-              title="Add context"
+              className="h-11 px-3 bg-[#003466] border border-[#003466] text-white rounded-xl flex items-center justify-center gap-1.5 hover:bg-[#0b477f] disabled:opacity-40 shadow-sm"
+              title="Attach PDF"
             >
               <span className="material-symbols-outlined text-[22px]">{uploadingPdf ? 'hourglass_top' : 'add'}</span>
+              <span className="hidden sm:inline text-[11px] font-black uppercase tracking-wider">PDF</span>
             </button>
             {showAttachMenu && (
               <div className="absolute bottom-12 left-0 w-44 bg-white border border-slate-200 rounded-xl shadow-xl p-2 z-20">
@@ -353,6 +456,16 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
               </div>
             )}
           </div>
+          <button
+            type="button"
+            onClick={handleRequestHandoff}
+            disabled={loading}
+            className="h-11 px-3 bg-white border border-amber-200 text-amber-700 rounded-xl flex items-center justify-center gap-1.5 hover:bg-amber-50 disabled:opacity-40 shadow-sm"
+            title="Request human counselor"
+          >
+            <span className="material-symbols-outlined text-[20px]">support_agent</span>
+            <span className="hidden lg:inline text-[11px] font-black uppercase tracking-wider">Human</span>
+          </button>
           <input 
             className="flex-1 min-h-[44px] pl-4 pr-12 py-3 bg-slate-100 border-transparent focus:border-[#003466] focus:bg-white focus:ring-4 focus:ring-[#003466]/5 rounded-xl transition-all outline-none text-sm"
             placeholder="Hỏi thêm về ngành học, sự nghiệp..." 
@@ -372,6 +485,10 @@ const ChatBox = ({ userId, sessionId, onSessionUpdate }) => {
         </div>
       </div>
     </div>
+    {handoffStatus?.trace_id && (
+      <HumanCounsellorPopup handoff={handoffStatus} onClose={() => setHandoffStatus(null)} />
+    )}
+    </>
   );
 };
 export default ChatBox;

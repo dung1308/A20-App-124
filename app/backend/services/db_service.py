@@ -20,7 +20,7 @@ from sqlalchemy import text, func, inspect
 import hashlib
 import secrets
 from config import USE_MOCK
-from models.schemas import User, ChatMessage, ChatSession, Major, Student, AuditLog, SecurityEvent, CVDocument
+from models.schemas import User, ChatMessage, ChatSession, Major, Student, AuditLog, SecurityEvent, CVDocument, HandoffMessage
 from utils.logger import get_logger, get_trace_id
 import database
 
@@ -744,6 +744,86 @@ class DBService:
             session.commit()
             return True
 
+    # ------------------------------------------------------------------
+    # Human handoff messages
+    # ------------------------------------------------------------------
+
+    def display_name_for_user(self, user_id: str, fallback_role: str = "VinUni counsellor") -> str:
+        profile = self.get_student_profile(user_id) or {}
+        full_name = (profile.get("full_name") or "").strip()
+        if full_name:
+            return full_name
+        email = (profile.get("email") or user_id or "").strip()
+        if "@" in email:
+            return email.split("@", 1)[0]
+        return email or fallback_role
+
+    def save_handoff_message(
+        self,
+        trace_id: str,
+        user_id: str,
+        sender_id: str,
+        sender_name: str,
+        sender_role: str,
+        role: str,
+        content: str,
+    ) -> Optional[Dict[str, Any]]:
+        if self.use_mock or database.SessionLocal is None:
+            return {
+                "id": None,
+                "trace_id": trace_id,
+                "user_id": user_id,
+                "sender_id": sender_id,
+                "sender_name": sender_name,
+                "sender_role": sender_role,
+                "role": role,
+                "content": content,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+
+        with database.SessionLocal() as session:
+            resolved_user_id = self._resolve_user_id(session, user_id)
+            sender_user = session.query(User).filter(
+                (User.user_id == sender_id) | (func.lower(User.email) == func.lower(sender_id))
+            ).first()
+            resolved_sender_id = sender_user.user_id if sender_user else sender_id
+            msg = HandoffMessage(
+                trace_id=trace_id,
+                user_id=resolved_user_id,
+                sender_id=resolved_sender_id,
+                sender_name=sender_name,
+                sender_role=sender_role,
+                role=role,
+                content=content,
+                timestamp=datetime.utcnow(),
+            )
+            session.add(msg)
+            session.commit()
+            return self._handoff_message_to_dict(msg)
+
+    def get_handoff_messages(self, trace_id: str) -> List[Dict[str, Any]]:
+        if self.use_mock or database.SessionLocal is None:
+            return []
+        with database.SessionLocal() as session:
+            messages = session.query(HandoffMessage)\
+                .filter(HandoffMessage.trace_id == trace_id)\
+                .order_by(HandoffMessage.timestamp.asc())\
+                .all()
+            return [self._handoff_message_to_dict(message) for message in messages]
+
+    def _handoff_message_to_dict(self, message: HandoffMessage) -> Dict[str, Any]:
+        return {
+            "id": message.id,
+            "trace_id": message.trace_id,
+            "user_id": message.user_id,
+            "sender_id": message.sender_id,
+            "sender_name": message.sender_name,
+            "sender_role": message.sender_role,
+            "role": message.role,
+            "content": message.content,
+            "timestamp": message.timestamp.isoformat() if message.timestamp else None,
+        }
+
     def merge_profile_from_cv(
         self,
         user_id: str,
@@ -751,7 +831,7 @@ class DBService:
         cv_signals: Dict[str, Any],
         document_id: str,
         filename: str,
-    ) -> None:
+    ) -> Optional[str]:
         """Merge non-empty CV fields into the profile without erasing useful data."""
         personal = structured_data.get("personal_info") or {}
         profile_update: Dict[str, Any] = {
@@ -841,13 +921,13 @@ class DBService:
         escalation_reason = judge_result.get("escalation_reason", "")
 
         if self.use_mock:
-            logger.info(f"DBService.save_audit_log(MOCK) — user={user_id}, route={route}, res={ai_resolved}")
-            return
+            logger.info("DBService.save_audit_log(MOCK) user=%s route=%s res=%s", user_id, route, ai_resolved)
+            return trace_id
 
         try:
             if database.SessionLocal is None:
                 logger.error("DBService.save_audit_log failed: database.SessionLocal is not initialized")
-                return
+                return None
 
             with database.SessionLocal() as session:
                 existing_user = None
@@ -880,8 +960,10 @@ class DBService:
                 session.add(log_entry)
                 session.commit()
                 logger.debug(f"Audit log persisted for user {user_id}")
+                return trace_id
         except Exception as e:
             logger.error(f"Failed to save audit log: {e}")
+            return None
 
     def save_security_event(
         self,

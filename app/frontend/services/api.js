@@ -23,11 +23,17 @@ const normalizeChatResponse = (data = {}) => {
     top3: recommendations,
     sources,
     references: sources,
-    fallback: Boolean(data.fallback),
+    fallback: Boolean(data.fallback || ['fallback', 'rejected', 'escalated', 'error'].includes(data.status)),
+    fallbackCard: data.fallback_card || data.fallbackCard || null,
+    recoveryActions: data.recovery_actions || data.recoveryActions || [],
+    decisionTrace: data.decision_trace || data.decisionTrace || null,
+    suggestedResources: data.suggested_resources || data.suggestedResources || [],
     status: data.status || 'success',
     intent: data.intent || data.agent || null,
     sessionId: data.sessionId || data.session_id || null,
     sessionTitle: data.sessionTitle || data.session_title || null,
+    traceId: data.trace_id || data.traceId || data.decision_trace?.trace_id || null,
+    handoffStatus: data.handoff_status || data.handoffStatus || data.decision_trace?.handoff_status || null,
   };
 };
 
@@ -167,6 +173,27 @@ const api = {
   deleteCVDocument: (documentId) =>
     apiClient.delete(`/api/profile/me/cv-documents/${documentId}`).then(res => res.data),
 
+  getProfileReadiness: () =>
+    apiClient.get('/api/profile/me/readiness').then(res => res.data),
+
+  getCVMergePreview: (documentId) =>
+    apiClient.get(`/api/profile/me/cv-documents/${documentId}/merge-preview`).then(res => res.data),
+
+  getContextualResources: (params = {}) =>
+    apiClient.get('/api/resources/contextual', { params }).then(res => res.data),
+
+  getHandoffStatus: () =>
+    apiClient.get('/api/handoff-status').then(res => res.data),
+
+  requestHandoff: (payload = {}) =>
+    apiClient.post('/api/handoff-request', payload).then(res => normalizeChatResponse(res.data)),
+
+  getHandoffMessages: (traceId) =>
+    apiClient.get(`/api/handoff/${encodeURIComponent(traceId)}/messages`).then(res => res.data),
+
+  sendHandoffMessage: (traceId, message) =>
+    apiClient.post(`/api/handoff/${encodeURIComponent(traceId)}/messages`, { message }).then(res => res.data),
+
   // Metrics and Human Handoff (PMF Scorecard Support)
   /**
    * Fetch system-wide PMF metrics (AI resolution rate, latency, etc.)
@@ -208,6 +235,7 @@ const api = {
   getDbStatus: () => apiClient.get('/api/system/db-status').then(res => res.data),
   getTokenUsage: (params = {}) =>
     apiClient.get('/api/system/token-usage', { params }).then(res => res.data),
+  getAdminSystemHealth: () => apiClient.get('/api/admin/system/health').then(res => res.data),
   getAdminUsers: () => apiClient.get('/api/admin/users').then(res => res.data),
   createAdminUser: (payload) => apiClient.post('/api/admin/users', payload).then(res => res.data),
   updateAdminUserRole: (userId, role) =>

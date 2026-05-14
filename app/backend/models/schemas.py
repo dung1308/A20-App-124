@@ -53,6 +53,19 @@ class ChatSession(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     ended_at = Column(DateTime, nullable=True)
 
+class HandoffMessage(Base):
+    """Human-only messages exchanged during a counselor handoff."""
+    __tablename__ = "handoff_messages"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    trace_id = Column(String, nullable=False, index=True)
+    user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
+    sender_id = Column(String, ForeignKey("users.user_id"), nullable=True)
+    sender_name = Column(String, nullable=True)
+    sender_role = Column(String, nullable=True)
+    role = Column(String, nullable=False)  # "student" or "staff"
+    content = Column(Text, nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
 class Student(Base):
     """Stores student CRM profile and recommendation data."""
     __tablename__ = "students"

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 
 const guides = [
   {
@@ -29,6 +30,28 @@ const guides = [
 ];
 
 const ResourcesPage = () => {
+  const [contextual, setContextual] = useState([]);
+  const [readiness, setReadiness] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    api.getContextualResources({ surface: 'resources' })
+      .then((data) => {
+        if (!mounted) return;
+        setContextual(data.resources || []);
+        setReadiness(data.readiness || null);
+      })
+      .catch(() => {
+        if (mounted) {
+          setContextual([]);
+          setReadiness(null);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <div className="p-8 h-full overflow-y-auto bg-slate-50/50">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -38,6 +61,38 @@ const ResourcesPage = () => {
             Huong dan ngan gon de hoc sinh biet nen dung tinh nang nao trong tung buoc chuan bi ho so.
           </p>
         </header>
+
+        {readiness && (
+          <section className="bg-white border border-blue-100 rounded-2xl shadow-sm p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-wider">Next best actions</h2>
+                <p className="text-xs text-slate-500 mt-1">
+                  Profile readiness is {Math.round((readiness.completion_ratio || 0) * 100)}%. Complete these items to improve AI guidance.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(readiness.next_actions || []).map((action) => (
+                  <span key={action.id} className="px-3 py-2 bg-blue-50 text-blue-700 border border-blue-100 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                    {action.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {contextual.length > 0 && (
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {contextual.map((item) => (
+              <article key={item.id} className="bg-white border border-blue-100 rounded-2xl shadow-sm p-6">
+                <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{item.surface}</p>
+                <h2 className="text-lg font-black text-slate-900 mt-2">{item.title}</h2>
+                <p className="text-sm text-slate-600 mt-2 leading-6">{item.snippet}</p>
+              </article>
+            ))}
+          </section>
+        )}
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {guides.map((guide) => (

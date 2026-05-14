@@ -46,7 +46,16 @@ const normalizeSource = (source, index) => {
     host: getHostLabel(url),
     date: formatDate(source?.date || source?.updated_at || source?.retrieved_at),
     snippet: sourceSnippet(source),
+    sourceType: source?.source_type || source?.type || null,
   };
+};
+
+const sourceTypeLabel = (type) => {
+  if (type === 'official') return 'Official';
+  if (type === 'profile-based') return 'Profile';
+  if (type === 'derived') return 'Derived';
+  if (type === 'generated') return 'Generated';
+  return null;
 };
 
 const SourceList = ({ sources = [], compact = false, showEmpty = false }) => {
@@ -96,6 +105,11 @@ const SourceList = ({ sources = [], compact = false, showEmpty = false }) => {
                     <span className="rounded bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-500 border border-slate-100">
                       {source.host}
                     </span>
+                    {sourceTypeLabel(source.sourceType) && (
+                      <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-black text-emerald-700 border border-emerald-100 uppercase">
+                        {sourceTypeLabel(source.sourceType)}
+                      </span>
+                    )}
                     {source.date && (
                       <span className="text-[10px] text-slate-500">Cập nhật {source.date}</span>
                     )}

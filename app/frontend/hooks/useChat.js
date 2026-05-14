@@ -54,7 +54,7 @@ export const useChat = (userId, sessionId, onSessionUpdate) => {
     loadHistory();
   }, [loadHistory]);
 
-  // Poll so human staff replies appear in the student's active chat.
+  // Keep the active AI chat synced with messages saved by normal chat endpoints.
   useEffect(() => {
     if (!sessionId || sessionId === 'new' || loading) return undefined;
     const interval = setInterval(loadHistory, 5000);
@@ -88,7 +88,8 @@ export const useChat = (userId, sessionId, onSessionUpdate) => {
         sessionId,
         text: outboundText,
         history: historyForRequest.map(m => ({ role: m.role, content: m.content })),
-        persona_summary: cvSignals?.persona_summary
+        persona_summary: cvSignals?.persona_summary,
+        context: options.context || null
       };
 
       const res = await api.postChat(payload, { signal: controller.signal });
@@ -106,6 +107,12 @@ export const useChat = (userId, sessionId, onSessionUpdate) => {
         type: res.recommendations.length > 0 ? 'recommendation' : 'text',
         fallback: res.fallback || false,
         fallbackReason: fallbackReasonFromResponse(res),
+        fallbackCard: res.fallbackCard,
+        recoveryActions: res.recoveryActions,
+        decisionTrace: res.decisionTrace,
+        traceId: res.traceId,
+        handoffStatus: res.handoffStatus,
+        suggestedResources: res.suggestedResources,
         intent: res.intent,
         status: res.status,
         timestamp: new Date().toISOString()

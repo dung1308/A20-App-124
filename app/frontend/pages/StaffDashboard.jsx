@@ -26,16 +26,16 @@ const StaffDashboard = () => {
     }
   };
 
-  const loadSessionMessages = async (sessionId) => {
-    if (!sessionId) {
+  const loadHandoffMessages = async (traceId) => {
+    if (!traceId) {
       setMessages([]);
       return;
     }
     try {
-      const data = await api.getSessionMessages(sessionId);
+      const data = await api.getHandoffMessages(traceId);
       setMessages(data.messages || []);
     } catch (err) {
-      toast.error('Could not load fallback session.');
+      toast.error('Could not load human counsellor chat.');
     }
   };
 
@@ -47,8 +47,10 @@ const StaffDashboard = () => {
 
   useEffect(() => {
     if (!activeHandoff) return;
-    loadSessionMessages(activeHandoff.session_id);
-  }, [activeHandoff?.session_id]);
+    loadHandoffMessages(activeHandoff.trace_id);
+    const interval = setInterval(() => loadHandoffMessages(activeHandoff.trace_id), 3000);
+    return () => clearInterval(interval);
+  }, [activeHandoff?.trace_id]);
 
   const handleSelect = async (handoff) => {
     setSelected(handoff);
@@ -85,13 +87,23 @@ const StaffDashboard = () => {
   };
 
   const handleSendReply = async () => {
-    if (!selected?.trace_id || !reply.trim()) return;
+    const target = selected || activeHandoff;
+    if (!target?.trace_id || !reply.trim()) return;
     setSending(true);
     try {
-      await api.sendHandoffReply(selected.trace_id, reply.trim());
+      const result = await api.sendHandoffMessage(target.trace_id, reply.trim());
       setReply('');
-      await loadSessionMessages(selected.session_id);
-      toast.success('Reply sent to the student chat.');
+      if (result.message) {
+        setMessages((current) => [...current, result.message]);
+      } else {
+        await loadHandoffMessages(target.trace_id);
+      }
+      const acceptedTarget = { ...target, handoff_status: 'accepted' };
+      setSelected(acceptedTarget);
+      setHandoffs((current) => current.map((handoff) =>
+        handoff.trace_id === target.trace_id ? acceptedTarget : handoff
+      ));
+      toast.success('Reply sent to the human chat popup.');
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Could not send reply.');
     } finally {
@@ -116,7 +128,7 @@ const StaffDashboard = () => {
         <header className="border-b-4 border-primary pb-4">
           <h1 className="text-3xl font-black text-primary tracking-tight">Staff / Human Fallback</h1>
           <p className="text-slate-500 font-medium mt-1">
-            Admin and editor accounts can accept fallback jobs, inspect the session, and reply inside the student's chat.
+            Admin and editor accounts can accept fallback jobs and reply in a separate human-only chat.
           </p>
         </header>
 
@@ -143,7 +155,8 @@ const StaffDashboard = () => {
                   onClick={() => handleSelect(handoff)}
                   className={`w-full text-left p-4 hover:bg-slate-50 ${activeHandoff?.trace_id === handoff.trace_id ? 'bg-blue-50/60' : ''}`}
                 >
-                  <p className="text-sm font-black text-slate-900 truncate">{handoff.user_id}</p>
+                  <p className="text-sm font-black text-slate-900 truncate">{handoff.student_name || handoff.user_id}</p>
+                  {handoff.student_name && <p className="text-[11px] text-slate-400 truncate">{handoff.user_id}</p>}
                   <p className="text-xs text-slate-500 mt-1 line-clamp-2">{handoff.input || 'No captured question'}</p>
                   <div className="flex items-center gap-2 mt-3">
                     <span className="px-2 py-1 bg-amber-50 text-amber-700 border border-amber-100 rounded text-[10px] font-black uppercase">
@@ -162,7 +175,8 @@ const StaffDashboard = () => {
                 <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-xl font-black text-slate-900">{activeHandoff.user_id}</h2>
+                      <h2 className="text-xl font-black text-slate-900">{activeHandoff.student_name || activeHandoff.user_id}</h2>
+                      {activeHandoff.student_name && <p className="text-xs text-slate-400 mt-1">{activeHandoff.user_id}</p>}
                       <p className="text-sm text-slate-500 mt-1">{activeHandoff.input}</p>
                       {activeHandoff.escalation_reason && (
                         <p className="text-xs text-amber-700 mt-2">{activeHandoff.escalation_reason}</p>
@@ -182,19 +196,24 @@ const StaffDashboard = () => {
                 <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                     <div className="p-4 border-b border-slate-100">
-                      <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">Session Chat</h3>
+                      <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">Human Counsellor Chat</h3>
                     </div>
                     <div className="h-[420px] overflow-y-auto p-4 space-y-3 bg-slate-50/60">
                       {messages.length === 0 ? (
-                        <p className="text-sm text-slate-500">No session messages found.</p>
-                      ) : messages.map((message, index) => (
-                        <div key={message.id || index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[85%] rounded-2xl p-3 text-sm leading-6 ${message.role === 'user' ? 'bg-primary text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'}`}>
+                        <p className="text-sm text-slate-500">No human messages found.</p>
+                      ) : messages.map((message, index) => {
+                        const isStaffMessage = message.role === 'staff' || message.sender_role === 'admin' || message.sender_role === 'editor';
+                        return (
+                        <div key={message.id || index} className={`flex ${isStaffMessage ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[85%] rounded-2xl p-3 text-sm leading-6 ${isStaffMessage ? 'bg-primary text-white rounded-tr-none' : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none'}`}>
+                            <p className="mb-1 text-[10px] font-black uppercase tracking-wider opacity-70">
+                              {message.sender_name || (isStaffMessage ? 'Staff' : 'Student')}
+                            </p>
                             <p className="whitespace-pre-wrap">{message.content}</p>
                             <p className="text-[10px] opacity-60 mt-2">{formatDate(message.timestamp)}</p>
                           </div>
                         </div>
-                      ))}
+                      )})}
                     </div>
                     <div className="p-4 border-t border-slate-100 bg-white">
                       <textarea
@@ -208,7 +227,7 @@ const StaffDashboard = () => {
                         disabled={sending || !reply.trim()}
                         className="mt-3 px-4 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-50"
                       >
-                        Send to Student Chat
+                        Send to Human Chat
                       </button>
                     </div>
                   </div>

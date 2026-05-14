@@ -3,9 +3,11 @@ import { useStore } from '../state/store';
 import { useNavigate } from 'react-router-dom';
 import { useChat } from '../hooks/useChat';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import api from '../services/api';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SourceList from '../components/Chat/SourceList';
+import HumanCounsellorPopup from '../components/Chat/HumanCounsellorPopup';
 
 const majorNameMap = {
   'cs': 'Khoa học Máy tính',
@@ -71,6 +73,7 @@ const ConsultantPage = () => {
 
   const [input, setInput] = useState('');
   const [selectedMajor, setSelectedMajor] = useState(null);
+  const [handoffStatus, setHandoffStatus] = useState(null);
   const scrollRef = useRef(null);
 
   // Initialize chat with top results if they exist
@@ -130,6 +133,52 @@ const ConsultantPage = () => {
     sendMessage(text);
     if (text === input) setInput('');
   };
+
+  const handleRequestHandoff = async () => {
+    try {
+      const result = await api.requestHandoff({
+        session_id: currentSessionId,
+        message: 'Student clicked Xin người tư vấn from Consultant quick actions.'
+      });
+      setHandoffStatus({
+        trace_id: result.traceId || result.trace_id,
+        handoff_status: result.handoffStatus || result.handoff_status || 'pending',
+        reason: result.fallbackCard?.reason || 'Student requested a human counselor.'
+      });
+      toast.success('Đã gửi yêu cầu tới người tư vấn.');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Không thể gửi yêu cầu tư vấn lúc này.');
+    }
+  };
+
+  useEffect(() => {
+    const latestHandoff = [...messages].reverse().find((message) => message.traceId && message.handoffStatus);
+    if (latestHandoff) {
+      setHandoffStatus({
+        trace_id: latestHandoff.traceId,
+        handoff_status: latestHandoff.handoffStatus,
+        reason: latestHandoff.fallbackCard?.reason || 'Student requested a human counselor.'
+      });
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadHandoffStatus = async () => {
+      try {
+        const data = await api.getHandoffStatus();
+        if (mounted) setHandoffStatus(data.handoff || null);
+      } catch {
+        if (mounted) setHandoffStatus(null);
+      }
+    };
+    loadHandoffStatus();
+    const interval = setInterval(loadHandoffStatus, 10000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -325,6 +374,14 @@ const ConsultantPage = () => {
                   {hint}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={handleRequestHandoff}
+                className="whitespace-nowrap px-3 py-1.5 bg-amber-50 text-amber-800 rounded-full text-xs font-semibold hover:bg-amber-100 transition-colors border border-amber-200 inline-flex items-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[16px]">support_agent</span>
+                Xin người tư vấn
+              </button>
             </div>
             <div className="relative flex items-center">
               <input 
@@ -395,6 +452,9 @@ const ConsultantPage = () => {
             </div>
           </div>
         </div>
+      )}
+      {handoffStatus?.trace_id && (
+        <HumanCounsellorPopup handoff={handoffStatus} onClose={() => setHandoffStatus(null)} />
       )}
     </div>
     </ErrorBoundary>

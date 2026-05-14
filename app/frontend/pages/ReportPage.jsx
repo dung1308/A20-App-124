@@ -14,6 +14,7 @@ const ReportPage = () => {
   const { matchResults, setMatchResults } = useStore();
   const { userId, isAuthenticated } = useAuth();
   const [showChat, setShowChat] = useState(false);
+  const [chatContext, setChatContext] = useState(null);
 
   useEffect(() => {
     if (!matchResults && userId) {
@@ -48,6 +49,17 @@ const ReportPage = () => {
 
   const handleRestart = () => {
     setMatchResults(null);
+  };
+
+  const handleAskMajor = (major) => {
+    setChatContext({
+      surface: 'report',
+      major_id: major.major_id,
+      major_name: major.major_name,
+      selected_signals: major.match_breakdown?.matched_signals || [],
+    });
+    setShowChat(true);
+    toast.success(`Chat will use ${major.major_name} as context.`);
   };
 
   if (!isAuthenticated || !userId) {
@@ -104,14 +116,23 @@ const ReportPage = () => {
               <div className="bg-amber-50 border border-amber-200 p-5 rounded-2xl">
                 <p className="text-amber-800 font-black">AI chua du tin hieu de ket luan chac chan.</p>
                 <p className="text-amber-700 text-sm mt-1">
-                  Hay bo sung Profile/CV hoac dang ky tu van de chuyen vien xem boi canh day du hon.
+                  {matchResults.fallback_card?.reason || 'Hay bo sung Profile/CV hoac dang ky tu van de chuyen vien xem boi canh day du hon.'}
                 </p>
+                {(matchResults.recovery_actions || []).length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {matchResults.recovery_actions.map((action) => (
+                      <span key={action.id} className="px-3 py-1.5 bg-white border border-amber-100 rounded-lg text-[10px] font-black uppercase tracking-wider text-amber-700">
+                        {action.label}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {topMajors.map((major) => (
-                <MajorCard key={major.major_id || major.major_name} major={major} />
+                <MajorCard key={major.major_id || major.major_name} major={major} onAsk={handleAskMajor} />
               ))}
             </div>
 
@@ -132,7 +153,7 @@ const ReportPage = () => {
                   </button>
                 </div>
               ) : (
-                <ChatBox userId={userId} />
+                <ChatBox userId={userId} initialContext={chatContext} />
               )}
             </section>
           </main>

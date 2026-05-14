@@ -19,6 +19,7 @@ const DatabaseManagementPage = () => {
   const [status, setStatus] = useState(null);
   const [users, setUsers] = useState([]);
   const [prompts, setPrompts] = useState([]);
+  const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -68,14 +69,16 @@ const DatabaseManagementPage = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [dbStatus, userData, promptData] = await Promise.all([
+      const [dbStatus, userData, promptData, healthData] = await Promise.all([
         api.getDbStatus(),
         api.getAdminUsers(),
-        api.getAdminPrompts()
+        api.getAdminPrompts(),
+        api.getAdminSystemHealth()
       ]);
       setStatus(dbStatus);
       setUsers(userData.users || []);
       setPrompts(promptData.prompts || []);
+      setHealth(healthData);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.detail || 'Không thể truy cập thông tin hệ thống.');
@@ -268,6 +271,31 @@ const DatabaseManagementPage = () => {
             <StatusCard label="Database" value={`${status.database} (${status.type})`} />
             <StatusCard label="Users" value={status.user_counts?.total || 0} />
             <StatusCard label="Blacklisted" value={status.user_counts?.blacklisted || 0} tone="red" />
+          </section>
+        )}
+
+        {health?.badges?.length > 0 && (
+          <section className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-sm font-black text-slate-800 uppercase tracking-wider">Operational health</h2>
+                <p className="text-xs text-slate-500 mt-1">Backend badges for tokens, prompts, handoffs, database, and RAG ingest.</p>
+              </div>
+              <button onClick={loadData} className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest text-primary">
+                Refresh
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              {health.badges.map((badge) => (
+                <div key={badge.id} className="border border-slate-100 rounded-xl p-4 bg-slate-50">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{badge.label}</p>
+                  <p className={`mt-1 text-sm font-black ${badge.status === 'warning' ? 'text-amber-600' : badge.status === 'error' ? 'text-red-600' : 'text-emerald-600'}`}>
+                    {badge.status}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1 truncate">{String(badge.detail ?? '-')}</p>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
@@ -668,7 +696,7 @@ const DatabaseManagementPage = () => {
                 onChange={(e) => setNewPrompt({ ...newPrompt, content: e.target.value })}
               />
               <div className="flex justify-end gap-2">
-                <button onClick={() => setPromptModalOpen(false)} className="px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest">
+                <button onClick={() => setPromptModalOpen(false)} className="px-4 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-50">
                   Cancel
                 </button>
                 <button disabled={saving} onClick={handleCreatePrompt} className="px-4 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-50">

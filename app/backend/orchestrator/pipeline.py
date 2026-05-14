@@ -161,12 +161,30 @@ class Pipeline:
                     "message": ESCALATION_MESSAGE,
                     "disclaimer": DISCLAIMER,
                     "escalation_level": escalation_level,
+                    "fallback_card": self._fallback_card(
+                        "human_handoff_required",
+                        judge_result.get("escalation_reason") or "The answer needs human admissions review.",
+                        "request_human_fallback",
+                    ),
+                    "recovery_actions": self._recovery_actions("fallback"),
+                    "decision_trace": self._decision_trace("match", "fallback", "escalated", judge_result),
                 }
 
             if not is_safe:
                 logger.warning(f"Judge rejected match result for {user_id}")
                 self._audit_log(user_id, answers, "REJECTED", judge_result, route=route, response_time_ms=latency, ai_resolved=False, fallback=True)
-                return {"top3": [], "fallback": True, "disclaimer": DISCLAIMER}
+                return {
+                    "top3": [],
+                    "fallback": True,
+                    "disclaimer": DISCLAIMER,
+                    "fallback_card": self._fallback_card(
+                        "safety_rejected",
+                        judge_result.get("reason") or "The recommendation did not pass safety review.",
+                        "revise_answers",
+                    ),
+                    "recovery_actions": self._recovery_actions("fallback"),
+                    "decision_trace": self._decision_trace("match", route, "rejected", judge_result),
+                }
 
             # 4. Audit logging
             try:
@@ -174,11 +192,30 @@ class Pipeline:
             except Exception as audit_err:
                 logger.error(f"Audit log failed (non-blocking): {audit_err}")
 
-            return {**raw_result, "disclaimer": DISCLAIMER}
+            return {
+                **raw_result,
+                "top3": self._enrich_match_explanations(raw_result.get("top3", []), answers, cv_signals),
+                "disclaimer": DISCLAIMER,
+                "recovery_actions": self._recovery_actions("success"),
+                "decision_trace": self._decision_trace(
+                    "match",
+                    route,
+                    "success",
+                    judge_result,
+                    {"used_cv_context": bool(cv_text or cv_signals), "recommendation_count": len(raw_result.get("top3", []))},
+                ),
+            }
 
         except Exception as e:
             logger.error(f"Pipeline match failure for {user_id}: {e}")
-            return {"top3": [], "fallback": True, "disclaimer": DISCLAIMER}
+            return {
+                "top3": [],
+                "fallback": True,
+                "disclaimer": DISCLAIMER,
+                "fallback_card": self._fallback_card("system_error", "The matching service could not complete this request.", "retry"),
+                "recovery_actions": self._recovery_actions("error"),
+                "decision_trace": self._decision_trace("match", "fallback", "error", {"pass": False, "reason": str(e)}),
+            }
 
     def parse_cv(self, text: str) -> Optional[CVSignals]:
         """
@@ -222,6 +259,7 @@ class Pipeline:
         history: List[Dict[str, str]],
         session_id: Optional[str] = None,
         persona_summary: Optional[str] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         Full pipeline for POST /api/chat (free-form follow-up).
@@ -265,6 +303,10 @@ class Pipeline:
                 # 1. Real LLM routing using safe history
                 route = self.router.route(message, history)
             
+            context_summary = self._format_context_summary(context)
+            if context_summary:
+                persona_summary = f"{persona_summary or ''}\n{context_summary}".strip()
+
             # 2. Dispatch (Real or Mock) with safe history
             raw_response = self._dispatch(
                 route,
@@ -353,10 +395,24 @@ class Pipeline:
                 "intent": route,
                 "status": status,
                 "major": None,
-                "sources": sources,
+                "sources": self._label_sources(sources),
                 "sessionId": session_id,
                 "sessionTitle": new_title,
                 "escalation_level": escalation_level,
+                "fallback_card": self._fallback_card(
+                    "human_handoff_required" if fallback else "",
+                    judge_result.get("escalation_reason") or judge_result.get("reason") or "",
+                    "request_human_fallback" if fallback else "",
+                ) if fallback else None,
+                "recovery_actions": self._recovery_actions(status),
+                "decision_trace": self._decision_trace(
+                    "chat",
+                    route,
+                    status,
+                    judge_result,
+                    {"context_received": bool(context), "source_count": len(sources)},
+                ),
+                "suggested_resources": self._suggested_resources(route, message, fallback),
             }
 
             # If route is advisor, extract structured data for the frontend cards
@@ -371,7 +427,11 @@ class Pipeline:
                     parsed = json.loads(json_text)
                     if "top3" in parsed:
                         response_data["response"] = parsed.get("answer", "Dựa trên trao đổi của chúng ta, đây là 3 ngành học tiềm năng nhất dành cho bạn:")
-                        response_data["major"] = self.advisor._validate_and_enrich(parsed["top3"])
+                        response_data["major"] = self._enrich_match_explanations(
+                            self.advisor._validate_and_enrich(parsed["top3"]),
+                            {},
+                            None,
+                        )
                 except Exception as e:
                     logger.warning(f"Structured advisor parsing failed: {e}")
 
@@ -393,7 +453,11 @@ class Pipeline:
             return {
                 "response": "Hệ thống đang gặp sự cố. Vui lòng thử lại sau.",
                 "intent": "fallback",
-                "status": "error"
+                "status": "error",
+                "fallback_card": self._fallback_card("system_error", "The chat service could not complete this request.", "retry"),
+                "recovery_actions": self._recovery_actions("error"),
+                "decision_trace": self._decision_trace("chat", "fallback", "error", {"pass": False, "reason": str(e)}),
+                "suggested_resources": self._suggested_resources("fallback", message, True)
             }
 
     # ------------------------------------------------------------------
@@ -449,6 +513,155 @@ class Pipeline:
         if any(word in msg for word in ["ngành", "chọn", "tư vấn", "phù hợp", "match"]):
             return "advisor"
         return "rag"
+
+    def _fallback_card(self, reason_code: str, reason: str, next_action: str) -> Dict[str, Any]:
+        if not reason_code:
+            return {}
+        if next_action == "request_human_fallback":
+            cta = {"label": "Request human advisor", "action": "human_fallback"}
+        else:
+            cta = {"label": "Try again", "action": next_action or "retry"}
+        return {
+            "reason_code": reason_code,
+            "reason": reason or "The system could not answer with enough confidence.",
+            "next_action": next_action or "retry",
+            "cta": cta,
+        }
+
+    def _recovery_actions(self, status: str) -> List[Dict[str, str]]:
+        actions = [
+            {"id": "retry", "label": "Retry"},
+            {"id": "edit_profile", "label": "Edit Profile"},
+            {"id": "open_wizard", "label": "Update Wizard answers"},
+            {"id": "open_resources", "label": "Open Resources"},
+        ]
+        if status in {"fallback", "error", "rejected", "escalated"}:
+            actions.append({"id": "request_human_fallback", "label": "Request human advisor"})
+        return actions
+
+    def _decision_trace(
+        self,
+        flow: str,
+        route: str,
+        status: str,
+        judge_result: Dict[str, Any],
+        extra: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        trace = {
+            "flow": flow,
+            "route": route,
+            "status": status,
+            "judge_pass": judge_result.get("pass"),
+            "escalation_level": judge_result.get("escalation_level", "NONE"),
+            "escalation_reason": judge_result.get("escalation_reason") or judge_result.get("reason"),
+        }
+        if extra:
+            trace.update(extra)
+        return trace
+
+    def _label_sources(self, sources: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        labeled = []
+        for source in sources or []:
+            url = (source.get("url") or "").lower()
+            if "vinuni.edu.vn" in url or "admissions.vinuni.edu.vn" in url:
+                source_type = "official"
+            elif source.get("source_type"):
+                source_type = source.get("source_type")
+            else:
+                source_type = "derived"
+            labeled.append({**source, "source_type": source_type})
+        return labeled
+
+    def _format_context_summary(self, context: Optional[Dict[str, Any]]) -> str:
+        if not context:
+            return ""
+        safe_context = {
+            key: value for key, value in context.items()
+            if key in {"surface", "major_id", "major_name", "report_id", "question", "selected_signals"}
+        }
+        if not safe_context:
+            return ""
+        return "Report/UI context: " + json.dumps(safe_context, ensure_ascii=False)
+
+    def _suggested_resources(self, route: str, message: str, fallback: bool) -> List[Dict[str, str]]:
+        message_lower = (message or "").lower()
+        resources = []
+        if route == "advisor" or any(word in message_lower for word in ["major", "ngành", "nganh", "match"]):
+            resources.append({"id": "wizard", "title": "Major matching wizard", "surface": "wizard"})
+        if route == "rag" or any(word in message_lower for word in ["admission", "tuyển sinh", "deadline", "hoc phi"]):
+            resources.append({"id": "admissions", "title": "Admissions resources", "surface": "resources"})
+        if fallback:
+            resources.append({"id": "human-fallback", "title": "Human advisor support", "surface": "staff_handoff"})
+        return resources[:3]
+
+    def _enrich_match_explanations(
+        self,
+        matches: List[Dict[str, Any]],
+        answers: Dict[str, Any],
+        cv_signals: Optional[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        interests = answers.get("interests") or []
+        strengths = answers.get("strengths") or []
+        work_style = answers.get("work_style")
+        dislikes = answers.get("dislikes") or []
+        cv_signals = cv_signals or {}
+
+        enriched = []
+        for item in matches or []:
+            matched_signals = []
+            for value in interests[:2]:
+                matched_signals.append({"source": "wizard", "label": "Interest", "value": value})
+            for value in strengths[:2]:
+                matched_signals.append({"source": "wizard", "label": "Strength", "value": value})
+            if work_style:
+                matched_signals.append({"source": "wizard", "label": "Work style", "value": work_style})
+            for value in (cv_signals.get("extracted_skills") or [])[:2]:
+                matched_signals.append({"source": "cv", "label": "CV skill", "value": value})
+            for value in (cv_signals.get("suggested_majors") or [])[:1]:
+                matched_signals.append({"source": "cv", "label": "CV suggested major", "value": value})
+
+            tradeoffs = []
+            if dislikes:
+                tradeoffs.append({
+                    "source": "wizard",
+                    "label": "Preference tradeoff",
+                    "value": f"Check whether this major avoids: {', '.join(map(str, dislikes[:2]))}",
+                })
+            if not cv_signals:
+                tradeoffs.append({
+                    "source": "profile",
+                    "label": "Missing CV context",
+                    "value": "Upload or confirm a CV to improve the evidence behind this recommendation.",
+                })
+            if float(item.get("match_score") or 0) < 70:
+                tradeoffs.append({
+                    "source": "advisor",
+                    "label": "Moderate confidence",
+                    "value": "Review the explanation and ask a follow-up before treating this as a strong fit.",
+                })
+
+            evidence = []
+            if item.get("source_url"):
+                evidence.append({
+                    "title": item.get("department") or item.get("major_name") or "VinUni admissions",
+                    "url": item.get("source_url"),
+                    "source_type": "official",
+                })
+            evidence.append({
+                "title": "Student profile and wizard answers",
+                "url": None,
+                "source_type": "profile-based",
+            })
+
+            enriched.append({
+                **item,
+                "match_breakdown": {
+                    "matched_signals": matched_signals[:5],
+                    "tradeoffs": tradeoffs[:2],
+                    "evidence": evidence,
+                },
+            })
+        return enriched
 
     def _audit_log(
         self,

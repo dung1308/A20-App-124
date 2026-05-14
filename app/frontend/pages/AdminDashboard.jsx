@@ -620,7 +620,7 @@ const AdminDashboard = () => {
                 <button 
                   disabled={page === 1}
                   onClick={() => setPage(prev => prev - 1)}
-                  className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-white transition-colors"
+                  className="p-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-white transition-colors"
                 >
                   <span className="material-symbols-outlined text-sm leading-none">chevron_left</span>
                 </button>
@@ -644,7 +644,7 @@ const AdminDashboard = () => {
                 <button 
                   disabled={page >= totalPages}
                   onClick={() => setPage(prev => prev + 1)}
-                  className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-white transition-colors"
+                  className="p-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-white transition-colors"
                 >
                   <span className="material-symbols-outlined text-sm leading-none">chevron_right</span>
                 </button>
@@ -882,7 +882,7 @@ const AdminDashboard = () => {
             <div className="p-4 bg-slate-50 border-t border-slate-100 text-right">
               <button 
                 onClick={() => setSelectedLog(null)}
-                className="px-6 py-2 bg-white border border-gray-300 rounded-lg font-bold text-sm hover:bg-gray-50 transition-all shadow-sm"
+                className="px-6 py-2 bg-white border border-gray-300 text-slate-700 rounded-lg font-bold text-sm hover:bg-gray-50 transition-all shadow-sm"
               >
                 Đóng
               </button>

@@ -153,6 +153,216 @@ def sanitize_id(raw_id: str) -> str:
     # Ensure it starts and ends with alpha-numeric (stripping leading/trailing symbols)
     return sanitized.strip('._-')
 
+def is_human_handoff_request(text: str) -> bool:
+    """Detect explicit student requests for a human counselor/advisor."""
+    normalized = (text or "").lower()
+    human_terms = [
+        "human",
+        "counsellor",
+        "counselor",
+        "advisor",
+        "staff",
+        "consultant",
+        "tu van vien",
+        "tư vấn viên",
+        "chuyen vien",
+        "chuyên viên",
+        "nguoi that",
+        "người thật",
+    ]
+    request_terms = ["call", "connect", "contact", "request", "need", "want", "gap", "gặp", "ket noi", "kết nối", "goi", "gọi"]
+    return any(term in normalized for term in human_terms) and any(term in normalized for term in request_terms)
+
+def _get_handoff_log(trace_id: str):
+    """Fetch a handoff audit log row by trace_id."""
+    from models.schemas import AuditLog
+
+    if database.SessionLocal is None:
+        raise HTTPException(status_code=503, detail="Database is not available")
+    with database.SessionLocal() as session:
+        log = session.query(AuditLog).filter(AuditLog.trace_id == trace_id).first()
+        if not log:
+            raise HTTPException(status_code=404, detail="Human handoff request not found")
+        return {
+            "trace_id": log.trace_id,
+            "user_id": log.user_id,
+            "handoff_status": log.handoff_status,
+            "escalation_reason": log.escalation_reason,
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+        }
+
+def _assert_handoff_access(trace_id: str, current_user: dict) -> Dict[str, Any]:
+    """Allow staff or the owning student to access a human handoff transcript."""
+    handoff = _get_handoff_log(trace_id)
+    profile = pipeline.db_service.get_student_profile(current_user.get("email")) or {}
+    allowed_user_ids = {current_user.get("email"), profile.get("user_id")}
+    if current_user.get("role") in {"admin", "editor"} or handoff["user_id"] in allowed_user_ids:
+        return handoff
+    raise HTTPException(status_code=403, detail="You do not have access to this handoff")
+
+def create_student_handoff_job(user_id: str, session_id: Optional[str], message: Optional[str]) -> Dict[str, Any]:
+    """Create a pending human fallback job visible to admin/editor staff."""
+    from models.schemas import AuditLog, User
+    from sqlalchemy import func
+
+    clean_message = (message or "Student requested human counselor support.").strip()
+    ack = (
+        "Your human counsellor request has been created. "
+        "A staff member can accept it from the Staff page and continue in a separate human-only chat window."
+    )
+    trace_id = f"handoff-{uuid.uuid4().hex[:16]}"
+    resolved_user_id = user_id
+
+    try:
+        if database.SessionLocal is None:
+            raise RuntimeError("database.SessionLocal is not initialized")
+        with database.SessionLocal() as session:
+            existing_user = session.query(User).filter(
+                (User.user_id == user_id) | (func.lower(User.email) == func.lower(user_id))
+            ).first()
+            if not existing_user:
+                existing_user = User(user_id=user_id, email=user_id, role="user")
+                session.add(existing_user)
+                session.flush()
+            resolved_user_id = existing_user.user_id
+            session.add(AuditLog(
+                user_id=resolved_user_id,
+                trace_id=trace_id,
+                input_data=f"STUDENT_HANDOFF_REQUEST: {clean_message}",
+                output_data=ack,
+                input_text=clean_message,
+                output_text=ack,
+                judge_result={
+                    "action": "student_handoff_request",
+                    "escalation_level": "MEDIUM",
+                    "escalation_reason": "Student explicitly requested a human counselor.",
+                    "session_id": session_id,
+                },
+                escalation_level="MEDIUM",
+                escalation_reason="Student explicitly requested a human counselor.",
+                handoff_status="pending",
+                route="fallback",
+                ai_resolved=False,
+                fallback=True,
+                timestamp=datetime.utcnow(),
+            ))
+            session.commit()
+    except Exception as e:
+        logger.error(f"Could not create handoff audit job: {e}")
+        raise HTTPException(status_code=500, detail="Could not create human handoff job")
+
+    student_name = pipeline.db_service.display_name_for_user(resolved_user_id, "Student")
+    pipeline.db_service.save_handoff_message(
+        trace_id=trace_id,
+        user_id=resolved_user_id,
+        sender_id=resolved_user_id,
+        sender_name=student_name,
+        sender_role="student",
+        role="student",
+        content=clean_message,
+    )
+    return {
+        "response": ack,
+        "answer": ack,
+        "intent": "fallback",
+        "status": "escalated",
+        "fallback": True,
+        "sessionId": session_id,
+        "session_id": session_id,
+        "trace_id": trace_id,
+        "handoff_status": "pending",
+        "sources": [],
+        "recommendations": [],
+        "major": [],
+        "top3": [],
+        "fallback_card": {
+            "reason_code": "student_requested_human",
+            "reason": "Student explicitly requested a human counselor.",
+            "next_action": "wait_for_staff",
+            "cta": {"label": "Open human chat", "action": "handoff_status"},
+        },
+        "recovery_actions": [
+            {"id": "continue_chat", "label": "Continue Chat"},
+            {"id": "open_resources", "label": "Open Resources"},
+        ],
+        "decision_trace": {
+            "flow": "chat",
+            "route": "fallback",
+            "status": "escalated",
+            "handoff_status": "pending",
+            "trace_id": trace_id,
+        },
+    }
+
+    clean_message = (message or "Student requested human counselor support.").strip()
+    if session_id:
+        pipeline.db_service.save_message(
+            user_id=user_id,
+            role="user",
+            content=clean_message,
+            agent_type="handoff_request",
+            session_id=session_id,
+            sources=[],
+        )
+
+    ack = (
+        "Mình đã gửi yêu cầu tới tư vấn viên. "
+        "Admin/editor sẽ thấy job này trong trang Staff và có thể nhận phiên để hỗ trợ bạn."
+    )
+    if session_id:
+        pipeline.db_service.save_message(
+            user_id=user_id,
+            role="assistant",
+            content=ack,
+            agent_type="fallback",
+            session_id=session_id,
+            sources=[],
+        )
+
+    pipeline.db_service.save_audit_log(
+        user_id=user_id,
+        input_data=f"STUDENT_HANDOFF_REQUEST: {clean_message}",
+        output_data=ack,
+        judge_result={
+            "action": "student_handoff_request",
+            "escalation_level": "MEDIUM",
+            "escalation_reason": "Student explicitly requested a human counselor.",
+        },
+        route="fallback",
+        ai_resolved=False,
+        fallback=True,
+        handoff_status="pending",
+    )
+    return {
+        "response": ack,
+        "answer": ack,
+        "intent": "fallback",
+        "status": "escalated",
+        "fallback": True,
+        "sessionId": session_id,
+        "session_id": session_id,
+        "sources": [],
+        "recommendations": [],
+        "major": [],
+        "top3": [],
+        "fallback_card": {
+            "reason_code": "student_requested_human",
+            "reason": "Student explicitly requested a human counselor.",
+            "next_action": "wait_for_staff",
+            "cta": {"label": "Waiting for advisor", "action": "handoff_status"},
+        },
+        "recovery_actions": [
+            {"id": "continue_chat", "label": "Continue Chat"},
+            {"id": "open_resources", "label": "Open Resources"},
+        ],
+        "decision_trace": {
+            "flow": "chat",
+            "route": "fallback",
+            "status": "escalated",
+            "handoff_status": "pending",
+        },
+    }
+
 # Enable CORS for frontend integration
 app.add_middleware(
     CORSMiddleware,
@@ -236,6 +446,7 @@ class ChatRequest(BaseModel):
     message: str = Field(..., alias="text")
     history: Optional[List[Dict[str, Any]]] = Field(default_factory=list)
     persona_summary: Optional[str] = Field(None, alias="personaSummary")
+    context: Optional[Dict[str, Any]] = None
 
     model_config = {
         "populate_by_name": True
@@ -276,6 +487,10 @@ class HandoffActionRequest(BaseModel):
 
 class HandoffReplyRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=5000)
+
+class StudentHandoffRequest(BaseModel):
+    session_id: Optional[str] = None
+    message: Optional[str] = None
 
 class RagConfigRequest(BaseModel):
     interval_hours: int
@@ -323,6 +538,11 @@ class ProfileUpdateRequest(BaseModel):
 
 class CVConfirmRequest(BaseModel):
     structured_data: Optional[Dict[str, Any]] = None
+
+class ResourceContextRequest(BaseModel):
+    surface: Optional[str] = None
+    intent: Optional[str] = None
+    major_id: Optional[str] = None
 
 class EmailLogRequest(BaseModel):
     user_id: str
@@ -373,6 +593,9 @@ async def chat(request: ChatRequest, current_user: dict = Depends(get_current_us
     if not session_id or session_id == "new":
         session_id = str(uuid.uuid4())
 
+    if is_human_handoff_request(request.message):
+        return create_student_handoff_job(user_id, session_id, request.message)
+
     # Ensure the orchestrator result is wrapped in the structure 
     # expected by ConsultantPage.jsx (response.response)
     chat_response = pipeline.run_chat(
@@ -380,7 +603,8 @@ async def chat(request: ChatRequest, current_user: dict = Depends(get_current_us
         request.message, 
         request.history, 
         session_id=session_id,
-        persona_summary=request.persona_summary
+        persona_summary=request.persona_summary,
+        context=request.context,
     )
     logger.info(f"Chat response {chat_response}")
 
@@ -707,7 +931,7 @@ async def get_pending_handoffs(current_user: dict = Depends(staff_required)):
     try:
         with database.SessionLocal() as session:
             logs = session.query(AuditLog).filter(
-                AuditLog.handoff_status == 'pending'
+                AuditLog.handoff_status.in_(["pending", "accepted"])
             ).order_by(AuditLog.timestamp.desc()).all()
             latest_sessions = {}
             for log in logs:
@@ -721,6 +945,7 @@ async def get_pending_handoffs(current_user: dict = Depends(staff_required)):
             return [{
                 "trace_id": log.trace_id,
                 "user_id": log.user_id,
+                "student_name": pipeline.db_service.display_name_for_user(log.user_id, "Student"),
                 "session_id": latest_sessions.get(log.user_id),
                 "input": log.input_data,
                 "escalation_level": log.escalation_level,
@@ -763,6 +988,33 @@ async def handle_handoff(trace_id: str, request: HandoffActionRequest, current_u
 @app.post("/api/admin/handoff/{trace_id}/message")
 async def send_handoff_reply(trace_id: str, request: HandoffReplyRequest, current_user: dict = Depends(staff_required)):
     """Persist a human staff reply into the student's latest chat session."""
+    handoff = _assert_handoff_access(trace_id, current_user)
+    staff_name = pipeline.db_service.display_name_for_user(current_user["email"], "VinUni counsellor")
+    message = pipeline.db_service.save_handoff_message(
+        trace_id=trace_id,
+        user_id=handoff["user_id"],
+        sender_id=current_user["email"],
+        sender_name=staff_name,
+        sender_role=current_user.get("role") or "staff",
+        role="staff",
+        content=request.message.strip(),
+    )
+    try:
+        from models.schemas import AuditLog
+        with database.SessionLocal() as session:
+            log = session.query(AuditLog).filter(AuditLog.trace_id == trace_id).first()
+            if log:
+                log.handoff_status = "accepted"
+                session.commit()
+    except Exception as e:
+        logger.warning(f"Could not mark handoff accepted after staff message: {e}")
+    return {
+        "status": "success",
+        "trace_id": trace_id,
+        "user_id": handoff["user_id"],
+        "message": message,
+    }
+
     from models.schemas import AuditLog, ChatSession
     try:
         with database.SessionLocal() as session:
@@ -1031,6 +1283,156 @@ async def update_profile(user_id: str, request: ProfileUpdateRequest, current_us
         logger.error(f"Failed to update profile: {e}")
         raise HTTPException(status_code=500, detail="Không thể cập nhật hồ sơ")
 
+@app.get("/api/profile/me/readiness")
+async def get_my_profile_readiness(current_user: dict = Depends(get_current_user)):
+    """Return Profile/Wizard/CV completeness so the UI can show next actions."""
+    user_id = current_user["email"]
+    profile = pipeline.db_service.get_student_profile(user_id) or {}
+    cv_documents = pipeline.db_service.list_cv_documents(user_id)
+    return {
+        "status": "success",
+        "user_id": user_id,
+        "readiness": _profile_readiness(profile, cv_documents),
+    }
+
+@app.get("/api/profile/me/cv-documents/{document_id}/merge-preview")
+async def preview_my_cv_document_merge(document_id: str, current_user: dict = Depends(get_current_user)):
+    """Preview how a CV document would merge into Profile before confirmation."""
+    user_id = current_user["email"]
+    doc = pipeline.db_service.get_cv_document(user_id, document_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="CV document not found")
+    profile = pipeline.db_service.get_student_profile(user_id) or {}
+    preview = _build_cv_merge_preview(profile, doc.get("structured_data") or {}, doc.get("cv_signals") or {})
+    return {
+        "status": "success",
+        "document_id": document_id,
+        "filename": doc.get("filename"),
+        "preview": preview,
+        "confirm_endpoint": f"/api/profile/me/cv-documents/{document_id}/confirm",
+    }
+
+@app.get("/api/resources/contextual")
+async def get_contextual_resources(
+    surface: Optional[str] = None,
+    intent: Optional[str] = None,
+    major_id: Optional[str] = None,
+    current_user: dict = Depends(get_current_user),
+):
+    """Return intent-aware help snippets for Profile, Wizard, Report, Chat, and Resources."""
+    profile = pipeline.db_service.get_student_profile(current_user["email"]) or {}
+    cv_documents = pipeline.db_service.list_cv_documents(current_user["email"])
+    return {
+        "status": "success",
+        "surface": surface,
+        "intent": intent,
+        "major_id": major_id,
+        "resources": _contextual_resources(surface, intent, major_id),
+        "readiness": _profile_readiness(profile, cv_documents),
+    }
+
+@app.get("/api/handoff-status")
+async def get_my_handoff_status(current_user: dict = Depends(get_current_user)):
+    """Return the latest human fallback state for the current user."""
+    user_id = current_user["email"]
+    try:
+        from models.schemas import AuditLog, HandoffMessage
+        if database.SessionLocal is None:
+            return {"status": "success", "handoff": None}
+        profile = pipeline.db_service.get_student_profile(user_id) or {}
+        resolved_user_id = profile.get("user_id") or user_id
+        with database.SessionLocal() as session:
+            handoff = session.query(AuditLog)\
+                .filter(AuditLog.user_id.in_([user_id, resolved_user_id]))\
+                .filter(AuditLog.handoff_status.in_(["pending", "accepted", "busy"]))\
+                .order_by(AuditLog.timestamp.desc())\
+                .first()
+            if not handoff:
+                return {"status": "success", "handoff": None}
+            latest_staff_message = session.query(HandoffMessage)\
+                .filter(HandoffMessage.trace_id == handoff.trace_id, HandoffMessage.role == "staff")\
+                .order_by(HandoffMessage.timestamp.desc())\
+                .first()
+            return {
+                "status": "success",
+                "handoff": {
+                    "trace_id": handoff.trace_id,
+                    "handoff_status": handoff.handoff_status,
+                    "escalation_level": handoff.escalation_level,
+                    "reason": handoff.escalation_reason,
+                    "queued_at": handoff.timestamp.isoformat() if handoff.timestamp else None,
+                    "latest_staff_message": {
+                        "content": latest_staff_message.content,
+                        "timestamp": latest_staff_message.timestamp.isoformat() if latest_staff_message.timestamp else None,
+                    } if latest_staff_message else None,
+                    "next_actions": [
+                        {"id": "wait", "label": "Wait for advisor reply"},
+                        {"id": "continue_chat", "label": "Continue Chat"},
+                        {"id": "open_resources", "label": "Open Resources"},
+                    ],
+                },
+            }
+    except Exception as e:
+        logger.error(f"Handoff status query failed: {e}")
+        raise HTTPException(status_code=500, detail="Could not load handoff status")
+
+@app.post("/api/handoff-request")
+async def request_human_handoff(request: StudentHandoffRequest, current_user: dict = Depends(get_current_user)):
+    """Student-facing endpoint to create a pending handoff job for admin/editor staff."""
+    session_id = request.session_id
+    if not session_id or session_id == "new":
+        session_id = str(uuid.uuid4())
+    return create_student_handoff_job(
+        current_user["email"],
+        session_id,
+        request.message or "Student clicked request human counselor.",
+    )
+
+@app.get("/api/handoff/{trace_id}/messages")
+async def get_handoff_messages(trace_id: str, current_user: dict = Depends(get_current_user)):
+    """Return the human-only transcript for a student handoff."""
+    handoff = _assert_handoff_access(trace_id, current_user)
+    return {
+        "status": "success",
+        "handoff": handoff,
+        "messages": pipeline.db_service.get_handoff_messages(trace_id),
+    }
+
+@app.post("/api/handoff/{trace_id}/messages")
+async def post_handoff_message(
+    trace_id: str,
+    request: HandoffReplyRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    """Append one human-only handoff message without invoking the AI pipeline."""
+    handoff = _assert_handoff_access(trace_id, current_user)
+    is_staff = current_user.get("role") in {"admin", "editor"}
+    role = "staff" if is_staff else "student"
+    sender_name = pipeline.db_service.display_name_for_user(
+        current_user["email"],
+        "VinUni counsellor" if is_staff else "Student",
+    )
+    message = pipeline.db_service.save_handoff_message(
+        trace_id=trace_id,
+        user_id=handoff["user_id"],
+        sender_id=current_user["email"],
+        sender_name=sender_name,
+        sender_role=current_user.get("role") or role,
+        role=role,
+        content=request.message.strip(),
+    )
+    if is_staff:
+        try:
+            from models.schemas import AuditLog
+            with database.SessionLocal() as session:
+                log = session.query(AuditLog).filter(AuditLog.trace_id == trace_id).first()
+                if log:
+                    log.handoff_status = "accepted"
+                    session.commit()
+        except Exception as e:
+            logger.warning(f"Could not mark handoff accepted after staff message: {e}")
+    return {"status": "success", "message": message}
+
 @app.get("/api/system/db-status")
 async def get_db_status(admin: dict = Depends(admin_required)):
     """Admin-only endpoint to check database statistics."""
@@ -1146,6 +1548,55 @@ async def get_token_usage(
         logger.error(f"Token usage query failed: {e}")
         raise HTTPException(status_code=500, detail="Could not load token usage")
 
+@app.get("/api/admin/system/health")
+async def get_admin_system_health(admin: dict = Depends(staff_required)):
+    """Return productized health badges for admin/staff operations pages."""
+    try:
+        from models.schemas import AuditLog
+        db_info = database.get_database_info()
+        since_24h = datetime.utcnow() - timedelta(hours=24)
+        stats = {
+            "tokens_24h": 0,
+            "requests_24h": 0,
+            "pending_handoffs": 0,
+            "accepted_handoffs": 0,
+            "prompt_versions": 0,
+        }
+        if database.SessionLocal is not None:
+            with database.SessionLocal() as session:
+                logs = session.query(AuditLog).filter(AuditLog.timestamp >= since_24h).all()
+                stats["requests_24h"] = len(logs)
+                stats["tokens_24h"] = sum(
+                    _estimate_text_tokens(log.input_text or log.input_data) +
+                    _estimate_text_tokens(log.output_text or log.output_data)
+                    for log in logs
+                )
+                stats["pending_handoffs"] = session.query(AuditLog).filter(AuditLog.handoff_status == "pending").count()
+                stats["accepted_handoffs"] = session.query(AuditLog).filter(AuditLog.handoff_status == "accepted").count()
+        stats["prompt_versions"] = len(pipeline.db_service.get_all_prompts())
+        rag_status = {
+            "sync_interval_hours": rag_config["sync_interval_hours"],
+            "scheduled_ingest_label": f"Periodic RAG ingest every {rag_config['sync_interval_hours']} hours",
+            "immediate_ingest_label": "Run immediate RAG ingestion now",
+        }
+        badges = [
+            {"id": "database", "label": "Database", "status": "ok" if db_info.get("connected") else "error", "detail": db_info.get("type")},
+            {"id": "tokens", "label": "Tokens 24h", "status": "ok", "detail": stats["tokens_24h"]},
+            {"id": "prompt_versions", "label": "Prompt versions", "status": "ok" if stats["prompt_versions"] else "warning", "detail": stats["prompt_versions"]},
+            {"id": "handoffs", "label": "Pending handoffs", "status": "warning" if stats["pending_handoffs"] else "ok", "detail": stats["pending_handoffs"]},
+            {"id": "rag_ingest", "label": "RAG ingest", "status": "ok", "detail": rag_status["scheduled_ingest_label"]},
+        ]
+        return {
+            "status": "success",
+            "badges": badges,
+            "stats": stats,
+            "rag": rag_status,
+            "accessed_by": admin["email"],
+        }
+    except Exception as e:
+        logger.error(f"Admin system health failed: {e}")
+        raise HTTPException(status_code=500, detail="Could not load admin system health")
+
 def _validate_admin_role(role: str) -> str:
     if role not in {"admin", "editor", "user"}:
         raise HTTPException(status_code=400, detail="Role khÃ´ng há»£p lá»‡. Chá»‰ há»— trá»£ admin, editor, user.")
@@ -1182,6 +1633,119 @@ def _apply_prompt_selection(agent_name: str, content: str) -> List[str]:
             setattr(component, attr_name, content)
             applied.append(f"{component_name}.{attr_name}")
     return applied
+
+def _profile_readiness(profile: Dict[str, Any], cv_documents: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
+    cv_documents = cv_documents or []
+    required_fields = ["summary", "career_goals", "skills", "education", "experience"]
+    completed = [field for field in required_fields if profile.get(field)]
+    wizard_keys = ["interests", "strengths", "dislikes", "work_style"]
+    wizard_completed = all(profile.get(key) for key in wizard_keys)
+    active_cv = next((doc for doc in cv_documents if doc.get("is_active")), None)
+    next_actions = []
+    if not wizard_completed:
+        next_actions.append({"id": "open_wizard", "label": "Complete or update Wizard answers"})
+    if not active_cv:
+        next_actions.append({"id": "upload_or_confirm_cv", "label": "Upload or confirm a CV document"})
+    missing = [field for field in required_fields if field not in completed]
+    if missing:
+        next_actions.append({"id": "edit_profile", "label": "Complete Profile fields", "missing_fields": missing})
+    return {
+        "required_fields": required_fields,
+        "completed_fields": completed,
+        "missing_fields": missing,
+        "wizard_completed": wizard_completed,
+        "active_cv_document_id": active_cv.get("id") if active_cv else profile.get("active_cv_document_id"),
+        "cv_document_count": len(cv_documents),
+        "completion_ratio": round((len(completed) + int(wizard_completed) + int(bool(active_cv))) / (len(required_fields) + 2), 3),
+        "next_actions": next_actions,
+    }
+
+def _build_cv_merge_preview(profile: Dict[str, Any], structured_data: Dict[str, Any], cv_signals: Dict[str, Any]) -> Dict[str, Any]:
+    personal = structured_data.get("personal_info") or {}
+    proposed = {}
+    for source_key, target_key in [("name", "full_name"), ("full_name", "full_name"), ("phone", "phone")]:
+        if personal.get(source_key):
+            proposed[target_key] = personal.get(source_key)
+    for key in ["summary", "career_goals", "skills", "languages", "certifications", "achievements", "education", "experience", "projects"]:
+        if structured_data.get(key):
+            proposed[key] = structured_data.get(key)
+    if cv_signals.get("gpa_estimate") is not None:
+        proposed["gpa"] = cv_signals.get("gpa_estimate")
+
+    changes = []
+    for field, new_value in proposed.items():
+        old_value = profile.get(field)
+        if old_value in (None, "", [], {}):
+            action = "add"
+        elif old_value == new_value:
+            action = "keep"
+        else:
+            action = "update"
+        changes.append({"field": field, "action": action, "current": old_value, "proposed": new_value})
+    skipped = [
+        {"field": field, "action": "skip", "reason": "No value extracted from CV"}
+        for field in ["summary", "career_goals", "skills", "education", "experience"]
+        if field not in proposed
+    ]
+    return {
+        "changes": changes,
+        "skipped": skipped,
+        "summary": {
+            "add": len([item for item in changes if item["action"] == "add"]),
+            "update": len([item for item in changes if item["action"] == "update"]),
+            "keep": len([item for item in changes if item["action"] == "keep"]),
+            "skip": len(skipped),
+        },
+    }
+
+def _contextual_resources(surface: Optional[str], intent: Optional[str], major_id: Optional[str]) -> List[Dict[str, Any]]:
+    surface_key = (surface or "").lower()
+    intent_key = (intent or "").lower()
+    resources = [
+        {
+            "id": "wizard-guide",
+            "title": "Use the Wizard to improve major recommendations",
+            "surface": "wizard",
+            "snippet": "Answer interests, strengths, dislikes, and work style so the advisor can explain fit with clearer signals.",
+            "action": {"id": "open_wizard", "label": "Open Wizard"},
+        },
+        {
+            "id": "cv-review",
+            "title": "Review CV extraction before saving",
+            "surface": "profile",
+            "snippet": "Uploaded CV data stays draft until you confirm the merge into Profile.",
+            "action": {"id": "open_profile", "label": "Review Profile"},
+        },
+        {
+            "id": "report-followup",
+            "title": "Ask follow-up questions from a report",
+            "surface": "report",
+            "snippet": "Use report context when asking chat why a major matched or what tradeoffs to check.",
+            "action": {"id": "open_chat", "label": "Ask in Chat"},
+        },
+        {
+            "id": "human-fallback",
+            "title": "Human advisor fallback",
+            "surface": "chat",
+            "snippet": "If confidence is low or a claim needs official review, request a human advisor and track the handoff status.",
+            "action": {"id": "request_handoff", "label": "Request Advisor"},
+        },
+    ]
+    if major_id:
+        resources.insert(0, {
+            "id": f"major-{major_id}",
+            "title": f"Check official context for {major_id}",
+            "surface": "report",
+            "snippet": "Use official VinUni sources for admissions facts and treat match score as an AI estimate.",
+            "action": {"id": "open_resources", "label": "Open Resources"},
+        })
+    filtered = [
+        item for item in resources
+        if not surface_key or item["surface"] == surface_key or surface_key in {"resources", "all"}
+    ]
+    if intent_key in {"fallback", "handoff", "human"}:
+        filtered = [item for item in resources if item["id"] == "human-fallback"] + filtered
+    return filtered[:4]
 
 @app.get("/api/admin/users")
 async def list_admin_users(admin: dict = Depends(admin_required)):

@@ -211,3 +211,74 @@ Thành viên: Nhóm A20-124
 - Thêm validation phía frontend cho wizard answers, profile fields, chat length và CV upload để mirror backend rules.
 - Thêm contract tests cho `/api/match`, `/api/chat`, `/api/upload-cv`, metrics, audit logs và RAG admin controls.
 - Kiểm tra lại `/api/profile/{user_id}/cv` vì frontend service đang reference endpoint này nhưng backend route scan hiện chưa thấy route tương ứng.
+
+### Cập nhật ngày 14/05/2026
+#### Đã làm
+- **Hoàn thiện Multi-Agent Orchestration**: Đồng bộ hóa logic giữa Advisor (định hướng), RAG (tra cứu thông tin), và CRM (dữ liệu cá nhân) dưới sự giám sát của Judge Agent để đảm bảo tính chính xác và an toàn.
+- **CV Extraction & OCR Fallback**: Triển khai quy trình trích xuất CV hai giai đoạn (text-based -> OCR fallback với Tesseract). Tích hợp logic "fail-soft" để vẫn trả về dữ liệu cấu trúc khi LLM gặp sự cố.
+- **TCR Alignment (Final Push)**: 
+    - **Transparency**: Hiển thị minh bạch nguồn trích dẫn (citations) và lý do match ngành (match_reason) kèm label "AI-estimated".
+    - **Control**: Cho phép người dùng chỉnh sửa trực tiếp thông tin trích xuất từ CV trước khi lưu vào Profile.
+    - **Recovery**: Triển khai Escalation Workflow tự động chuyển sang tư vấn viên khi AI phát hiện dấu hiệu hứa hẹn quá mức (overcommitment).
+- **Hệ thống Quản trị**: Hoàn tất Dashboard dành cho Staff (xử lý Handoff) và Admin (quản lý Prompt Versioning và Ingestion).
+
+#### Khó nhất tuần này
+- Xử lý xung đột dữ liệu khi merge thông tin từ nhiều bản CV khác nhau vào Profile người dùng mà không làm mất dữ liệu cũ có giá trị.
+- Cấu hình OCR trên môi trường Cloud (Railway) yêu cầu cài đặt thêm các package hệ thống (libtesseract) thông qua Dockerfile.
+
+#### AI tool đã dùng
+| Tool | Dùng để làm gì | Kết quả |
+|---|---|---|
+| Gemini Code Assist | Refactor logic trích xuất CV, viết Escalation Detector và tối ưu hóa Dockerfile cho OCR | Hệ thống xử lý được các file PDF dạng ảnh và bảo vệ người dùng khỏi thông tin sai lệch. |
+
+#### Học được
+- Dữ liệu từ AI (trích xuất CV) luôn cần có con người (người dùng) xác nhận lại trước khi chính thức đưa vào cơ sở dữ liệu.
+- Việc thiết kế "Hinge Rule" (quản lý tập trung LLM config) giúp tiết kiệm cực kỳ nhiều thời gian khi cần thử nghiệm các model khác nhau (gpt-4o vs gemini-1.5).
+
+#### Kế hoạch tiếp theo
+- Chuẩn bị cho buổi Demo cuối kỳ với kịch bản: Student Wizard -> Profile Update via CV -> AI Advisor Chat -> Counselor Handoff.
+- Kiểm tra tải (load test) cho hệ thống RAG khi số lượng tài liệu tăng lên.
+
+---
+
+### Cap nhat bo sung ngay 14/05/2026 - Codex
+
+#### Da hoan thanh
+- Tong hop lai `14_05_Summary.md` thanh ban ghi ro rang ve cac tinh nang da lam trong ngay.
+- Tao `app/guide/Guideline_v3.md` tu `Guideline_v2.md`, bo sung cach lam viec dua tren pain point.
+- Bo sung vao guideline cac nguyen tac Trust, Recovery, Clarity, Speed, Safety.
+- Chuyen noi dung tu `app/Pain_Point.md` va `app/Pain_Point_skills.md` thanh ban do uu tien tinh nang co the trien khai.
+- Ghi ro yeu cau cho CV document versions, OCR fallback, structured CV parsing, editable profile merge, Wizard `cv_document_id`, RAG/profile context usage, human fallback, prompt versioning, token dashboard, resources, va admin tools.
+
+#### Gia tri san pham
+- Guideline moi giup LLM/coding agent khong chi viet code dung ky thuat ma con biet tinh nang dang giai quyet dau dau nao cua nguoi dung.
+- Cac tinh nang AI phai co duong lui ro rang: retry, edit, confirm, continue later, hoac human fallback.
+- Admin/staff tooling duoc dinh huong thanh man hinh van hanh de dung, khong chi la developer utility.
+
+#### Verification
+- Thay doi lan nay la tai lieu, khong can build backend/frontend.
+- Cac file duoc cap nhat: `14_05_Summary.md`, `JOURNAL.md`, `app/guide/Guideline_v3.md`.
+
+---
+
+### Cap nhat bo sung ngay 14/05/2026 - Backend/Frontend API functions
+
+#### Da hoan thanh
+- Backend them contract moi cho pain-point UX: `fallback_card`, `recovery_actions`, `decision_trace`, source labels, va `match_breakdown` cho ket qua goi y nganh.
+- Backend them API moi:
+  - `GET /api/profile/me/readiness`
+  - `GET /api/profile/me/cv-documents/{document_id}/merge-preview`
+  - `GET /api/resources/contextual`
+  - `GET /api/handoff-status`
+  - `GET /api/admin/system/health`
+- Frontend cap nhat `services/api.js` de normalize va dung cac field/API moi.
+- Report page hien thi ly do fallback, recovery actions, matched signals, tradeoffs, evidence labels, va nut "Ask about this major".
+- Chat UI gui context tu Report sang backend, hien fallback card, recovery buttons, suggested resources, source labels, va handoff status banner.
+- Profile page hien Profile readiness va CV merge preview truoc khi confirm CV version.
+- Resources page hien contextual resources va next-best actions dua tren readiness.
+- System/database page hien operational health badges cho database, token usage, prompt versions, handoffs, va RAG ingest.
+- Frontend contrast fix: cac secondary button nen trang duoc gan mau chu/icon ro rang de khong bi mat tren nen trang.
+
+#### Verification
+- Backend touched files da pass `py_compile` bang `.venv`.
+- Frontend da pass `npm run build`; van con warning chunk size lon cua Vite.
