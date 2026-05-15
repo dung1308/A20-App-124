@@ -183,7 +183,10 @@ const StaffDashboard = () => {
                       )}
                     </div>
                     <div className="flex gap-2">
-                      <button onClick={() => handleAccept(activeHandoff)} className="px-4 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest">
+                      <button
+                        onClick={() => handleAccept(activeHandoff)}
+                        className="px-4 py-3 bg-[#003466] text-white border border-[#003466] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-blue-900/20 hover:bg-[#0b477f] active:scale-95 transition-all"
+                      >
                         Accept
                       </button>
                       <button onClick={() => handleBusy(activeHandoff)} className="px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-black uppercase tracking-widest">
@@ -225,7 +228,7 @@ const StaffDashboard = () => {
                       <button
                         onClick={handleSendReply}
                         disabled={sending || !reply.trim()}
-                        className="mt-3 px-4 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-50"
+                        className="mt-3 px-4 py-3 bg-[#003466] text-white border border-[#003466] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-blue-900/20 hover:bg-[#0b477f] active:scale-95 transition-all disabled:cursor-not-allowed disabled:bg-slate-200 disabled:border-slate-200 disabled:text-slate-500 disabled:shadow-none"
                       >
                         Send to Human Chat
                       </button>

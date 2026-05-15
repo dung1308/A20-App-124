@@ -37,6 +37,8 @@ Quy tắc:
 - Chính xác
 - Dễ hiểu
 - Có thể dùng bullet points nếu phù hợp
+- Khi Context có Source URL, phải thêm mục "Nguồn:" ở cuối câu trả lời với link đó
+- Không nói đã xác minh nếu không có source_type official trong Context
 """
 
 
@@ -110,7 +112,7 @@ class RAGAgent:
             # ======================================================
 
             context_text = "\n\n---\n\n".join(
-                [doc.get("text", "") for doc in context_docs]
+                [self._format_context_doc(doc, idx) for idx, doc in enumerate(context_docs, start=1)]
             )
 
             if not context_text.strip():
@@ -360,7 +362,9 @@ class RAGAgent:
             seen_urls.add(url)
             sources.append({
                 "title": self._source_title(metadata, idx),
-                "url": url
+                "url": url,
+                "source_type": self._source_type(metadata, url),
+                "snippet": self._snippet(chunk),
             })
 
         return sources
@@ -380,10 +384,39 @@ class RAGAgent:
 
     def _source_title(self, metadata: Dict[str, Any], idx: int) -> str:
         return (
-            metadata.get("source")
+            metadata.get("title")
+            or metadata.get("page_title")
+            or metadata.get("source")
             or metadata.get("section")
             or metadata.get("type")
             or f"Tài liệu VinUni {idx}"
+        )
+
+    def _source_type(self, metadata: Dict[str, Any], url: str) -> str:
+        explicit = metadata.get("source_type")
+        if explicit:
+            return explicit
+        lowered_url = (url or "").lower()
+        if "vinuni.edu.vn" in lowered_url:
+            return "official"
+        return metadata.get("type") or metadata.get("source") or "derived"
+
+    def _snippet(self, text: str, max_chars: int = 220) -> str:
+        compact = re.sub(r"\s+", " ", text or "").strip()
+        if len(compact) <= max_chars:
+            return compact
+        return compact[:max_chars].rsplit(" ", 1)[0] + "..."
+
+    def _format_context_doc(self, doc: Dict[str, Any], idx: int) -> str:
+        metadata = doc.get("metadata", {}) or {}
+        url = self._source_url(metadata)
+        title = self._source_title(metadata, idx)
+        source_type = self._source_type(metadata, url)
+        return (
+            f"Source {idx}: {title}\n"
+            f"Source type: {source_type}\n"
+            f"Source URL: {url}\n"
+            f"Content: {doc.get('text', '')}"
         )
 
     # ==========================================================

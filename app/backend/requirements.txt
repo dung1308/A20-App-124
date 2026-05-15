@@ -18,6 +18,7 @@ pypdf>=4.2.0
 scikit-learn>=1.4.2
 joblib>=1.4.2
 numpy>=1.26.4
+rank_bm25>=0.2.1
 pdfplumber
 pyarrow>=11.0.0
 PyMuPDF>=1.20.0

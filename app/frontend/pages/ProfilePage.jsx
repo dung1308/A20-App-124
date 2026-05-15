@@ -190,7 +190,7 @@ const ProfilePage = () => {
         </div>
         <button
           onClick={() => navigate('/wizard')}
-          className="px-5 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest hover:shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0"
+          className="px-5 py-3 bg-[#003466] text-white border border-[#003466] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-blue-900/20 hover:bg-[#0b477f] active:scale-95 transition-all flex items-center justify-center gap-2 shrink-0"
         >
           <span className="material-symbols-outlined text-[18px]">psychology_alt</span>
           {hasWizardAnswers ? 'Làm lại Wizard' : 'Làm Wizard'}
@@ -434,7 +434,7 @@ const ProfilePage = () => {
           {isEditing ? (
             <>
               <button onClick={handleCancel} className="px-6 py-3 text-slate-500 text-sm font-black uppercase tracking-widest hover:text-slate-800 transition-colors">Hủy</button>
-              <button onClick={handleSave} disabled={saving} className="px-8 py-3 bg-primary text-white font-black text-sm uppercase tracking-widest rounded-xl hover:shadow-lg active:scale-95 transition-all shadow-md disabled:opacity-50">
+              <button onClick={handleSave} disabled={saving} className="px-8 py-3 bg-[#003466] text-white border border-[#003466] font-black text-sm uppercase tracking-widest rounded-xl shadow-md shadow-blue-900/20 hover:bg-[#0b477f] hover:shadow-lg active:scale-95 transition-all disabled:cursor-not-allowed disabled:bg-slate-200 disabled:border-slate-200 disabled:text-slate-500 disabled:shadow-none">
                 {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
               </button>
             </>

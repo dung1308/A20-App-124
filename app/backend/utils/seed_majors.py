@@ -25,8 +25,8 @@ MAJORS_DATA = [
     },
     {
         "id": "ee", 
-        "name": "Kỹ thuật Điện — Điện tử", 
-        "description": "Sinh viên EE thiết kế mạch điện, lập trình vi điều khiển, làm dự án IoT và thực tập tại các nhà máy sản xuất điện tử."
+        "name": "Kỹ thuật Điện & Máy tính", 
+        "description": "Sinh viên ECE học nền tảng kỹ thuật điện, kỹ thuật máy tính, lập trình, mạch điện, hệ thống nhúng, IoT, vi điện tử, viễn thông và các công nghệ năng lượng."
     },
     {
         "id": "me", 

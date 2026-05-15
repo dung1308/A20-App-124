@@ -50,6 +50,11 @@ class LLMRouter:
         """
         logger.info(f"Routing message: '{message[:60]}...'")
 
+        rule_route = self._rule_route(message)
+        if rule_route:
+            logger.info(f"[RULE] Routed to: {rule_route}")
+            return rule_route
+
         # ==========================================================
         # ✅ MOCK MODE — NO LLM CALLS
         # ==========================================================
@@ -81,6 +86,51 @@ class LLMRouter:
         except Exception as e:
             logger.error(f"Router failure: {e} → fallback to 'rag'")
             return "rag"
+
+    def _rule_route(self, message: str) -> str:
+        """
+        Force informational program/major lookup questions through RAG.
+        Without this, phrases such as "xem chuyen nganh bac si y khoa" can
+        be classified as advisor because they contain major-selection words.
+        """
+        msg = (message or "").lower()
+        factual_program_terms = [
+            "bác sĩ y khoa",
+            "bac si y khoa",
+            "medical doctor",
+            "doctor of medicine",
+            "chương trình",
+            "chuong trinh",
+            "program",
+        ]
+        info_verbs = [
+            "xem",
+            "tìm hiểu",
+            "tim hieu",
+            "hướng dẫn",
+            "huong dan",
+            "thông tin",
+            "thong tin",
+            "chi tiết",
+            "chi tiet",
+            "giới thiệu",
+            "gioi thieu",
+        ]
+        choose_terms = [
+            "nên chọn",
+            "nen chon",
+            "phù hợp",
+            "phu hop",
+            "match",
+            "so sánh",
+            "so sanh",
+        ]
+
+        if any(term in msg for term in factual_program_terms) and any(term in msg for term in info_verbs):
+            if not any(term in msg for term in choose_terms):
+                return "rag"
+
+        return ""
 
     # ------------------------------------------------------------------
     # MOCK ROUTER (deterministic)

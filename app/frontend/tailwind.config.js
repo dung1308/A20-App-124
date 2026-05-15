@@ -8,6 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
+        'primary': '#003466',
         'vinuni-blue': '#003466',
       },
     },

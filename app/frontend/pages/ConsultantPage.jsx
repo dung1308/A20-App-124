@@ -11,7 +11,7 @@ import HumanCounsellorPopup from '../components/Chat/HumanCounsellorPopup';
 
 const majorNameMap = {
   'cs': 'Khoa học Máy tính',
-  'ee': 'Kỹ thuật Điện — Điện tử',
+  'ee': 'Kỹ thuật Điện & Máy tính',
   'me': 'Kỹ thuật Cơ khí',
   'bme': 'Kỹ thuật Y sinh',
   'ba': 'Quản trị Kinh doanh',

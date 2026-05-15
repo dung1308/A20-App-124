@@ -93,12 +93,12 @@ const ReportPage = () => {
   return (
     <div className="p-8 h-full overflow-y-auto bg-slate-50/50">
       <div className="max-w-7xl mx-auto space-y-6">
-        <header className="bg-primary text-white p-8 rounded-2xl shadow-xl shadow-blue-900/10">
+        <header className="bg-[#003466] text-white p-8 rounded-2xl border border-[#0b477f] shadow-xl shadow-blue-900/20">
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6">
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-blue-100">VinUni Major Match</p>
-              <h1 className="text-3xl font-black mt-2">Bao cao goi y nganh hoc</h1>
-              <p className="text-blue-100 text-sm mt-3 max-w-3xl leading-6">
+              <h1 className="text-3xl font-black mt-2 text-white">Bao cao goi y nganh hoc</h1>
+              <p className="text-blue-50 text-sm mt-3 max-w-3xl leading-6">
                 {matchResults.disclaimer || 'Ket qua do AI phan tich dua tren cau tra loi Wizard va CV neu ban da tai len.'}
               </p>
             </div>
@@ -192,9 +192,9 @@ const ReportPage = () => {
 };
 
 const SummaryCard = ({ label, value }) => (
-  <div className="bg-white/10 border border-white/20 rounded-xl p-4">
-    <p className="text-[10px] font-black uppercase tracking-widest text-blue-100">{label}</p>
-    <p className="text-2xl font-black mt-1">{value}</p>
+  <div className="bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
+    <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>
+    <p className="text-2xl font-black mt-1 text-[#003466]">{value}</p>
   </div>
 );
 

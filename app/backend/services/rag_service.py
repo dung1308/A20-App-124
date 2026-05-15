@@ -117,7 +117,7 @@ ANSWER_GENERATION_PROMPT = (
 
 DEMO_CORPUS: List[Dict[str, str]] = [
     {"id": "cs",           "text": "Khoa học Máy tính (CS) tại VinUni tập trung vào AI, phát triển phần mềm..."},
-    {"id": "ee",           "text": "Kỹ thuật Điện — Điện tử (EE) đào tạo về mạch điện, hệ thống nhúng..."},
+    {"id": "ee",           "text": "Kỹ thuật Điện & Máy tính (ECE) đào tạo về mạch điện, kỹ thuật máy tính, lập trình, hệ thống nhúng, IoT, vi điện tử và viễn thông."},
     {"id": "me",           "text": "Kỹ thuật Cơ khí (ME) đào tạo thiết kế máy móc..."},
     {"id": "bme",          "text": "Kỹ thuật Y sinh (BME)..."},
     {"id": "ba",           "text": "Quản trị Kinh doanh (BA)..."},
@@ -673,7 +673,11 @@ class RAGService:
                 url = (params.get("url") or "").strip()
                 if not url:
                     raise ValueError("External ingestion requires params.url")
-                added = self.ingest_external_url(url, force_overwrite=force)
+                added = self.ingest_external_url(
+                    url,
+                    force_overwrite=force,
+                    source_type=params.get("source_type"),
+                )
                 report["added"] = added
                 return report
 
@@ -689,27 +693,41 @@ class RAGService:
         report = self.sync_all(source_type=source_type, params=params or {})
         yield {"progress": 100, "message": "RAG ingestion completed", "report": report, "done": True}
 
-    def ingest_external_url(self, url: str, force_overwrite: bool = False) -> int:
+    def ingest_external_url(
+        self,
+        url: str,
+        force_overwrite: bool = False,
+        source_type: Optional[str] = None,
+    ) -> int:
         import requests
         from html.parser import HTMLParser
+        from urllib.parse import urlparse
 
         class TextExtractor(HTMLParser):
             def __init__(self):
                 super().__init__()
                 self.parts = []
                 self.skip = False
+                self.in_title = False
+                self.title_parts = []
 
             def handle_starttag(self, tag, attrs):
                 if tag in {"script", "style", "noscript"}:
                     self.skip = True
+                if tag == "title":
+                    self.in_title = True
 
             def handle_endtag(self, tag):
                 if tag in {"script", "style", "noscript"}:
                     self.skip = False
+                if tag == "title":
+                    self.in_title = False
 
             def handle_data(self, data):
                 if not self.skip and data.strip():
                     self.parts.append(data.strip())
+                if self.in_title and data.strip():
+                    self.title_parts.append(data.strip())
 
         response = requests.get(url, timeout=15, headers={"User-Agent": "VinUniAdmissionAssistant/1.0"})
         response.raise_for_status()
@@ -719,6 +737,15 @@ class RAGService:
         chunks = chunk_text(text, max_tokens=220)
         ids, documents, embeddings, metadatas = [], [], [], []
         safe_id = re.sub(r"[^a-zA-Z0-9._-]", "_", url)[:120]
+        parsed = urlparse(url)
+        host = parsed.hostname or ""
+        is_official_vinuni = host.endswith("vinuni.edu.vn")
+        admin_source_type = (source_type or "").strip().lower()
+        if admin_source_type == "unofficial":
+            admin_source_type = "external"
+        if admin_source_type not in {"official", "external"}:
+            admin_source_type = "official" if is_official_vinuni else "external"
+        page_title = " ".join(parser.title_parts).strip() or url
 
         for idx, chunk in enumerate(chunks):
             emb = self.embed_text(chunk)
@@ -727,7 +754,15 @@ class RAGService:
             ids.append(f"external_{safe_id}_{idx}")
             documents.append(chunk)
             embeddings.append(emb)
-            metadatas.append({"type": "external", "source": "web", "url": url})
+            metadatas.append({
+                "type": "external",
+                "source": "web",
+                "source_type": admin_source_type,
+                "admin_marked_source_type": admin_source_type,
+                "title": page_title,
+                "url": url,
+                "retrieved_at": datetime.utcnow().isoformat() + "Z",
+            })
 
         if ids:
             self.admission_collection.upsert(

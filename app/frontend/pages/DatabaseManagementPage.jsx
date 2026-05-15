@@ -37,6 +37,7 @@ const DatabaseManagementPage = () => {
   const [compareResult, setCompareResult] = useState(null);
   const [ingestMode, setIngestMode] = useState('internal');
   const [ingestUrl, setIngestUrl] = useState('');
+  const [externalSourceType, setExternalSourceType] = useState('official');
   const [forceOverwrite, setForceOverwrite] = useState(false);
   const [ingesting, setIngesting] = useState(false);
   const [ingestReport, setIngestReport] = useState(null);
@@ -236,7 +237,10 @@ const DatabaseManagementPage = () => {
         source_type: ingestMode,
         params: {
           force_overwrite: forceOverwrite,
-          ...(ingestMode === 'external' ? { url: ingestUrl.trim() } : {})
+          ...(ingestMode === 'external' ? {
+            url: ingestUrl.trim(),
+            source_type: externalSourceType,
+          } : {})
         }
       };
       const result = await api.ingestRag(payload);
@@ -631,12 +635,47 @@ const DatabaseManagementPage = () => {
                 <p className="text-xs text-slate-500 mt-1">Reads the configured local corpus folders and updates embeddings.</p>
               </div>
             ) : (
-              <input
-                className={`${inputClass} w-full`}
-                placeholder="https://vinuni.edu.vn/..."
-                value={ingestUrl}
-                onChange={(e) => setIngestUrl(e.target.value)}
-              />
+              <div className="space-y-4">
+                <input
+                  className={`${inputClass} w-full`}
+                  placeholder="https://vinuni.edu.vn/..."
+                  value={ingestUrl}
+                  onChange={(e) => setIngestUrl(e.target.value)}
+                />
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Source verification</p>
+                  <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all ${externalSourceType === 'official' ? 'border-emerald-200 bg-white shadow-sm' : 'border-slate-200 bg-slate-50'}`}>
+                      <input
+                        type="radio"
+                        name="external-source-type"
+                        value="official"
+                        checked={externalSourceType === 'official'}
+                        onChange={(e) => setExternalSourceType(e.target.value)}
+                        className="mt-0.5 h-4 w-4 border-slate-300 text-emerald-600 focus:ring-emerald-200"
+                      />
+                      <span>
+                        <span className="block text-sm font-black text-slate-800">Official</span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-500">Use for VinUni-owned domains or verified university pages.</span>
+                      </span>
+                    </label>
+                    <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-all ${externalSourceType === 'unofficial' ? 'border-amber-200 bg-white shadow-sm' : 'border-slate-200 bg-slate-50'}`}>
+                      <input
+                        type="radio"
+                        name="external-source-type"
+                        value="unofficial"
+                        checked={externalSourceType === 'unofficial'}
+                        onChange={(e) => setExternalSourceType(e.target.value)}
+                        className="mt-0.5 h-4 w-4 border-slate-300 text-amber-600 focus:ring-amber-200"
+                      />
+                      <span>
+                        <span className="block text-sm font-black text-slate-800">Unofficial</span>
+                        <span className="mt-1 block text-xs leading-5 text-slate-500">Use for third-party references that should not be treated as verified policy.</span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
             )}
 
             <label className="flex items-center gap-3 text-sm font-bold text-slate-700">

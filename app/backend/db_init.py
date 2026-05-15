@@ -49,7 +49,7 @@ def seed_admissions_data():
                 AdmissionsData(
                     major_id="ee",
                     requirements="GPA >= 3.2, IELTS >= 6.0, Physics/Math score >= 7.5",
-                    description="Ngành Kỹ thuật Điện — Điện tử phù hợp với học sinh thích vật lý và công nghệ."
+                    description="Ngành Kỹ thuật Điện & Máy tính phù hợp với học sinh thích vật lý, mạch điện, hệ thống nhúng, lập trình và công nghệ máy tính."
                 ),
                 AdmissionsData(
                     major_id="me",

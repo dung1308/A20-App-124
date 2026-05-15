@@ -1,6 +1,10 @@
 import React from 'react';
 
 const MajorCard = ({ major, onAsk }) => {
+  const displayName = major.major_id === 'ee'
+    ? 'Kỹ thuật Điện & Máy tính'
+    : major.major_name;
+
   const getScoreColor = (score) => {
     if (score >= 70) return 'text-emerald-600 bg-emerald-50 border-emerald-100';
     if (score >= 40) return 'text-amber-600 bg-amber-50 border-amber-100';
@@ -15,7 +19,7 @@ const MajorCard = ({ major, onAsk }) => {
     <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex justify-between items-start gap-4 mb-4">
         <div>
-          <h3 className="text-lg font-bold text-blue-900 leading-tight">{major.major_name}</h3>
+          <h3 className="text-lg font-bold text-blue-900 leading-tight">{displayName}</h3>
           {major.department && <p className="text-xs text-slate-500 mt-1">{major.department}</p>}
         </div>
         <div className="flex flex-col items-end gap-2 shrink-0">

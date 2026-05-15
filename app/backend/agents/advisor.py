@@ -41,9 +41,17 @@ OFFICIAL_MAJOR_LINKS: Dict[str, Dict[str, str]] = {
     "architecture": {"department": "VinUni Admissions", "source_url": "https://admissions.vinuni.edu.vn/vi/dai-hoc/cau-hoi-thuong-gap/tuyen-sinh/"},
 }
 
+CANONICAL_MAJOR_NAMES = {
+    "ee": "Kỹ thuật Điện & Máy tính",
+}
+
+CANONICAL_MAJOR_DESCRIPTIONS = {
+    "ee": "Sinh viên ECE học nền tảng kỹ thuật điện, kỹ thuật máy tính, lập trình, mạch điện, hệ thống nhúng, IoT, vi điện tử, viễn thông và các công nghệ năng lượng.",
+}
+
 VINUNI_MAJORS_LOOKUP: Dict[str, Dict] = {
     "cs":           {"name": "Khoa học Máy tính",         "what_students_do": "Sinh viên CS tại VinUni làm việc với AI, xây dựng ứng dụng, nghiên cứu thuật toán và thực tập tại các công ty công nghệ như VNG, KMS, FPT."},
-    "ee":           {"name": "Kỹ thuật Điện — Điện tử",   "what_students_do": "Sinh viên EE thiết kế mạch điện, lập trình vi điều khiển, làm dự án IoT và thực tập tại các nhà máy sản xuất điện tử."},
+    "ee":           {"name": "Kỹ thuật Điện & Máy tính",   "what_students_do": "Sinh viên ECE học nền tảng kỹ thuật điện, kỹ thuật máy tính, lập trình, mạch điện, hệ thống nhúng, IoT, vi điện tử, viễn thông và các công nghệ năng lượng."},
     "me":           {"name": "Kỹ thuật Cơ khí",           "what_students_do": "Sinh viên ME làm với CAD/CAM, in 3D, robotics và thực tập tại các nhà máy hoặc công ty sản xuất."},
     "bme":          {"name": "Kỹ thuật Y sinh",            "what_students_do": "Sinh viên BME thiết kế thiết bị y tế, nghiên cứu cùng bệnh viện, có thể học tiếp y khoa hoặc làm trong ngành dược."},
     "ba":           {"name": "Quản trị Kinh doanh",        "what_students_do": "Sinh viên BA làm case study thực tế, tham gia cuộc thi khởi nghiệp, thực tập tại công ty lớn hoặc startup."},
@@ -329,10 +337,10 @@ Hãy hỏi thêm 2-3 thông tin cụ thể để có thể tư vấn tốt hơn.
             # Mapping keys to match MajorResult pydantic schema
             enriched.append({
                 "major_id": major_id,
-                "major_name": info["name"],
+                "major_name": CANONICAL_MAJOR_NAMES.get(major_id, info["name"]),
                 "match_reason": item.get("match_reason", ""),
                 "match_score": item.get("match_score", 0),
-                "what_students_do": info["what_students_do"],
+                "what_students_do": CANONICAL_MAJOR_DESCRIPTIONS.get(major_id, info["what_students_do"]),
                 "department": OFFICIAL_MAJOR_LINKS.get(major_id, {}).get("department"),
                 "source_url": OFFICIAL_MAJOR_LINKS.get(major_id, {}).get("source_url"),
                 "verified_source": bool(OFFICIAL_MAJOR_LINKS.get(major_id, {}).get("source_url")),

@@ -9,7 +9,7 @@ Swapping LLM providers = edit this one file only.
 
 import os
 import logging
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -28,7 +28,7 @@ DATABASE_URL: str = os.getenv("DATABASE_URL", "") # Initialize as empty string, 
 PROMPT_VERSION: str = os.getenv("PROMPT_VERSION", "v2")
 ALLOW_PROMPT_DELETION: bool = os.getenv("ALLOW_PROMPT_DELETION", "false").lower() == "true"
 USE_MOCK: bool = os.getenv("USE_MOCK", "True").lower() == "true"
-REDIS_URL: str | None = os.getenv("REDIS_URL")
+REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
 HUMAN_WEBHOOK: str = os.getenv("HUMAN_WEBHOOK", "http://localhost:9000/handoff")
 ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
 # CORS settings - comma separated string in env
