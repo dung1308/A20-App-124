@@ -11,7 +11,7 @@ Checked on 15/05/2026:
 - `app/frontend/Dockerfile` is Railway-ready. It builds the Vite app with `npm run build` and serves the generated `dist/` folder on `${PORT:-3000}`.
 - Both Docker build contexts include `.dockerignore` files to keep local logs, uploads, caches, `node_modules`, and previous build output out of Railway image builds.
 - `DATABASE_URL=postgresql://...@db:5432/...` is local Docker Compose only. Railway production must use `${{Postgres.DATABASE_URL}}`.
-- `VITE_*` variables are embedded into the frontend bundle at build time. After changing `VITE_API_URL` or `VITE_GOOGLE_CLIENT_ID` in Railway, redeploy the frontend service.
+- `VITE_*` variables are embedded into the frontend bundle at build time. The frontend Dockerfile declares `ARG VITE_API_URL` and `ARG VITE_GOOGLE_CLIENT_ID` so Railway can pass service variables into `npm run build`. After changing either value in Railway, redeploy the frontend service.
 
 ## 0. Local Docker Compose Setup
 
@@ -179,7 +179,7 @@ Notes:
 - Do **not** use the `.railway.internal` URL for `VITE_API_URL`. The frontend runs in the user's browser, so it must use the public internet address.
 - `VITE_GOOGLE_CLIENT_ID` should match the same Google OAuth client configured for the backend as `GOOGLE_CLIENT_ID`.
 - The frontend Dockerfile runs `npm run build`, then serves `dist/` on `${PORT:-3000}`. Do not use `npm run dev` for production Railway deploys.
-- Because this is a Vite app, `VITE_API_URL` and `VITE_GOOGLE_CLIENT_ID` must be available when Railway builds the image. Redeploy the frontend after editing these variables.
+- Because this is a Vite app, `VITE_API_URL` and `VITE_GOOGLE_CLIENT_ID` must be available when Railway builds the image. The checked-in Dockerfile declares both as build args. Redeploy the frontend after editing these variables, and clear the browser cache if the browser keeps loading an older `index-*.js` bundle.
 
 ## 4.1 Google OAuth Settings
 
