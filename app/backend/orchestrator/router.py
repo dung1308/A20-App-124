@@ -12,6 +12,8 @@ REAL mode:
 
 import logging
 import json
+import re
+import unicodedata
 from typing import List, Dict, Any
 
 from config import USE_MOCK
@@ -93,7 +95,95 @@ class LLMRouter:
         Without this, phrases such as "xem chuyen nganh bac si y khoa" can
         be classified as advisor because they contain major-selection words.
         """
-        msg = (message or "").lower()
+        msg = self._normalize_text(message)
+        if not msg:
+            return ""
+
+        profile_terms = [
+            "my profile",
+            "my gpa",
+            "my ielts",
+            "ho so cua toi",
+            "diem cua toi",
+            "cv cua toi",
+        ]
+        if any(term in msg for term in profile_terms):
+            return ""
+
+        explicit_advisor_terms = [
+            "nen chon",
+            "phu hop voi toi",
+            "chon nganh nao",
+            "nganh nao hop",
+            "major match",
+            "career direction",
+            "tu van chon nganh",
+            "so sanh giup toi chon",
+        ]
+        if any(term in msg for term in explicit_advisor_terms):
+            return ""
+
+        factual_terms = [
+            "admission",
+            "admissions",
+            "apply",
+            "application",
+            "deadline",
+            "requirement",
+            "requirements",
+            "eligibility",
+            "tuition",
+            "fee",
+            "fees",
+            "scholarship",
+            "financial aid",
+            "campus",
+            "dorm",
+            "program",
+            "curriculum",
+            "major",
+            "vinuni",
+            "tuyen sinh",
+            "ung tuyen",
+            "nop ho so",
+            "han nop",
+            "hoc phi",
+            "hoc bong",
+            "yeu cau",
+            "dieu kien",
+            "ky tuyen sinh",
+            "nganh",
+            "chuong trinh",
+            "doi song sinh vien",
+        ]
+        question_terms = [
+            "what",
+            "when",
+            "where",
+            "who",
+            "how",
+            "which",
+            "can you tell",
+            "explain",
+            "list",
+            "give me",
+            "la gi",
+            "khi nao",
+            "o dau",
+            "nhu the nao",
+            "bao nhieu",
+            "co nhung",
+            "cho biet",
+            "thong tin",
+            "chi tiet",
+            "gioi thieu",
+            "huong dan",
+            "xem",
+            "tim hieu",
+        ]
+        if any(term in msg for term in factual_terms) and any(term in msg for term in question_terms):
+            return "rag"
+
         factual_program_terms = [
             "bác sĩ y khoa",
             "bac si y khoa",
@@ -131,6 +221,14 @@ class LLMRouter:
                 return "rag"
 
         return ""
+
+    def _normalize_text(self, value: str) -> str:
+        text = (value or "").lower()
+        text = unicodedata.normalize("NFD", text)
+        text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
+        text = text.replace("đ", "d")
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
 
     # ------------------------------------------------------------------
     # MOCK ROUTER (deterministic)
