@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import CVUpload from '../components/CVUpload/CVUpload';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const { userAvatar, updateUserAvatar } = useAuth();
+  const profileImageInputRef = useRef(null);
   const userEmail = localStorage.getItem('user_email');
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -110,6 +113,29 @@ const ProfilePage = () => {
     }
   };
 
+  const handleProfileImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please choose an image file.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Profile image must be under 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateUserAvatar(reader.result);
+      toast.success('Profile image updated.');
+    };
+    reader.onerror = () => toast.error('Could not read this image.');
+    reader.readAsDataURL(file);
+  };
+
   const handleViewCV = async () => {
     try {
       const response = await api.downloadCV(userEmail);
@@ -161,6 +187,51 @@ const ProfilePage = () => {
         <h2 className="text-3xl font-black text-primary m-0 tracking-tight">Hồ sơ cá nhân</h2>
         <p className="text-slate-500 font-medium mt-1">Quản lý thông tin để Trợ lý AI có thể tư vấn hướng nghiệp chính xác nhất cho bạn.</p>
       </header>
+
+      <section className="bg-white border border-slate-200 rounded-2xl p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-sm">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center text-[#003466] text-3xl font-black border border-blue-100 shadow-sm overflow-hidden shrink-0">
+            {userAvatar ? (
+              <img src={userAvatar} alt="" className="h-full w-full object-cover" />
+            ) : (
+              (profile?.full_name || userEmail || 'U').charAt(0).toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-black text-slate-900">Profile image</p>
+            <p className="text-xs text-slate-500 mt-1">Upload a square image under 2MB. It will also appear in the upper bar.</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => profileImageInputRef.current?.click()}
+            className="px-5 py-3 bg-[#003466] text-white border border-[#003466] rounded-xl text-xs font-black uppercase tracking-widest shadow-sm shadow-blue-900/20 hover:bg-[#0b477f] active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-[18px]">upload</span>
+            Upload profile image
+          </button>
+          {userAvatar && (
+            <button
+              type="button"
+              onClick={() => {
+                updateUserAvatar('');
+                toast.success('Profile image removed.');
+              }}
+              className="px-5 py-3 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-50 active:scale-95 transition-all"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+        <input
+          ref={profileImageInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleProfileImageUpload}
+          className="hidden"
+        />
+      </section>
 
       <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 mb-8 flex items-center gap-4">
         <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 shadow-sm border border-blue-200">

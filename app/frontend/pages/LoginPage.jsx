@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -154,6 +155,13 @@ const LoginPage = () => {
               {isLogin ? 'Đăng ký ngay' : 'Đăng nhập'}
             </button>
           </div>
+          {isLogin && (
+            <div className="mt-3 text-center text-xs text-[#64748b]">
+              <Link to="/admin-signup" className="font-semibold text-[#003466] hover:underline">
+                Create an admin account
+              </Link>
+            </div>
+          )}
         </div>
       </div>
   );

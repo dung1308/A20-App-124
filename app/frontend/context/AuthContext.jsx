@@ -90,11 +90,13 @@ export const AuthProvider = ({ children }) => {
   // Helper function to handle successful authentication (login/signup/google)
   const handleAuthSuccess = useCallback((data) => {
     const newToken = data.token;
+    const savedAvatar = localStorage.getItem(`user_avatar_${data.user_email}`);
+    const avatar = savedAvatar || data.picture || '';
     localStorage.setItem('token', newToken);
     localStorage.setItem('user_email', data.user_email);
     localStorage.setItem('user_role', data.role || 'user');
     localStorage.setItem('user_name', data.full_name || '');
-    localStorage.setItem('user_avatar', data.picture || '');
+    localStorage.setItem('user_avatar', avatar);
     localStorage.setItem('user_permissions', JSON.stringify(data.permissions || []));
 
     setToken(newToken);
@@ -102,7 +104,7 @@ export const AuthProvider = ({ children }) => {
     setUserId(data.user_email);
     setRole(data.role || 'user');
     setUserName(data.full_name || null);
-    setUserAvatar(data.picture || null);
+    setUserAvatar(avatar || null);
     setPermissions(data.permissions || []);
 
     // Navigate based on Wizard completion
@@ -152,6 +154,31 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const adminSignup = async (fullName, email, password, adminKey) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.post('/api/auth/admin-signup', {
+        full_name: fullName,
+        email,
+        password,
+        admin_key: adminKey,
+      });
+      toast.success('Admin account created. Please sign in.');
+      return response.data;
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      const msg = Array.isArray(detail)
+        ? detail.map(d => d.msg.replace('Value error, ', '')).join(' ')
+        : (typeof detail === 'string' ? detail.replace('Value error, ', '') : (err.message || 'Could not create admin account'));
+      setError(msg);
+      toast.error(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loginWithGoogle = async (credential) => {
     setLoading(true);
     setError(null);
@@ -192,6 +219,15 @@ export const AuthProvider = ({ children }) => {
     navigate('/login');
   }, [navigate]);
 
+  const updateUserAvatar = useCallback((avatarDataUrl) => {
+    const email = localStorage.getItem('user_email');
+    if (email) {
+      localStorage.setItem(`user_avatar_${email}`, avatarDataUrl || '');
+    }
+    localStorage.setItem('user_avatar', avatarDataUrl || '');
+    setUserAvatar(avatarDataUrl || '');
+  }, []);
+
   const authContextValue = {
     token,
     isAuthenticated,
@@ -200,8 +236,10 @@ export const AuthProvider = ({ children }) => {
     userName,
     userAvatar,
     permissions,
+    updateUserAvatar,
     login,
     signup,
+    adminSignup,
     loginWithGoogle,
     logout,
     loading,

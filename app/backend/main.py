@@ -12,6 +12,7 @@ import uuid
 import threading
 import json
 import ast
+import secrets
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 import logging
@@ -1114,17 +1115,11 @@ async def signup(request: SignupRequest):
         raise HTTPException(status_code=400, detail="Email này đã được đăng ký.")
 
     try:
-        # Determine role based on email domain or provided secret admin key
-        admin_signup_key = os.getenv("ADMIN_SIGNUP_KEY", "dev-admin-key")
-        is_admin_key_valid = request.admin_key == admin_signup_key if request.admin_key else False
-        
-        role = "admin" if (request.email.endswith("@vinuni.edu.vn") or is_admin_key_valid) else "user"
-
         user_data = {
             "full_name": request.full_name,
             "email": request.email,
             "password": request.password,
-            "role": role
+            "role": "user"
         }
         # Use email as the internal user_id for consistency across login/signup
         pipeline.db_service.upsert_student_profile(request.email, user_data)
@@ -1133,6 +1128,33 @@ async def signup(request: SignupRequest):
     except Exception as e:
         logger.error(f"Signup error: {e}")
         raise HTTPException(status_code=500, detail="Lỗi khi tạo tài khoản.")
+
+@app.post("/api/auth/admin-signup")
+async def admin_signup(request: SignupRequest):
+    """Create an admin account when the shared ADMIN_SIGNUP_KEY is provided."""
+    admin_signup_key = os.getenv("ADMIN_SIGNUP_KEY")
+    if not admin_signup_key:
+        logger.error("ADMIN_SIGNUP_KEY is not configured")
+        raise HTTPException(status_code=500, detail="Admin signup is not configured.")
+
+    if not request.admin_key or not secrets.compare_digest(request.admin_key, admin_signup_key):
+        raise HTTPException(status_code=403, detail="Invalid admin signup key.")
+
+    existing_user = pipeline.db_service.get_student_profile(request.email)
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email nay da duoc dang ky.")
+
+    try:
+        pipeline.db_service.upsert_student_profile(request.email, {
+            "full_name": request.full_name,
+            "email": request.email,
+            "password": request.password,
+            "role": "admin",
+        })
+        return {"status": "success", "message": "Admin account created successfully."}
+    except Exception as e:
+        logger.error(f"Admin signup error: {e}")
+        raise HTTPException(status_code=500, detail="Could not create admin account.")
 
 @app.post("/api/auth/login")
 async def login(request: LoginRequest):
@@ -1184,7 +1206,7 @@ async def google_auth(request: GoogleLoginRequest):
         db_permissions = user.get("permissions") or [] if user else []
 
         # Logic phân quyền tương tự login thường
-        role = user.get("role") if user else ("admin" if email.endswith("@vinuni.edu.vn") else "user")
+        role = user.get("role") if user else "user"
         
         app_token = create_access_token({"sub": email, "role": role, "permissions": db_permissions})
         

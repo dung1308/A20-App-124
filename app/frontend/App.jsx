@@ -5,6 +5,7 @@ import ReportPage from './pages/ReportPage';
 import DashboardPage from './pages/DashboardPage';
 import ConsultantPage from './pages/ConsultantPage';
 import LoginPage from './pages/LoginPage';
+import AdminSignupPage from './pages/AdminSignupPage';
 import ProfilePage from './pages/ProfilePage';
 import ResourcesPage from './pages/ResourcesPage';
 import TokenUsagePage from './pages/TokenUsagePage';
@@ -74,6 +75,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin-signup" element={<AdminSignupPage />} />
           <Route path="/wizard" element={<ProtectedRoute><WizardPage /></ProtectedRoute>} />
 
           {/* Protected Routes sharing sidebar and navigation */}

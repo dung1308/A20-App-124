@@ -121,6 +121,7 @@ const api = {
   // Authentication Endpoints
   login: (credentials) => apiClient.post('/api/auth/login', credentials).then(res => res.data),
   signup: (userData) => apiClient.post('/api/auth/signup', userData).then(res => res.data),
+  adminSignup: (userData) => apiClient.post('/api/auth/admin-signup', userData).then(res => res.data),
   googleLogin: (token) => apiClient.post('/api/auth/google', { token }).then(res => res.data),
 
   // Chat and Session Management
