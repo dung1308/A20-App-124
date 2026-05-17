@@ -6,7 +6,7 @@ import axios from 'axios';
 // Create an Axios instance for authentication that doesn't use the interceptor yet
 // to avoid circular dependencies or issues during token acquisition.
 const authApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_URL || 'https://a20-app-124-production.up.railway.app',
 });
 
 // Create the Auth Context

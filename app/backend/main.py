@@ -39,7 +39,7 @@ import database
 from services.pdf_loader import extract_text_from_pdf
 from services.cv_parser import parse_cv_with_llm
 from services.metric_service import MetricService
-from config import CORS_ORIGINS, ALLOW_PROMPT_DELETION
+from config import CORS_ORIGINS, ALLOW_PROMPT_DELETION, ADMIN_SIGNUP_KEY
 from guards.rate_limiter import RateLimiter
 from guards.admin_audit import AdminAuditMiddleware
 
@@ -1139,12 +1139,11 @@ async def signup(request: SignupRequest):
 @app.post("/api/auth/admin-signup")
 async def admin_signup(request: SignupRequest):
     """Create an admin account when the shared ADMIN_SIGNUP_KEY is provided."""
-    admin_signup_key = os.getenv("ADMIN_SIGNUP_KEY")
-    if not admin_signup_key:
+    if not ADMIN_SIGNUP_KEY:
         logger.error("ADMIN_SIGNUP_KEY is not configured")
         raise HTTPException(status_code=500, detail="Admin signup is not configured.")
 
-    if not request.admin_key or not secrets.compare_digest(request.admin_key, admin_signup_key):
+    if not request.admin_key or not secrets.compare_digest(request.admin_key, ADMIN_SIGNUP_KEY):
         raise HTTPException(status_code=403, detail="Invalid admin signup key.")
 
     existing_user = pipeline.db_service.get_student_profile(request.email)

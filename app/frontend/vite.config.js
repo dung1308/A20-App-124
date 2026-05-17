@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => {
       allowedHosts,
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:8000',
+          target: env.VITE_API_URL || 'https://a20-app-124-production.up.railway.app',
           changeOrigin: true,
           secure: false,
         },

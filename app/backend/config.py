@@ -9,11 +9,18 @@ Swapping LLM providers = edit this one file only.
 
 import os
 import logging
+from pathlib import Path
 from typing import List, Optional
 from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+# Load backend-local settings first, then fill missing shared settings from repo root.
+# This keeps direct backend runs stable while still allowing shared repo-level env vars
+# during local development.
+BACKEND_DIR = Path(__file__).resolve().parent
+REPO_ROOT = BACKEND_DIR.parent.parent
+load_dotenv(BACKEND_DIR / ".env")
+load_dotenv(REPO_ROOT / ".env")
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +39,10 @@ REDIS_URL: Optional[str] = os.getenv("REDIS_URL")
 HUMAN_WEBHOOK: str = os.getenv("HUMAN_WEBHOOK", "http://localhost:9000/handoff")
 ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
 # CORS settings - comma separated string in env
-CORS_ORIGINS_STR: str = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000")
+CORS_ORIGINS_STR: str = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000,https://a20-app-124.up.railway.app",
+)
 CORS_ORIGINS: List[str] = [origin.strip() for origin in CORS_ORIGINS_STR.split(",") if origin.strip()]
 
 LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
@@ -43,6 +53,7 @@ DAILY_LLM_BUDGET: float = float(os.getenv("DAILY_LLM_BUDGET", "100"))
 
 # Security settings
 SECRET_KEY: str = os.getenv("SECRET_KEY", "your-super-secret-key-change-in-production")
+ADMIN_SIGNUP_KEY: str = os.getenv("ADMIN_SIGNUP_KEY", "")
 ALGORITHM: str = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
 
