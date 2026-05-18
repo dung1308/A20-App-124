@@ -14,7 +14,7 @@ AI-powered admission and major-matching assistant for VinUni applicants. The app
 - Evaluation evidence: [evaluation_evidence.md](./evaluation_evidence.md)
 - AI logs: [AI-LOG_Manual/sessions.jsonl](./AI-LOG_Manual/sessions.jsonl)
 - Database: Railway PostgreSQL, configured through `DATABASE_URL`
-  - Public-safe form: `postgresql://postgres:wueglUFBADUBEGmqiyKOYZGIRClqmWVY@centerbeam.proxy.rlwy.net:23859/railway`
+  - Public-safe form: `postgresql://postgres:***@centerbeam.proxy.rlwy.net:23859/railway`
   - The full credential is kept in Railway environment variables and local `.env`, not committed in README.
 
 ## Project Goal
