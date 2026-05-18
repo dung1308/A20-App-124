@@ -6,7 +6,7 @@ AI-powered admission and major-matching assistant for VinUni applicants. The app
 
 - Live frontend: https://a20-app-124.up.railway.app/
 - Live backend: https://a20-app-124-production.up.railway.app/
-- Backend health check: https://a20-app-dung-production.up.railway.app/health
+- Backend health check: https://a20-app-124-production.up.railway.app/health
 - Architecture: [architecture.md](./architecture.md)
 - Pitch deck: [Pitch_deck.md](./Pitch_deck.md)
 - Weekly journal: [JOURNAL.md](./JOURNAL.md)
