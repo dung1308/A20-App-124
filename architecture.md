@@ -5,10 +5,10 @@ Tài liệu này mô tả kiến trúc sản phẩm VinUni Admission Assistant t
 ## Live System
 
 - Frontend: https://a20-app-124.up.railway.app/
-- Backend/API: https://a20-app-dung-production.up.railway.app/
-- Health check: https://a20-app-dung-production.up.railway.app/health
+- Backend/API: https://a20-app-124-production.up.railway.app/
+- Health check: https://a20-app-124-production.up.railway.app/health
 - Database: Railway PostgreSQL, configured through `DATABASE_URL`
-- Public-safe database form: `postgresql://postgres:***@yamanote.proxy.rlwy.net:41557/railway`
+- Public-safe database form: `postgresql://postgres:***@centerbeam.proxy.rlwy.net:23859/railway`
 
 > Không ghi mật khẩu database thật trong tài liệu public. Full credential nằm trong Railway environment variables và local `.env`.
 

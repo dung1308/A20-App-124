@@ -7,10 +7,10 @@ Tài liệu này tổng hợp kết quả đánh giá, evidence từ toàn bộ 
 ## Live Deployment Evidence
 
 - Frontend production: `https://a20-app-124.up.railway.app/`
-- Backend production: `https://a20-app-dung-production.up.railway.app/`
-- Backend health endpoint: `https://a20-app-dung-production.up.railway.app/health`
+- Backend production: `https://a20-app-124-production.up.railway.app/`
+- Backend health endpoint: `https://a20-app-124-production.up.railway.app/health`
 - Database: Railway PostgreSQL, configured through `DATABASE_URL`.
-- Public-safe database form used in docs: `postgresql://postgres:***@yamanote.proxy.rlwy.net:41557/railway`.
+- Public-safe database form used in docs: `postgresql://postgres:***@centerbeam.proxy.rlwy.net:23859/railway`.
 
 Database password is intentionally not written in this public evidence file. The full value is configured in Railway environment variables and local `.env`.
 
